@@ -66,7 +66,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Conexión verificada con una query trivial.
 - **Depende de**: 0.5
 
-### [ ] 1.2 — Migración: tabla `users`
+### [x] 1.2 — Migración: tabla `users`
 
 - **Objetivo**: Tabla users + RLS. Incluye `total_points int default 0` (total de torneo: fuente del leaderboard global y del ranking de ligas).
 - **Archivos**: `supabase/migrations/0001_users.sql`.
