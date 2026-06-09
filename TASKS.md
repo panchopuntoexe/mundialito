@@ -183,7 +183,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 4 — Pronósticos (núcleo del producto)
 
-### [ ] 4.1 — Validaciones Zod de pronóstico
+### [x] 4.1 — Validaciones Zod de pronóstico
 
 - **Objetivo**: Schema de input del pronóstico.
 - **Archivos**: `lib/validations/prediction.ts`.
