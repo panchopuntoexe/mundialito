@@ -204,14 +204,14 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Devuelve el pronóstico o 404 si no existe.
 - **Depende de**: 4.2
 
-### [ ] 4.4 — UI: pantalla principal estilo Wordle
+### [x] 4.4 — UI: pantalla principal estilo Wordle
 
 - **Objetivo**: Partido del día + selectores de resultado y rango de goles.
 - **Archivos**: `app/(main)/page.tsx`, `components/MatchCard.tsx`, `components/PredictionForm.tsx`.
 - **Aceptación**: Selección de resultado + goles, botón confirmar. Mobile-first.
 - **Depende de**: 4.2, 3.4
 
-### [ ] 4.5 — UI: estado "ya pronosticaste" / "cerrado"
+### [x] 4.5 — UI: estado "ya pronosticaste" / "cerrado"
 
 - **Objetivo**: Mostrar el pronóstico hecho y bloquear edición tras kickoff.
 - **Archivos**: `components/PredictionForm.tsx`.

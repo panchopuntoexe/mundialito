@@ -1,19 +1,98 @@
+import { MatchCard, type MatchCardData } from "@/components/MatchCard";
+import { tournamentDayRangeUtc, tournamentToday } from "@/lib/matches/day";
+import { TOURNAMENT_TIME_ZONE } from "@/lib/scoring/streaks";
+import { createClient } from "@/lib/supabase/server";
+import type { GoalsRange, ResultPred } from "@/types/domain";
+
 /**
- * Home de la app principal (protegida). Placeholder hasta la FASE 4, donde se
- * construye la pantalla de pronóstico del día (tareas 4.4–4.6).
+ * Home de la app principal (tarea 4.4): los partidos del día con su formulario de
+ * pronóstico. "Día" en la TZ fija del torneo (CONTEXT.md "Partido del día").
+ *
+ * Server Component: trae los partidos de hoy y los pronósticos PROPIOS del
+ * usuario en un solo render, y delega la interactividad a las islas de cliente
+ * (PredictionForm / Consensus). La ventana de pronóstico la re-valida el endpoint
+ * (regla de arquitectura 3); acá la UI solo refleja el estado.
  */
-export default function Home() {
+
+const MATCH_COLUMNS =
+  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status";
+
+function dayLabel(day: string): string {
+  // Mediodía UTC del día para evitar bordes de TZ al formatear la fecha.
+  const date = new Date(`${day}T12:00:00Z`);
+  return new Intl.DateTimeFormat("es", {
+    timeZone: TOURNAMENT_TIME_ZONE,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date);
+}
+
+export default async function Home() {
+  const today = tournamentToday();
+  const { startUtc, endUtc } = tournamentDayRangeUtc(today);
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: matchesData } = await supabase
+    .from("matches")
+    .select(MATCH_COLUMNS)
+    .gte("kickoff_at", startUtc)
+    .lt("kickoff_at", endUtc)
+    .order("kickoff_at", { ascending: true });
+
+  const matches: MatchCardData[] = matchesData ?? [];
+
+  // Pronósticos propios de los partidos de hoy (RLS: solo los del usuario).
+  const predByMatch = new Map<
+    number,
+    { result_pred: ResultPred; goals_range_pred: GoalsRange }
+  >();
+  if (user && matches.length > 0) {
+    const { data: preds } = await supabase
+      .from("predictions")
+      .select("match_id, result_pred, goals_range_pred")
+      .eq("user_id", user.id)
+      .in(
+        "match_id",
+        matches.map((m) => m.id),
+      );
+    for (const p of preds ?? []) {
+      predByMatch.set(p.match_id, {
+        result_pred: p.result_pred,
+        goals_range_pred: p.goals_range_pred,
+      });
+    }
+  }
+
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
-      <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-brand">
-        Mundial 2026
-      </span>
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-        Prode Mundial
-      </h1>
-      <p className="max-w-sm text-balance text-foreground-muted">
-        Pronostica los partidos del día, suma puntos y compite con amigos.
-      </p>
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 p-4">
+      <div className="flex items-baseline justify-between gap-2">
+        <h1 className="text-lg font-bold tracking-tight">Partidos de hoy</h1>
+        <span className="text-xs capitalize text-foreground-muted">
+          {dayLabel(today)}
+        </span>
+      </div>
+
+      {matches.length === 0 ? (
+        <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
+          No hay partidos hoy. Volvé mañana para sostener tu racha. 🔥
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {matches.map((match) => (
+            <li key={match.id}>
+              <MatchCard
+                match={match}
+                prediction={predByMatch.get(match.id) ?? null}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
