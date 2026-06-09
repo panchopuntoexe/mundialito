@@ -129,14 +129,15 @@ create table league_members (
 create index idx_league_members_user on league_members(user_id);
 
 -- ───────────────────────────────────────────────
--- STREAKS (rachas de aciertos)
+-- STREAKS (rachas de PARTICIPACIÓN — ADR 0001, no de aciertos)
 -- ───────────────────────────────────────────────
 create table streaks (
-  user_id            uuid primary key references users(id),
-  current_streak     int default 0,
-  max_streak         int default 0,
-  freeze_available   boolean default true,    -- "congelar" 1 vez por fase
-  last_predicted_at  timestamptz
+  user_id               uuid primary key references users(id),
+  current_streak        int default 0,
+  max_streak            int default 0,
+  freeze_available      boolean default true,   -- auto-consumo; recarga 1 vez por MACRO-RONDA
+  last_participated_on  date,                   -- día (TZ fija del torneo) de la última participación completa
+  freeze_refilled_round text                    -- macro-ronda del último refill (para recargar 1 sola vez)
 );
 
 -- ───────────────────────────────────────────────

@@ -94,7 +94,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: invite_code único. Borrar liga cascada a members. El ranking de liga refleja el total de torneo del usuario, incluido lo acumulado antes de unirse.
 - **Depende de**: 1.2
 
-### [ ] 1.6 — Migración: `streaks` y `achievements`
+### [x] 1.6 — Migración: `streaks` y `achievements`
 
 - **Objetivo**: Tablas de gamificación.
 - **Archivos**: `supabase/migrations/0005_gamification.sql`.
