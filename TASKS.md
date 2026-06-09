@@ -236,7 +236,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Tests cubren acierto, fallo, bonus de goles, resultado de knockout vía `winner_team`, y exclusión de la tanda de penales en `goals_range`. NO hay tests de multiplicador (no existe).
 - **Depende de**: 1.8
 
-### [ ] 5.2 — Lógica de rachas (participación)
+### [x] 5.2 — Lógica de rachas (participación)
 
 - **Objetivo**: Racha de **participación** (no de aciertos): avanzar/mantener/reiniciar `current`/`max` streak y consumir freeze **automáticamente**. Se invoca desde el endpoint de pronóstico (4.2), NO desde el cron de resultados. "Día" en zona horaria fija del torneo; freeze se recarga una vez por macro-ronda.
 - **Archivos**: `lib/scoring/streaks.ts`.
