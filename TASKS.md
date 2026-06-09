@@ -34,7 +34,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: `npm run lint` y `npm run type-check` pasan en limpio.
 - **Depende de**: 0.1
 
-### [ ] 0.4 — Setup de Vitest
+### [x] 0.4 — Setup de Vitest
 
 - **Objetivo**: Framework de tests listo.
 - **Archivos**: `vitest.config.ts`, un test dummy.
