@@ -108,7 +108,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: stats_json como jsonb.
 - **Depende de**: 1.2
 
-### [ ] 1.8 — Tipos TypeScript generados de la DB
+### [x] 1.8 — Tipos TypeScript generados de la DB
 
 - **Objetivo**: Tipos de Supabase + tipos de dominio compartidos.
 - **Archivos**: `types/database.ts`, `types/domain.ts`.
