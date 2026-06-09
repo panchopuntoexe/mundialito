@@ -22,6 +22,9 @@ const serverSchema = z.object({
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
   API_FOOTBALL_KEY: z.string().min(1),
   CRON_SECRET: z.string().min(1),
+  // Endpoint del fixture estático (worldcup26.ir). Solo lo usa el seed (3.3),
+  // por eso es opcional: no se fuerza en cada boot de la app.
+  WORLDCUP_FIXTURE_URL: z.url().optional(),
 });
 
 type ServerEnv = z.infer<typeof serverSchema>;

@@ -165,7 +165,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Llamada a fixtures con league=1&season=2026 devuelve datos.
 - **Depende de**: 0.5
 
-### [ ] 3.3 — Seed inicial del fixture a la DB
+### [x] 3.3 — Seed inicial del fixture a la DB
 
 - **Objetivo**: Script que carga los 104 partidos a `matches`. La identidad la posee la PK sintética; matchear filas por `external_ref` (worldcup26.ir) y dejar `api_football_id` para que el sync (5.4) lo complete/matchee. Setear `macro_round` por partido.
 - **Archivos**: `scripts/seed-fixtures.ts`.
