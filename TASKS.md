@@ -158,7 +158,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Funciones tipadas que devuelven partidos parseados.
 - **Depende de**: 0.5
 
-### [ ] 3.2 — Cliente de API-Football (live scores)
+### [x] 3.2 — Cliente de API-Football (live scores)
 
 - **Objetivo**: Cliente para live scores y estadísticas.
 - **Archivos**: `lib/external/apiFootball.ts`.
