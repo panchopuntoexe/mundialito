@@ -1,3 +1,7 @@
+/**
+ * Home de la app principal (protegida). Placeholder hasta la FASE 4, donde se
+ * construye la pantalla de pronóstico del día (tareas 4.4–4.6).
+ */
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
