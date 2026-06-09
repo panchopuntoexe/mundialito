@@ -2,7 +2,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 /**
- * Middleware de sesión y rutas protegidas (tarea 2.2).
+ * Proxy de sesión y rutas protegidas (tarea 2.2).
+ *
+ * En Next 16 la convención `middleware.ts` se renombró a `proxy.ts` (mismo
+ * comportamiento, función `proxy`). Sigue siendo el "middleware" de sesión.
  *
  * En cada request:
  *  1. Refresca la sesión de Supabase (cookies) y obtiene el `user`.
@@ -33,7 +36,7 @@ function withSessionCookies(
   return target;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
 
