@@ -73,7 +73,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Migración aplica. RLS: cada user lee/edita su fila.
 - **Depende de**: 1.1
 
-### [ ] 1.3 — Migración: tabla `matches`
+### [x] 1.3 — Migración: tabla `matches`
 
 - **Objetivo**: Tabla matches con enum status y columna generada total_goals. **PK sintética propia** (no la de API-Football) con `api_football_id` y `external_ref` como columnas unique de lookup (ADR 0002). Incluir `winner_team` ('home'|'away'|null, equipo que avanza en knockout) y `macro_round`.
 - **Archivos**: `supabase/migrations/0002_matches.sql`.
