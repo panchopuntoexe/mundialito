@@ -18,8 +18,9 @@ import { updateSession } from "@/lib/supabase/middleware";
  * evita una query a la DB en cada request del middleware.
  */
 
-// Rutas públicas: no requieren sesión.
-const PUBLIC_PATHS = ["/login", "/callback"];
+// Rutas públicas: no requieren sesión. Incluye la imagen del Wrapped, que es
+// un asset compartible por link (se sirve sin sesión, como un OG image).
+const PUBLIC_PATHS = ["/login", "/callback", "/api/wrapped/image"];
 
 function isPublic(pathname: string): boolean {
   return PUBLIC_PATHS.some(
