@@ -5,11 +5,10 @@ import { z } from "zod";
  *
  * Falla rápido y con mensaje claro si falta una env var requerida.
  *
- * División cliente/servidor:
- * - Las `NEXT_PUBLIC_*` se inlinean en el bundle, así que se referencian
- *   estáticamente y se validan siempre.
- * - Los secretos de servidor solo existen en el server; se validan solo cuando
- *   `typeof window === "undefined"` para no romper el render del cliente.
+ * Dos exports:
+ * - `env`        → variables públicas (`NEXT_PUBLIC_*`), validadas siempre.
+ * - `serverEnv`  → secretos de servidor, validados solo en el server. En el
+ *                  cliente, acceder a uno lanza un error (nunca deben leerse ahí).
  */
 
 const clientSchema = z.object({
@@ -25,11 +24,7 @@ const serverSchema = z.object({
   CRON_SECRET: z.string().min(1),
 });
 
-// Referencias estáticas para que Next inline las NEXT_PUBLIC_*.
-const clientRaw = {
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-};
+type ServerEnv = z.infer<typeof serverSchema>;
 
 function format(error: z.ZodError): string {
   return error.issues
@@ -37,36 +32,48 @@ function format(error: z.ZodError): string {
     .join("\n");
 }
 
-const clientParsed = clientSchema.safeParse(clientRaw);
-if (!clientParsed.success) {
-  throw new Error(
-    `❌ Variables de entorno públicas inválidas o faltantes:\n${format(
-      clientParsed.error,
-    )}\n→ Revisa tu .env.local (ver .env.example).`,
-  );
+function loadClientEnv() {
+  // Referencias estáticas para que Next inline las NEXT_PUBLIC_*.
+  const parsed = clientSchema.safeParse({
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
+  if (!parsed.success) {
+    throw new Error(
+      `❌ Variables de entorno públicas inválidas o faltantes:\n${format(
+        parsed.error,
+      )}\n→ Revisa tu .env.local (ver .env.example).`,
+    );
+  }
+  return parsed.data;
 }
 
-const isServer = typeof window === "undefined";
-
-const serverParsed = isServer
-  ? serverSchema.safeParse(process.env)
-  : ({ success: true, data: {} as z.infer<typeof serverSchema> } as const);
-
-if (isServer && !serverParsed.success) {
-  throw new Error(
-    `❌ Variables de entorno de servidor inválidas o faltantes:\n${format(
-      serverParsed.error,
-    )}\n→ Revisa tu .env.local (ver .env.example).`,
-  );
+function loadServerEnv(): ServerEnv {
+  if (typeof window !== "undefined") {
+    // En el cliente los secretos no existen: proxy que lanza si se accede.
+    return new Proxy({} as ServerEnv, {
+      get(_target, prop) {
+        throw new Error(
+          `Intento de leer la variable de servidor "${String(
+            prop,
+          )}" en el cliente. Los secretos son server-only.`,
+        );
+      },
+    });
+  }
+  const parsed = serverSchema.safeParse(process.env);
+  if (!parsed.success) {
+    throw new Error(
+      `❌ Variables de entorno de servidor inválidas o faltantes:\n${format(
+        parsed.error,
+      )}\n→ Revisa tu .env.local (ver .env.example).`,
+    );
+  }
+  return parsed.data;
 }
 
-/**
- * Env validado y tipado. En el cliente, las claves de servidor están vacías
- * (jamás se envían al bundle); accederlas server-side está garantizado.
- */
-export const env = {
-  ...clientParsed.data,
-  ...serverParsed.data,
-};
+export const env = loadClientEnv();
+export const serverEnv = loadServerEnv();
 
 export type Env = typeof env;
+export type { ServerEnv };

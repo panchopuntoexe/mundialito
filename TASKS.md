@@ -59,7 +59,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 1 — Datos y persistencia
 
-### [ ] 1.1 — Proyecto Supabase + cliente
+### [x] 1.1 — Proyecto Supabase + cliente
 
 - **Objetivo**: Clientes de Supabase para server y client components.
 - **Archivos**: `lib/supabase/server.ts`, `lib/supabase/client.ts`.
