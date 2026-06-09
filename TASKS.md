@@ -321,35 +321,35 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 7 — Wrapped (viralidad)
 
-### [ ] 7.1 — Agregación de stats por usuario
+### [x] 7.1 — Agregación de stats por usuario
 
 - **Objetivo**: Función que arma el snapshot de stats (% aciertos, racha, fallo épico, etc.).
 - **Archivos**: `lib/scoring/wrappedStats.ts`.
 - **Aceptación**: Tests del cálculo del "fallo épico" y agregados.
 - **Depende de**: 5.5
 
-### [ ] 7.2 — Generación de imagen de la tarjeta
+### [x] 7.2 — Generación de imagen de la tarjeta
 
 - **Objetivo**: Generar imagen server-side (ej. @vercel/og) con las stats.
 - **Archivos**: `app/api/wrapped/image/route.tsx`.
 - **Aceptación**: Devuelve imagen PNG con el diseño de la tarjeta.
 - **Depende de**: 7.1
 
-### [ ] 7.3 — Cron: Wrapped Generator
+### [x] 7.3 — Cron: Wrapped Generator
 
 - **Objetivo**: Generar Wrapped al final de cada fase y guardar en Storage.
 - **Archivos**: `app/api/cron/generate-wrapped/route.ts`, `jobs/generateWrapped.ts`.
 - **Aceptación**: Crea filas en wrapped_cards con image_url poblada.
 - **Depende de**: 7.2, 1.7
 
-### [ ] 7.4 — UI: ver y compartir Wrapped
+### [x] 7.4 — UI: ver y compartir Wrapped
 
 - **Objetivo**: Pantalla del Wrapped + botones de compartir (Web Share API).
 - **Archivos**: `app/(main)/wrapped/`, `components/WrappedCard.tsx`.
 - **Aceptación**: Comparte imagen/link a WhatsApp, Instagram, X.
 - **Depende de**: 7.3
 
-### [ ] 7.5 — Mini-tarjeta compartible por partido
+### [x] 7.5 — Mini-tarjeta compartible por partido
 
 - **Objetivo**: Tras cada partido, tarjeta del resultado compartible (estilo cuadritos de Wordle).
 - **Archivos**: `components/MatchResultCard.tsx`, endpoint de imagen.
