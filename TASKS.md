@@ -18,9 +18,9 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: `npm run dev` levanta en :3000. `strict: true` en tsconfig. Alias `@/` configurado.
 - **Depende de**: —
 
-### [ ] 0.2 — Configurar Tailwind CSS mobile-first
+### [x] 0.2 — Configurar Tailwind CSS mobile-first
 - **Objetivo**: Tailwind funcionando, tokens base de color/tipografía del proyecto.
-- **Archivos**: `tailwind.config.ts`, `app/globals.css`.
+- **Archivos**: `app/globals.css` (Tailwind v4 es CSS-first: tokens en `@theme`, sin `tailwind.config.ts`).
 - **Aceptación**: Una página de prueba renderiza clases de Tailwind. Tema oscuro como base.
 - **Depende de**: 0.1
 
