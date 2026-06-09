@@ -87,7 +87,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: No permite dos pronósticos del mismo user al mismo match.
 - **Depende de**: 1.2, 1.3
 
-### [ ] 1.5 — Migración: `leagues` y `league_members`
+### [x] 1.5 — Migración: `leagues` y `league_members`
 
 - **Objetivo**: Tablas de ligas privadas. `league_members` **sin** contador `total_points`: el ranking de liga se calcula filtrando `users.total_points` por membresía (liga = filtro sobre el total global, no ledger aparte).
 - **Archivos**: `supabase/migrations/0004_leagues.sql`.
