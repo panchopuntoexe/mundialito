@@ -80,7 +80,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Migración aplica. Índices de kickoff y status creados. `api_football_id` y `external_ref` son unique. `total_goals` documentado como reg+alargue sin penales.
 - **Depende de**: 1.1
 
-### [ ] 1.4 — Migración: tabla `predictions`
+### [x] 1.4 — Migración: tabla `predictions`
 
 - **Objetivo**: Tabla predictions con enums y constraint unique (user, match).
 - **Archivos**: `supabase/migrations/0003_predictions.sql`.
