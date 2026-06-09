@@ -4,7 +4,7 @@ La "racha" mide **participación** (días consecutivos en que el usuario pronost
 
 ## Contexto
 
-ARCHITECTURE.md §3 originalmente definía la racha como racha de *aciertos* y la usaba como multiplicador de puntos (×1.2 / ×1.5 / ×2.0). Al precisar el dominio, la racha se redefinió como participación. Mantener el multiplicador habría hecho que la simple asistencia multiplicara los puntos de precisión, contaminando el leaderboard: un usuario que se presenta a diario y acierta por suerte superaría a uno que predice poco pero con precisión.
+ARCHITECTURE.md §3 originalmente definía la racha como racha de _aciertos_ y la usaba como multiplicador de puntos (×1.2 / ×1.5 / ×2.0). Al precisar el dominio, la racha se redefinió como participación. Mantener el multiplicador habría hecho que la simple asistencia multiplicara los puntos de precisión, contaminando el leaderboard: un usuario que se presenta a diario y acierta por suerte superaría a uno que predice poco pero con precisión.
 
 ## Decisión
 

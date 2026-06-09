@@ -164,6 +164,7 @@ create table wrapped_cards (
 ```
 
 **Row Level Security (RLS):** activar en todas las tablas. Reglas base:
+
 - `users`: cada quien lee/edita su propia fila.
 - `predictions`: el dueño lee/escribe las suyas; lecturas públicas solo después del kickoff.
 - `league_members`: visible para miembros de la misma liga.
@@ -173,10 +174,11 @@ create table wrapped_cards (
 ## 3. Sistema de puntuación
 
 ### Reglas
-| Acierto | Puntos |
-|---------|--------|
-| Resultado correcto (Local/Empate/Visitante en grupos; equipo que avanza en knockout) | 10 |
-| Rango de goles correcto (bonus, solo si acertaste el resultado) | +15 |
+
+| Acierto                                                                              | Puntos |
+| ------------------------------------------------------------------------------------ | ------ |
+| Resultado correcto (Local/Empate/Visitante en grupos; equipo que avanza en knockout) | 10     |
+| Rango de goles correcto (bonus, solo si acertaste el resultado)                      | +15    |
 
 Los puntos son **solo precisión**. NO hay multiplicador por racha — la racha está
 desacoplada de los puntos (ver ADR 0001). El resultado en knockout es el equipo que
@@ -184,6 +186,7 @@ avanza (no hay empate); el rango de goles cuenta reglamentario + alargue, **sin*
 tanda de penales.
 
 ### Algoritmo (pseudocódigo)
+
 ```
 function calculatePoints(prediction, match):
     points = 0
@@ -212,6 +215,7 @@ function calculatePoints(prediction, match):
 ## 4. Flujos críticos
 
 ### 4.1 Crear un pronóstico
+
 ```
 POST /api/predictions
   1. Auth middleware verifica sesión
@@ -225,6 +229,7 @@ POST /api/predictions
 ```
 
 ### 4.2 Sincronización de scores (Cron — Match Sync)
+
 ```
 Cada 60s (solo si hay partidos 'live'):
   1. Verifica si hay matches con status='live' o kickoff dentro de 5 min
@@ -235,6 +240,7 @@ Cada 60s (solo si hay partidos 'live'):
 ```
 
 ### 4.3 Cálculo de puntos (Cron — Results Checker + Score Calc)
+
 ```
 Cada 5 min:
   1. Busca matches con status='finished' AND processed=false
@@ -253,6 +259,7 @@ Cada 5 min:
 ```
 
 ### 4.4 Generación de Wrapped (Cron — Wrapped Gen)
+
 ```
 Al final de cada fase (group_stage, round_16, ... final):
   1. Por cada usuario activo:
@@ -267,6 +274,7 @@ Al final de cada fase (group_stage, round_16, ... final):
 ```
 
 ### 4.5 Racha de participación (al crear el pronóstico)
+
 ```
 En POST /api/predictions, tras guardar (ver 4.1 paso 5):
   1. La racha mide PARTICIPACIÓN, no aciertos (ADR 0001). No afecta los puntos.
@@ -287,14 +295,15 @@ En POST /api/predictions, tras guardar (ver 4.1 paso 5):
 
 ## 5. Estrategia de caché (Upstash Redis)
 
-| Clave | Contenido | TTL | Quién la escribe |
-|-------|-----------|-----|------------------|
-| `fixtures:{date}` | Partidos de un día | 1 hora | Match Sync / on-demand |
-| `match:live:{id}` | Score en vivo | 60 seg | Match Sync |
-| `leaderboard:global` | Top global | 5 min | Score Calc (invalida) |
-| `leaderboard:league:{id}` | Ranking de liga | 5 min | Score Calc (invalida) |
+| Clave                     | Contenido          | TTL    | Quién la escribe       |
+| ------------------------- | ------------------ | ------ | ---------------------- |
+| `fixtures:{date}`         | Partidos de un día | 1 hora | Match Sync / on-demand |
+| `match:live:{id}`         | Score en vivo      | 60 seg | Match Sync             |
+| `leaderboard:global`      | Top global         | 5 min  | Score Calc (invalida)  |
+| `leaderboard:league:{id}` | Ranking de liga    | 5 min  | Score Calc (invalida)  |
 
 **Patrón de lectura (cache-aside):**
+
 ```
 1. Buscar en Redis
 2. Si hit → retornar

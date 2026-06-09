@@ -14,6 +14,7 @@ El usuario pronostica los partidos del día (todos los del día actual) antes de
 **NO es una app de apuestas.** No hay dinero real. El valor es reputación, gamificación y viralidad social. Esto es una decisión de producto y legal — nunca introducir mecánicas de apuesta con dinero.
 
 ### El loop de engagement
+
 1. Usuario ve los partidos del día → pronostica cada uno antes de su kickoff (predecir todos los abiertos del día mantiene su racha).
 2. El pronóstico se cierra cuando empieza el partido (no se puede cambiar).
 3. Al terminar el partido, se calculan puntos automáticamente.
@@ -24,19 +25,19 @@ El usuario pronostica los partidos del día (todos los del día actual) antes de
 
 ## Stack tecnológico
 
-| Capa | Tecnología | Razón |
-|------|-----------|-------|
-| Framework | Next.js 16 (App Router) | Fullstack en un repo, Server Components, API Routes |
-| Lenguaje | TypeScript (strict) | Tipado en todo el stack |
-| Base de datos | Supabase (PostgreSQL) | DB + Auth + Realtime + Storage en un solo servicio |
-| Realtime | Supabase Realtime | Leaderboards en vivo sin polling |
-| Caché | Upstash Redis | Serverless, evita quemar API-Football |
-| Estado servidor | TanStack Query (React Query) | Cache y sincronización de datos |
-| Estado UI | Zustand | Estado ligero del cliente |
-| Estilos | Tailwind CSS | Mobile-first, rápido |
-| Deploy | Vercel | Deploy automático, Edge, Cron Jobs nativos |
-| CI/CD | GitHub Actions | Lint, type-check, tests en cada PR |
-| Datos de partidos | API-Football + worldcup26.ir | Live scores + fixture estático |
+| Capa              | Tecnología                   | Razón                                               |
+| ----------------- | ---------------------------- | --------------------------------------------------- |
+| Framework         | Next.js 16 (App Router)      | Fullstack en un repo, Server Components, API Routes |
+| Lenguaje          | TypeScript (strict)          | Tipado en todo el stack                             |
+| Base de datos     | Supabase (PostgreSQL)        | DB + Auth + Realtime + Storage en un solo servicio  |
+| Realtime          | Supabase Realtime            | Leaderboards en vivo sin polling                    |
+| Caché             | Upstash Redis                | Serverless, evita quemar API-Football               |
+| Estado servidor   | TanStack Query (React Query) | Cache y sincronización de datos                     |
+| Estado UI         | Zustand                      | Estado ligero del cliente                           |
+| Estilos           | Tailwind CSS                 | Mobile-first, rápido                                |
+| Deploy            | Vercel                       | Deploy automático, Edge, Cron Jobs nativos          |
+| CI/CD             | GitHub Actions               | Lint, type-check, tests en cada PR                  |
+| Datos de partidos | API-Football + worldcup26.ir | Live scores + fixture estático                      |
 
 ---
 

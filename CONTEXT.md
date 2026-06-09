@@ -5,7 +5,7 @@ Lenguaje de dominio de la PWA de pronósticos del Mundial 2026. Esta es la fuent
 ## Language
 
 **Partido del día**:
-El conjunto de *todos* los partidos cuyo kickoff cae en el día actual. Los partidos de días futuros no están disponibles para pronosticar hasta que llega su día.
+El conjunto de _todos_ los partidos cuyo kickoff cae en el día actual. Los partidos de días futuros no están disponibles para pronosticar hasta que llega su día.
 _Avoid_: "el partido del día" en singular (el producto no curaba un único partido — se predicen todos los del día).
 
 **Pronóstico** (Prediction):
@@ -29,9 +29,10 @@ Campo explícito en `matches` (`'home' | 'away' | null`) que registra quién ava
 
 **Resultado** (Match result):
 Lo que se acierta con `result_pred`. Depende de la fase:
+
 - **Fase de grupos**: resultado a los 90' (local / empate / visitante). El empate es válido.
 - **Knockout**: el equipo que **avanza** (decidido por 90', alargue o penales). NO existe empate — el `draw` se deshabilita en UI y se rechaza server-side para partidos de knockout. Como un partido de knockout puede quedar empatado en el marcador (p. ej. 1-1 que se define por penales), el resultado **no se puede derivar de `score_home`/`score_away`** — la fila `matches` debe registrar el equipo que avanza explícitamente.
-_Avoid_: asumir que `deriveResult(score_home, score_away)` basta (falla en knockouts empatados).
+  _Avoid_: asumir que `deriveResult(score_home, score_away)` basta (falla en knockouts empatados).
 
 **Identidad del partido** (Match identity):
 La fila `matches` tiene **PK sintética propia** (no la de ningún proveedor). Los IDs externos son columnas de lookup re-apuntables: `api_football_id` (unique, para el sync de scores en vivo) y `external_ref` (worldcup26.ir, para el seed del fixture estático). `predictions.match_id` referencia la PK interna. Cambiar de proveedor de scores = un `UPDATE` de columna, no una migración de PK.
