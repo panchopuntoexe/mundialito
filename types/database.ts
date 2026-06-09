@@ -302,6 +302,13 @@ export interface Database {
         Args: { p_league_id: string; p_user_id: string };
         Returns: boolean;
       };
+      // Aplica los resultados de un partido finalizado en una transacción
+      // idempotente (migración 0007 / tarea 5.5). Devuelve true si esta corrida
+      // hizo el claim del partido; false si ya estaba procesado.
+      apply_match_results: {
+        Args: { p_match_id: number; p_results: Json };
+        Returns: boolean;
+      };
     };
     Enums: {
       match_status: "scheduled" | "live" | "finished" | "cancelled";

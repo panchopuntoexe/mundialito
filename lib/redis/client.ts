@@ -22,3 +22,13 @@ export function cached<T>(
 ): Promise<T> {
   return cachedWith(redis as unknown as CacheStore, key, ttlSeconds, fetcher);
 }
+
+/**
+ * Borra una o más claves (invalidación). No-op si no se pasan claves (Upstash
+ * `DEL` exige al menos una). Devuelve cuántas se borraron.
+ * Lo usa el cron de resultados para invalidar leaderboards (tarea 5.6).
+ */
+export function del(...keys: string[]): Promise<number> {
+  if (keys.length === 0) return Promise.resolve(0);
+  return redis.del(...keys);
+}

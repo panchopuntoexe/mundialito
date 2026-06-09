@@ -250,21 +250,21 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Tests por cada tipo de logro.
 - **Depende de**: 1.8
 
-### [ ] 5.4 — Cron: Match Sync
+### [x] 5.4 — Cron: Match Sync
 
 - **Objetivo**: Sincronizar scores en vivo cada 60s.
 - **Archivos**: `app/api/cron/match-sync/route.ts`, `jobs/matchSync.ts`, `vercel.json`.
 - **Aceptación**: Protegido con CRON_SECRET. Actualiza scores y caché.
 - **Depende de**: 3.2, 1.9
 
-### [ ] 5.5 — Cron: Results Checker + Score Calc
+### [x] 5.5 — Cron: Results Checker + Score Calc
 
 - **Objetivo**: Procesar partidos finalizados e idempotentemente calcular puntos.
 - **Archivos**: `app/api/cron/process-results/route.ts`, `jobs/processResults.ts`.
 - **Aceptación**: Correr dos veces no duplica puntos (flag `processed` en la misma transacción). Actualiza `predictions`, suma a `users.total_points` y evalúa achievements. **NO toca rachas** (viven en el endpoint de pronóstico, 4.2/5.2).
 - **Depende de**: 5.1, 5.3
 
-### [ ] 5.6 — Invalidación de caché de leaderboards
+### [x] 5.6 — Invalidación de caché de leaderboards
 
 - **Objetivo**: Tras procesar, invalidar rankings en Redis.
 - **Archivos**: `jobs/processResults.ts`, `lib/redis/cache.ts`.
@@ -275,42 +275,42 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 6 — Ligas y leaderboards (motor viral)
 
-### [ ] 6.1 — Endpoint: crear liga
+### [x] 6.1 — Endpoint: crear liga
 
 - **Objetivo**: POST que crea liga con invite_code único.
 - **Archivos**: `app/api/leagues/route.ts`.
 - **Aceptación**: Genera código único, crea creador como miembro.
 - **Depende de**: 1.5, 2.2
 
-### [ ] 6.2 — Endpoint: unirse a liga por código
+### [x] 6.2 — Endpoint: unirse a liga por código
 
 - **Objetivo**: POST para unirse con invite_code.
 - **Archivos**: `app/api/leagues/join/route.ts`.
 - **Aceptación**: Código inválido → 404. No duplica membresía.
 - **Depende de**: 6.1
 
-### [ ] 6.3 — Endpoint: leaderboard global (cacheado)
+### [x] 6.3 — Endpoint: leaderboard global (cacheado)
 
 - **Objetivo**: GET top global.
 - **Archivos**: `app/api/leagues/global/route.ts`.
 - **Aceptación**: Sirve desde Redis, TTL 5 min.
 - **Depende de**: 5.6
 
-### [ ] 6.4 — Endpoint: leaderboard de liga (cacheado)
+### [x] 6.4 — Endpoint: leaderboard de liga (cacheado)
 
 - **Objetivo**: GET ranking de una liga.
 - **Archivos**: `app/api/leagues/[id]/route.ts`.
 - **Aceptación**: Solo miembros lo ven. Cacheado.
 - **Depende de**: 6.2, 5.6
 
-### [ ] 6.5 — Realtime: ranking en vivo
+### [x] 6.5 — Realtime: ranking en vivo
 
 - **Objetivo**: Suscripción a cambios de puntos vía Supabase Realtime.
 - **Archivos**: `components/Leaderboard.tsx`, `lib/supabase/realtime.ts`.
 - **Aceptación**: El ranking se actualiza sin recargar al procesarse un partido.
 - **Depende de**: 6.3, 6.4
 
-### [ ] 6.6 — UI: pantallas de ligas
+### [x] 6.6 — UI: pantallas de ligas
 
 - **Objetivo**: Crear, unirse, ver ligas y rankings.
 - **Archivos**: `app/(main)/leagues/`.

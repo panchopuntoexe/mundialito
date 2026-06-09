@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
-  title: "Iniciar sesión · Prode Mundial",
+  title: "Iniciar sesión · Mundialito",
 };
 
 /**
