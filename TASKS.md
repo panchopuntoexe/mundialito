@@ -190,7 +190,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Rechaza enums inválidos y campos faltantes.
 - **Depende de**: 1.8
 
-### [ ] 4.2 — Endpoint: crear pronóstico (con ventana de tiempo)
+### [x] 4.2 — Endpoint: crear pronóstico (con ventana de tiempo)
 
 - **Objetivo**: POST que valida kickoff y guarda pronóstico. Rechaza `draw` en partidos de knockout (422). Tras guardar, actualiza la **racha de participación** (ver 5.2 / ARCHITECTURE §4.5) — la racha vive aquí, no en el cron de resultados.
 - **Archivos**: `app/api/predictions/route.ts`.
