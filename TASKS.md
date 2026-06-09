@@ -115,7 +115,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: `supabase gen types` produce tipos usados sin `any`.
 - **Depende de**: 1.2–1.7
 
-### [ ] 1.9 — Cliente Upstash Redis + helpers cache-aside
+### [x] 1.9 — Cliente Upstash Redis + helpers cache-aside
 
 - **Objetivo**: Cliente Redis y helper genérico `cached(key, ttl, fetcher)`.
 - **Archivos**: `lib/redis/client.ts`, `lib/redis/cache.ts`.
