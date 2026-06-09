@@ -172,7 +172,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Tabla matches poblada con los partidos del Mundial. Re-correr el seed no duplica filas (upsert por `external_ref`).
 - **Depende de**: 3.1, 1.3
 
-### [ ] 3.4 — Endpoint: partido(s) del día (con caché)
+### [x] 3.4 — Endpoint: partido(s) del día (con caché)
 
 - **Objetivo**: GET de los partidos de hoy, cacheado.
 - **Archivos**: `app/api/matches/route.ts`.
