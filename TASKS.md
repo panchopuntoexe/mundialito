@@ -229,7 +229,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 5 — Scoring y jobs (motor automático)
 
-### [ ] 5.1 — Lógica pura de cálculo de puntos
+### [x] 5.1 — Lógica pura de cálculo de puntos
 
 - **Objetivo**: Funciones puras `deriveResult`, `deriveGoalsRange`, `calculatePoints`. En knockout el resultado sale de `winner_team` (no del marcador, que puede empatar); `goals_range` cuenta reg+alargue sin penales. **Sin** multiplicador de racha (ADR 0001).
 - **Archivos**: `lib/scoring/calculate.ts`.
