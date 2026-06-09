@@ -28,7 +28,6 @@ import {
 import type { Json } from "@/types/database";
 import {
   MACRO_ROUNDS,
-  type MacroRound,
   type MatchStatus,
   type ResultPred,
   type WinnerTeam,
