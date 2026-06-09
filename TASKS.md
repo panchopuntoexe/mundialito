@@ -243,7 +243,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Tests: racha sube al completar los partidos abiertos del día, se mantiene en días consecutivos, freeze se auto-consume al saltar un día y se reinicia si no hay freeze. No depende de si el pronóstico fue correcto.
 - **Depende de**: 1.8
 
-### [ ] 5.3 — Lógica de logros
+### [x] 5.3 — Lógica de logros
 
 - **Objetivo**: Evaluar y otorgar achievements.
 - **Archivos**: `lib/scoring/achievements.ts`.
