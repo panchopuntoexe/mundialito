@@ -48,7 +48,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: La app falla con error claro si falta una env var requerida.
 - **Depende de**: 0.1
 
-### [ ] 0.6 — GitHub Actions CI
+### [x] 0.6 — GitHub Actions CI
 
 - **Objetivo**: CI que corre lint + type-check + test en cada PR.
 - **Archivos**: `.github/workflows/ci.yml`.
