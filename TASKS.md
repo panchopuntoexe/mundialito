@@ -218,7 +218,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Tras confirmar o tras kickoff, el form se bloquea.
 - **Depende de**: 4.4, 4.3
 
-### [ ] 4.6 — UI: consenso de la comunidad (post-cierre)
+### [x] 4.6 — UI: consenso de la comunidad (post-cierre)
 
 - **Objetivo**: Tras el kickoff, mostrar % de usuarios por opción.
 - **Archivos**: `app/api/matches/[id]/consensus/route.ts`, `components/Consensus.tsx`.
