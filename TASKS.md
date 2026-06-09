@@ -197,7 +197,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: Rechaza con 409 si el partido ya empezó. `draw` en knockout → 422. Upsert respeta unique. La racha avanza al completar los partidos abiertos del día.
 - **Depende de**: 4.1, 2.2, 3.4
 
-### [ ] 4.3 — Endpoint: obtener mi pronóstico de un partido
+### [x] 4.3 — Endpoint: obtener mi pronóstico de un partido
 
 - **Objetivo**: GET del pronóstico propio.
 - **Archivos**: `app/api/predictions/[matchId]/route.ts`.
