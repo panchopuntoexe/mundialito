@@ -41,7 +41,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: `npm run test` corre y pasa el test dummy.
 - **Depende de**: 0.1
 
-### [ ] 0.5 — Variables de entorno y validación
+### [x] 0.5 — Variables de entorno y validación
 
 - **Objetivo**: `.env.example` completo y validación de env con Zod al boot.
 - **Archivos**: `.env.example`, `lib/env.ts`.
