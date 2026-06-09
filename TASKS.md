@@ -126,21 +126,21 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 2 — Autenticación
 
-### [ ] 2.1 — Auth con Supabase (Google + email)
+### [x] 2.1 — Auth con Supabase (Google + email)
 
 - **Objetivo**: Login/logout funcional.
 - **Archivos**: `app/(auth)/`, `lib/supabase/`.
 - **Aceptación**: Usuario inicia sesión y persiste entre recargas.
 - **Depende de**: 1.1, 1.2
 
-### [ ] 2.2 — Middleware de sesión y rutas protegidas
+### [x] 2.2 — Middleware de sesión y rutas protegidas
 
 - **Objetivo**: Proteger rutas de `(main)` y API Routes.
-- **Archivos**: `middleware.ts`, helper `getServerUser()`.
+- **Archivos**: `proxy.ts` (Next 16 renombró `middleware.ts` → `proxy.ts`), `lib/supabase/middleware.ts` (helper `updateSession`), helper `getServerUser()` en `lib/supabase/auth.ts`.
 - **Aceptación**: Rutas protegidas redirigen a login sin sesión.
 - **Depende de**: 2.1
 
-### [ ] 2.3 — Onboarding: elegir username
+### [x] 2.3 — Onboarding: elegir username
 
 - **Objetivo**: Tras primer login, pedir username único.
 - **Archivos**: `app/(auth)/onboarding/`, `app/api/users/route.ts`.
