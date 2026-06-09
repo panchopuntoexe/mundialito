@@ -101,7 +101,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 - **Aceptación**: achievements unique (user, type).
 - **Depende de**: 1.2
 
-### [ ] 1.7 — Migración: `wrapped_cards`
+### [x] 1.7 — Migración: `wrapped_cards`
 
 - **Objetivo**: Tabla de tarjetas Wrapped.
 - **Archivos**: `supabase/migrations/0006_wrapped.sql`.
