@@ -151,7 +151,7 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 3 — Integración de datos de partidos
 
-### [ ] 3.1 — Cliente de worldcup26.ir (fixture estático)
+### [x] 3.1 — Cliente de worldcup26.ir (fixture estático)
 
 - **Objetivo**: Cliente para traer fixture, equipos y grupos.
 - **Archivos**: `lib/external/worldcup.ts`.
