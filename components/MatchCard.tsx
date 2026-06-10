@@ -35,7 +35,7 @@ const PHASE_LABELS: Record<string, string> = {
   final: "Final",
 };
 
-function phaseLabel(phase: string): string {
+export function phaseLabel(phase: string): string {
   if (phase.startsWith("group_")) {
     return `Grupo ${phase.slice("group_".length).toUpperCase()}`;
   }

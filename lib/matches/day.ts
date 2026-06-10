@@ -48,7 +48,7 @@ function zonedDayStartUtc(day: string, timeZone: string): Date {
 }
 
 /** Suma un día calendario a 'YYYY-MM-DD'. */
-function nextDay(day: string): string {
+export function nextDay(day: string): string {
   const [y, m, d] = day.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
 }

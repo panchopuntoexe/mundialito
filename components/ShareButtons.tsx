@@ -5,10 +5,12 @@ import { useState } from "react";
 /**
  * Botonera de compartir reutilizable (tareas 7.4 y 7.5).
  *
- * Web Share API nativa (cubre WhatsApp/Instagram/X en móvil) con fallback a copiar
- * link, más atajos directos: WhatsApp y X (intents web) e Instagram vía descarga
- * del PNG (Instagram no acepta intents web). Compartida por las tarjetas de
- * Wrapped y de resultado de partido.
+ * El botón principal comparte la IMAGEN como archivo vía Web Share API nivel 2
+ * (`navigator.share({ files })`, soportada en móvil: cubre WhatsApp/Instagram/X). Si
+ * el navegador no puede compartir archivos, cae a compartir el link (con preview de
+ * la imagen) y, por último, a copiar el link. Además: atajos directos a WhatsApp y X
+ * (intents web, solo texto+link) e Instagram vía descarga del PNG. Compartida por las
+ * tarjetas de Wrapped y de resultado de partido.
  */
 interface ShareButtonsProps {
   /** URL pública/absoluta preferida (Storage). Si es null, se usa `fallbackPath`. */
@@ -40,17 +42,56 @@ export function ShareButtons({
     return src;
   }
 
-  async function handleNativeShare() {
-    const url = shareUrl();
+  /** Baja la imagen (`src`) como File para compartirla/descargarla. null si falla. */
+  async function fetchImageFile(): Promise<File | null> {
+    try {
+      const res = await fetch(src);
+      if (!res.ok) return null;
+      const blob = await res.blob();
+      return new File([blob], `${downloadName}.png`, {
+        type: blob.type || "image/png",
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /** Comparte el link (con preview de la imagen) o, si no hay Web Share, copia. */
+  async function shareLink() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Mundialito 2026", text, url });
+        await navigator.share({ title: "Mundialito 2026", text, url: shareUrl() });
       } catch {
         // El usuario canceló el diálogo: no es un error.
       }
       return;
     }
     await copyLink();
+  }
+
+  /**
+   * Compartir nativo: intenta enviar la IMAGEN como archivo (Web Share API nivel 2).
+   * Si el navegador no puede compartir archivos, cae a compartir el link.
+   */
+  async function handleNativeShare() {
+    if (
+      typeof navigator !== "undefined" &&
+      typeof navigator.canShare === "function"
+    ) {
+      const file = await fetchImageFile();
+      if (file && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: "Mundialito 2026", text });
+        } catch (err) {
+          // AbortError = el usuario canceló (no es error); otro fallo → caer al link.
+          if ((err as Error)?.name !== "AbortError") {
+            await shareLink();
+          }
+        }
+        return;
+      }
+    }
+    await shareLink();
   }
 
   async function copyLink() {
@@ -79,20 +120,19 @@ export function ShareButtons({
 
   /** Instagram no acepta intents web: se descarga el PNG para compartirlo. */
   async function downloadImage() {
-    try {
-      const res = await fetch(src);
-      const blob = await res.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = objectUrl;
-      a.download = `${downloadName}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(objectUrl);
-    } catch {
+    const file = await fetchImageFile();
+    if (!file) {
       window.open(src, "_blank", "noopener");
+      return;
     }
+    const objectUrl = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = `${downloadName}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(objectUrl);
   }
 
   return (

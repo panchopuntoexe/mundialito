@@ -51,10 +51,10 @@ export default async function MainLayout({
           Ligas
         </Link>
         <Link
-          href="/wrapped"
+          href="/estadisticas"
           className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
         >
-          Wrapped
+          Estadísticas
         </Link>
       </nav>
       {children}

@@ -223,19 +223,5 @@ export function renderWrappedImage(params: {
   );
 }
 
-/** Stats de muestra para previsualizar el diseño (`?preview=1`). */
-export const SAMPLE_WRAPPED_STATS: WrappedStats = {
-  phase: "group_stage",
-  totalPredictions: 12,
-  correctPredictions: 8,
-  perfectPredictions: 3,
-  accuracy: 67,
-  totalPoints: 145,
-  maxStreak: 6,
-  epicMiss: {
-    matchId: 7,
-    matchLabel: "BRA vs CRC",
-    communityCorrectPct: 92,
-  },
-  achievements: ["first_win", "sharpshooter", "streak_3"],
-};
+/** Stats de muestra (`?preview=1`), compartidas con la página de preview dev. */
+export { SAMPLE_WRAPPED_STATS } from "./samples";

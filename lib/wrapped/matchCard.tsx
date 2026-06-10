@@ -161,14 +161,5 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
   );
 }
 
-/** Datos de muestra para previsualizar el diseño (`?preview=1`). */
-export const SAMPLE_MATCH_RESULT: MatchResultCardData = {
-  username: "tu_usuario",
-  homeTeam: "Argentina",
-  awayTeam: "México",
-  scoreHome: 2,
-  scoreAway: 1,
-  resultCorrect: true,
-  goalsCorrect: false,
-  pointsEarned: 10,
-};
+/** Datos de muestra (`?preview=1`), compartidos con la página de preview dev. */
+export { SAMPLE_MATCH_RESULT } from "./samples";

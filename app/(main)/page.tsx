@@ -1,6 +1,12 @@
+import { DayCompleteCelebration } from "@/components/DayCompleteCelebration";
 import { MatchCard, type MatchCardData } from "@/components/MatchCard";
 import { PushOptIn } from "@/components/PushOptIn";
-import { tournamentDayRangeUtc, tournamentToday } from "@/lib/matches/day";
+import { UpcomingMatches } from "@/components/UpcomingMatches";
+import {
+  nextDay,
+  tournamentDayRangeUtc,
+  tournamentToday,
+} from "@/lib/matches/day";
 import { TOURNAMENT_TIME_ZONE } from "@/lib/scoring/streaks";
 import { createClient } from "@/lib/supabase/server";
 import type { GoalsRange, ResultPred } from "@/types/domain";
@@ -46,6 +52,22 @@ export default async function Home() {
     .order("kickoff_at", { ascending: true });
 
   const matches: MatchCardData[] = matchesData ?? [];
+
+  // "Lo que se viene": partidos de mañana y pasado mañana (preview read-only).
+  // Todos con kickoff futuro → ninguno bloqueado; no llevan formulario.
+  const tomorrow = nextDay(today);
+  const dayAfter = nextDay(tomorrow);
+  const { startUtc: upcomingStart } = tournamentDayRangeUtc(tomorrow);
+  const { endUtc: upcomingEnd } = tournamentDayRangeUtc(dayAfter);
+
+  const { data: upcomingData } = await supabase
+    .from("matches")
+    .select(MATCH_COLUMNS)
+    .gte("kickoff_at", upcomingStart)
+    .lt("kickoff_at", upcomingEnd)
+    .order("kickoff_at", { ascending: true });
+
+  const upcoming: MatchCardData[] = upcomingData ?? [];
 
   // Pronósticos propios de los partidos de hoy (RLS: solo los del usuario).
   const predByMatch = new Map<
@@ -95,7 +117,10 @@ export default async function Home() {
         </ul>
       )}
 
+      <UpcomingMatches matches={upcoming} />
+
       <PushOptIn />
+      <DayCompleteCelebration />
     </main>
   );
 }

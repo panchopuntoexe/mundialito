@@ -26,6 +26,8 @@ const PUBLIC_PATHS = [
   "/callback",
   "/api/wrapped/image",
   "/api/matches/result-image",
+  // Preview dev del Wrapped (mock, sin login). La página hace 404 en producción.
+  "/wrapped-preview",
 ];
 
 function isPublic(pathname: string): boolean {

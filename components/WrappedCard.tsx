@@ -24,15 +24,15 @@ export function WrappedCard({
 }: WrappedCardProps) {
   const fallbackPath = `/api/wrapped/image?card=${cardId}`;
   const src = imageUrl ?? fallbackPath;
-  const text = `Mi Wrapped de ${phaseLabel} en Mundialito 2026 — ${accuracy}% de aciertos 🔥`;
-  const downloadName = `wrapped-${phaseLabel.toLowerCase().replace(/\s+/g, "-")}`;
+  const text = `Mis estadísticas de ${phaseLabel} en Mundialito 2026 — ${accuracy}% de aciertos 🔥`;
+  const downloadName = `estadisticas-${phaseLabel.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
-        alt={`Tarjeta Wrapped — ${phaseLabel}`}
+        alt={`Tarjeta de estadísticas — ${phaseLabel}`}
         className="w-full rounded-lg"
         loading="lazy"
       />

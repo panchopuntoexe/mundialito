@@ -5,13 +5,14 @@ import { createClient } from "@/lib/supabase/server";
 import { wrappedPhaseLabel } from "@/lib/wrapped/phases";
 
 /**
- * Pantalla de Wrapped (tarea 7.4): las tarjetas del usuario por fase del torneo.
+ * Pantalla de Estadísticas (tarea 7.4): las tarjetas del usuario por fase del
+ * torneo. (Internamente la feature sigue llamándose "wrapped": tabla, lib y API.)
  *
  * Server Component: trae las tarjetas propias (RLS: select own, migración 0006).
  * El cron (7.3) las crea al cerrar cada fase. El compartir lo maneja el componente
  * cliente <WrappedCard/> (Web Share API + atajos).
  */
-export default async function WrappedPage() {
+export default async function EstadisticasPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,7 +30,7 @@ export default async function WrappedPage() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
       <header className="flex flex-col gap-1">
-        <h1 className="text-lg font-bold tracking-tight">Tu Wrapped</h1>
+        <h1 className="text-lg font-bold tracking-tight">Tus estadísticas</h1>
         <p className="text-sm text-foreground-muted">
           Tus tarjetas de cada fase del Mundial. Compartilas y sumá amigos.
         </p>
@@ -37,8 +38,8 @@ export default async function WrappedPage() {
 
       {!cards || cards.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-          Todavía no hay tarjetas. Al cerrar cada fase del torneo generamos tu
-          Wrapped acá. 🎁
+          Todavía no hay tarjetas. Al cerrar cada fase del torneo generamos tus
+          estadísticas acá. 🎁
         </p>
       ) : (
         <ul className="flex flex-col gap-6">

@@ -102,12 +102,25 @@ export function PredictionForm({
           goals_range_pred: goals,
         }),
       });
+      const data: {
+        error?: string;
+        streak?: { current_streak: number; completed_today: boolean };
+      } = await res.json().catch(() => ({}));
       if (res.status === 201) {
         setSaved({ result_pred: result, goals_range_pred: goals });
         setEditing(false);
+        // Al completar TODOS los partidos abiertos del día, avisamos al
+        // celebrador global (confeti + atajo a Estadísticas). El dedupe por día
+        // vive en <DayCompleteCelebration/>: editar luego no re-dispara.
+        if (data.streak?.completed_today) {
+          window.dispatchEvent(
+            new CustomEvent("mundialito:day-complete", {
+              detail: { currentStreak: data.streak.current_streak },
+            }),
+          );
+        }
         return;
       }
-      const data: { error?: string } = await res.json().catch(() => ({}));
       if (res.status === 409) {
         setClosed(true);
         setEditing(false);
