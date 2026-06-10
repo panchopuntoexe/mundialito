@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/(auth)/actions";
+import { levelForPoints } from "@/lib/scoring/levels";
 import { getServerProfile } from "@/lib/supabase/auth";
 
 /**
@@ -19,6 +20,8 @@ export default async function MainLayout({
     redirect("/onboarding");
   }
 
+  const level = levelForPoints(profile.total_points);
+
   return (
     <>
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -26,7 +29,17 @@ export default async function MainLayout({
           Mundi<span className="text-brand">alito</span>
         </span>
         <div className="flex items-center gap-3 text-sm">
-          <span className="text-foreground-muted">@{profile.username}</span>
+          <span className="flex items-center gap-1.5 text-foreground-muted">
+            <span
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
+              style={{ color: level.color }}
+              title={`Nivel: ${level.name} · ${profile.total_points} pts`}
+            >
+              <span aria-hidden>{level.emoji}</span>
+              {level.name}
+            </span>
+            @{profile.username}
+          </span>
           <form action={signOut}>
             <button
               type="submit"
@@ -43,6 +56,12 @@ export default async function MainLayout({
           className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
         >
           Hoy
+        </Link>
+        <Link
+          href="/ranking"
+          className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+        >
+          Ranking
         </Link>
         <Link
           href="/leagues"

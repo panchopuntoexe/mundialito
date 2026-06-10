@@ -20,6 +20,7 @@ import {
   buildMatchResults,
 } from "@/lib/scoring/results";
 import {
+  ACCURACY_LEADERBOARD_KEY,
   GLOBAL_LEADERBOARD_KEY,
   leagueLeaderboardKey,
 } from "@/lib/leaderboards/keys";
@@ -96,9 +97,11 @@ export async function runProcessResults(): Promise<ProcessResultsSummary> {
     for (const r of results) affectedUsers.add(r.user_id);
   }
 
-  // Logros: se derivan del estado ya persistido (idempotente vía unique).
+  // Logros: se derivan del estado ya persistido (idempotente vía unique). El
+  // primer partido del torneo (por kickoff) se resuelve una sola vez por corrida.
+  const openerMatchId = await loadOpenerMatchId(admin);
   for (const userId of affectedUsers) {
-    await grantAchievements(admin, userId);
+    await grantAchievements(admin, userId, openerMatchId);
   }
 
   // Invalidación de leaderboards (5.6): solo si hubo cambios de puntos.
@@ -112,19 +115,49 @@ export async function runProcessResults(): Promise<ProcessResultsSummary> {
   return { processed, skippedNoScore, usersAffected: affectedUsers.size };
 }
 
+/** Primer partido del torneo por kickoff (para el logro "Telonero"). */
+async function loadOpenerMatchId(admin: Admin): Promise<number | null> {
+  const { data, error } = await admin
+    .from("matches")
+    .select("id")
+    .order("kickoff_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error("[processResults] error leyendo el primer partido:", error);
+    return null;
+  }
+  return data?.id ?? null;
+}
+
 /** Re-evalúa los logros de un usuario y otorga los nuevos (idempotente). */
-async function grantAchievements(admin: Admin, userId: string): Promise<void> {
+async function grantAchievements(
+  admin: Admin,
+  userId: string,
+  openerMatchId: number | null,
+): Promise<void> {
   const [preds, streak, user, earned] = await Promise.all([
-    admin.from("predictions").select("result_correct, goals_correct").eq("user_id", userId),
+    admin
+      .from("predictions")
+      .select("match_id, result_correct, goals_correct, matches(kickoff_at)")
+      .eq("user_id", userId),
     admin.from("streaks").select("max_streak").eq("user_id", userId).maybeSingle(),
     admin.from("users").select("total_points").eq("id", userId).maybeSingle(),
     admin.from("achievements").select("type").eq("user_id", userId),
   ]);
 
+  const predictions = (preds.data ?? []).map((p) => ({
+    match_id: p.match_id,
+    result_correct: p.result_correct,
+    goals_correct: p.goals_correct,
+    kickoff_at: p.matches?.kickoff_at ?? "",
+  }));
+
   const stats = aggregateAchievementStats({
-    predictions: preds.data ?? [],
+    predictions,
     maxStreak: streak.data?.max_streak ?? 0,
     totalPoints: user.data?.total_points ?? 0,
+    openerMatchId,
   });
 
   const newTypes = evaluateAchievements(
@@ -149,7 +182,9 @@ async function invalidateLeaderboards(
   admin: Admin,
   affectedUsers: Set<string>,
 ): Promise<void> {
-  const keys = [GLOBAL_LEADERBOARD_KEY];
+  // Global y Precisión cambian al sumar puntos/aciertos. (La Racha es de
+  // participación: no la afecta el cron, se refresca por TTL.)
+  const keys = [GLOBAL_LEADERBOARD_KEY, ACCURACY_LEADERBOARD_KEY];
 
   const { data: memberships, error } = await admin
     .from("league_members")

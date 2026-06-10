@@ -9,7 +9,7 @@
 
 **Mundialito** — Una PWA de pronósticos del Mundial de fútbol 2026, mobile-first.
 
-El usuario pronostica los partidos del día (todos los del día actual) antes de cada kickoff, acumula puntos por precisión, sostiene una racha de participación diaria, compite con amigos en ligas privadas, y al final de cada macro-ronda obtiene una tarjeta "Wrapped" compartible en redes sociales.
+El usuario pronostica los partidos del día (todos los del día actual) antes de cada kickoff, acumula puntos por precisión, sube de **nivel** y gana **insignias** según su rendimiento, sostiene una racha de participación diaria, compite con amigos en ligas privadas y en el **ranking público** (filtrable por Puntos / Precisión / Racha), y al final de cada macro-ronda obtiene una tarjeta "Wrapped" compartible en redes sociales (con QR a la app).
 
 **NO es una app de apuestas.** No hay dinero real. El valor es reputación, gamificación y viralidad social. Esto es una decisión de producto y legal — nunca introducir mecánicas de apuesta con dinero.
 
@@ -17,9 +17,9 @@ El usuario pronostica los partidos del día (todos los del día actual) antes de
 
 1. Usuario ve los partidos del día → pronostica cada uno antes de su kickoff (predecir todos los abiertos del día mantiene su racha).
 2. El pronóstico se cierra cuando empieza el partido (no se puede cambiar).
-3. Al terminar el partido, se calculan puntos automáticamente.
-4. El usuario ve su posición en el ranking global y en sus ligas privadas.
-5. Comparte su tarjeta (resultado del día o Wrapped de fase) → atrae nuevos usuarios.
+3. Al terminar el partido, se calculan puntos automáticamente (y se otorgan insignias y se recalcula el nivel).
+4. El usuario ve su posición en el ranking público (Puntos / Precisión / Racha) y en sus ligas privadas, con su nivel junto al nombre.
+5. Comparte su tarjeta (resultado del día o Wrapped de fase, con nivel + QR) → atrae nuevos usuarios.
 
 ---
 

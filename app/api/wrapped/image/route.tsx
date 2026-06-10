@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   if (searchParams.get("preview")) {
-    return renderWrappedImage({
+    return await renderWrappedImage({
       username: "tu_usuario",
       stats: SAMPLE_WRAPPED_STATS,
     });
@@ -46,5 +46,5 @@ export async function GET(request: Request) {
   const stats = data.stats_json as unknown as WrappedStats;
   const username = data.users?.username ?? "jugador";
 
-  return renderWrappedImage({ username, stats });
+  return await renderWrappedImage({ username, stats });
 }

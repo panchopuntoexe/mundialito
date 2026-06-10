@@ -181,12 +181,14 @@ async function generateForPhase(
   const userIds = [...byUser.keys()];
   if (userIds.length === 0) return { cardsCreated: 0, skippedExisting: 0 };
 
-  const [existing, usernames, streaks, achievements] = await Promise.all([
-    existingCardUsers(admin, phase, userIds),
-    loadUsernames(admin, userIds),
-    loadMaxStreaks(admin, userIds),
-    loadAchievements(admin, userIds),
-  ]);
+  const [existing, usernames, streaks, achievements, totalPoints] =
+    await Promise.all([
+      existingCardUsers(admin, phase, userIds),
+      loadUsernames(admin, userIds),
+      loadMaxStreaks(admin, userIds),
+      loadAchievements(admin, userIds),
+      loadTotalPoints(admin, userIds),
+    ]);
 
   let cardsCreated = 0;
   let skippedExisting = 0;
@@ -213,6 +215,7 @@ async function generateForPhase(
       predictions: wrappedPreds,
       maxStreak: streaks.get(userId) ?? 0,
       achievements: achievements.get(userId) ?? [],
+      userTotalPoints: totalPoints.get(userId) ?? 0,
     });
 
     const ok = await persistCard(
@@ -276,7 +279,7 @@ async function persistCard(
 
   const path = `${inserted.id}.png`;
   try {
-    const image = renderWrappedImage({ username, stats });
+    const image = await renderWrappedImage({ username, stats });
     const bytes = await image.arrayBuffer();
     const { error: upErr } = await admin.storage
       .from(STORAGE_BUCKET)
@@ -343,6 +346,22 @@ async function loadMaxStreaks(
     return new Map();
   }
   return new Map((data ?? []).map((s) => [s.user_id, s.max_streak ?? 0]));
+}
+
+/** Total acumulado de torneo por usuario (define el nivel de la tarjeta). */
+async function loadTotalPoints(
+  admin: Admin,
+  userIds: string[],
+): Promise<Map<string, number>> {
+  const { data, error } = await admin
+    .from("users")
+    .select("id, total_points")
+    .in("id", userIds);
+  if (error) {
+    console.error("[generateWrapped] error leyendo puntos totales:", error);
+    return new Map();
+  }
+  return new Map((data ?? []).map((u) => [u.id, u.total_points ?? 0]));
 }
 
 async function loadAchievements(

@@ -24,6 +24,7 @@ export const SAMPLE_WRAPPED_STATS: WrappedStats = {
     communityCorrectPct: 92,
   },
   achievements: ["first_win", "sharpshooter", "streak_3"],
+  levelKey: "crack",
 };
 
 /** Datos de muestra para previsualizar la mini-tarjeta de resultado (`?preview=1`). */

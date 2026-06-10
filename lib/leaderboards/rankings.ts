@@ -15,22 +15,38 @@ export interface RankedUser {
   display_name: string | null;
   avatar_url: string | null;
   total_points: number;
+  /** Métrica extra según la vista del ranking (Precisión). Opcional. */
+  accuracy?: number;
+  /** Métrica extra según la vista del ranking (Racha). Opcional. */
+  max_streak?: number;
 }
 
 export interface LeaderboardEntry extends RankedUser {
   rank: number;
 }
 
-export function assignRanks(users: RankedUser[]): LeaderboardEntry[] {
-  let lastPoints: number | null = null;
+/**
+ * "Standard competition ranking" (1, 2, 2, 4) sobre usuarios YA ordenados de mayor
+ * a menor por el valor de `getValue`: empates (mismo valor que el anterior)
+ * comparten posición y la siguiente salta.
+ */
+export function assignRanksBy(
+  users: RankedUser[],
+  getValue: (u: RankedUser) => number,
+): LeaderboardEntry[] {
+  let lastValue: number | null = null;
   let lastRank = 0;
 
   return users.map((user, index) => {
-    // Mismos puntos que el anterior → comparten posición; si no, la posición es
-    // la ordinal (índice + 1), que es lo que hace saltar tras un empate.
-    const rank = user.total_points === lastPoints ? lastRank : index + 1;
-    lastPoints = user.total_points;
+    const value = getValue(user);
+    const rank = value === lastValue ? lastRank : index + 1;
+    lastValue = value;
     lastRank = rank;
     return { ...user, rank };
   });
+}
+
+/** Ranking por total de torneo (`total_points`). */
+export function assignRanks(users: RankedUser[]): LeaderboardEntry[] {
+  return assignRanksBy(users, (u) => u.total_points);
 }

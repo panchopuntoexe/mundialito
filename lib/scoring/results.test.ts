@@ -54,13 +54,14 @@ describe("aggregateAchievementStats", () => {
   it("cuenta aciertos de resultado y plenos, y arrastra streak/puntos", () => {
     const stats = aggregateAchievementStats({
       predictions: [
-        { result_correct: true, goals_correct: true }, // pleno
-        { result_correct: true, goals_correct: false }, // solo resultado
-        { result_correct: false, goals_correct: true }, // no cuenta (resultado errado)
-        { result_correct: null, goals_correct: null }, // sin procesar
+        { match_id: 1, kickoff_at: "2026-06-11T18:00:00Z", result_correct: true, goals_correct: true }, // pleno
+        { match_id: 2, kickoff_at: "2026-06-12T18:00:00Z", result_correct: true, goals_correct: false }, // solo resultado
+        { match_id: 3, kickoff_at: "2026-06-13T18:00:00Z", result_correct: false, goals_correct: true }, // no cuenta (resultado errado)
+        { match_id: 4, kickoff_at: "2026-06-14T18:00:00Z", result_correct: null, goals_correct: null }, // sin procesar
       ],
       maxStreak: 7,
       totalPoints: 120,
+      openerMatchId: 99,
     });
 
     expect(stats).toEqual({
@@ -69,6 +70,37 @@ describe("aggregateAchievementStats", () => {
       perfectPredictions: 1,
       maxStreak: 7,
       totalPoints: 120,
+      predictedTournamentOpener: false,
+      maxCorrectStreak: 2, // partidos 1 y 2 seguidos antes del fallo en el 3
     });
+  });
+
+  it("detecta tournament_opener cuando pronosticó el primer partido", () => {
+    const stats = aggregateAchievementStats({
+      predictions: [
+        { match_id: 5, kickoff_at: "2026-06-11T18:00:00Z", result_correct: true, goals_correct: false },
+      ],
+      maxStreak: 0,
+      totalPoints: 0,
+      openerMatchId: 5,
+    });
+    expect(stats.predictedTournamentOpener).toBe(true);
+  });
+
+  it("maxCorrectStreak ordena por kickoff, no por orden de inserción", () => {
+    const stats = aggregateAchievementStats({
+      predictions: [
+        // Llegan desordenadas; por kickoff la racha real es 4 (días 11→14).
+        { match_id: 3, kickoff_at: "2026-06-13T18:00:00Z", result_correct: true, goals_correct: false },
+        { match_id: 1, kickoff_at: "2026-06-11T18:00:00Z", result_correct: true, goals_correct: false },
+        { match_id: 4, kickoff_at: "2026-06-14T18:00:00Z", result_correct: true, goals_correct: false },
+        { match_id: 0, kickoff_at: "2026-06-10T18:00:00Z", result_correct: false, goals_correct: false },
+        { match_id: 2, kickoff_at: "2026-06-12T18:00:00Z", result_correct: true, goals_correct: false },
+      ],
+      maxStreak: 0,
+      totalPoints: 0,
+      openerMatchId: null,
+    });
+    expect(stats.maxCorrectStreak).toBe(4);
   });
 });

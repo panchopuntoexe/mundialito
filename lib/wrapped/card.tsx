@@ -11,8 +11,11 @@
  * sprites en el cron) — se usan color y texto.
  */
 import { ImageResponse } from "next/og";
+import { APP_HOST, APP_URL } from "@/lib/appUrl";
+import { levelByKey } from "@/lib/scoring/levels";
 import type { WrappedStats } from "@/lib/scoring/wrappedStats";
 import { wrappedPhaseLabel } from "@/lib/wrapped/phases";
+import { qrDataUrl } from "@/lib/wrapped/qr";
 
 /** Formato vertical 4:5, ideal para stories/feed de redes. */
 export const WRAPPED_IMAGE_WIDTH = 1080;
@@ -65,12 +68,14 @@ function StatBlock({
   );
 }
 
-export function renderWrappedImage(params: {
+export async function renderWrappedImage(params: {
   username: string;
   stats: WrappedStats;
-}): ImageResponse {
+}): Promise<ImageResponse> {
   const { username, stats } = params;
   const achievementsCount = stats.achievements.length;
+  const level = stats.levelKey ? levelByKey(stats.levelKey) : null;
+  const qr = await qrDataUrl(APP_URL);
 
   return new ImageResponse(
     (
@@ -113,10 +118,10 @@ export function renderWrappedImage(params: {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            marginTop: 48,
+            marginTop: 28,
           }}
         >
-          <div style={{ fontSize: 240, fontWeight: 800, color: COLOR.brand }}>
+          <div style={{ fontSize: 210, fontWeight: 800, color: COLOR.brand }}>
             {`${stats.accuracy}%`}
           </div>
           <div
@@ -136,11 +141,11 @@ export function renderWrappedImage(params: {
           style={{
             display: "flex",
             flexDirection: "row",
-            marginTop: 56,
+            marginTop: 36,
             backgroundColor: COLOR.surface,
             borderRadius: 28,
             border: `2px solid ${COLOR.border}`,
-            padding: "40px 24px",
+            padding: "36px 24px",
           }}
         >
           <StatBlock
@@ -165,11 +170,11 @@ export function renderWrappedImage(params: {
           style={{
             display: "flex",
             flexDirection: "column",
-            marginTop: 48,
+            marginTop: 32,
             backgroundColor: COLOR.surfaceMuted,
             borderRadius: 28,
             borderLeft: `10px solid ${COLOR.danger}`,
-            padding: 40,
+            padding: 36,
           }}
         >
           <div
@@ -199,22 +204,60 @@ export function renderWrappedImage(params: {
           )}
         </div>
 
-        {/* Footer: logros */}
+        {/* Footer: nivel + logros (izq) · QR + nombre de la app (der) */}
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "flex-end",
             justifyContent: "space-between",
             marginTop: "auto",
-            paddingTop: 40,
+            paddingTop: 28,
           }}
         >
-          <div style={{ fontSize: 34, color: COLOR.foreground }}>
-            {`${achievementsCount} ${achievementsCount === 1 ? "logro" : "logros"}`}
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {level ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  alignSelf: "flex-start",
+                  backgroundColor: COLOR.surface,
+                  border: `2px solid ${level.color}`,
+                  borderRadius: 9999,
+                  padding: "10px 22px",
+                  fontSize: 34,
+                  fontWeight: 700,
+                  color: level.color,
+                  textTransform: "uppercase",
+                  letterSpacing: 2,
+                }}
+              >
+                {level.name}
+              </div>
+            ) : null}
+            <div style={{ fontSize: 34, color: COLOR.foreground }}>
+              {`${achievementsCount} ${achievementsCount === 1 ? "logro" : "logros"}`}
+            </div>
           </div>
-          <div style={{ fontSize: 30, color: COLOR.muted }}>
-            mundialito26-six.vercel.app
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qr}
+              width={132}
+              height={132}
+              alt=""
+              style={{ borderRadius: 16, backgroundColor: "#ffffff" }}
+            />
+            <div style={{ fontSize: 26, color: COLOR.muted }}>{APP_HOST}</div>
           </div>
         </div>
       </div>

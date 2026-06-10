@@ -11,6 +11,8 @@ function stats(over: Partial<AchievementStats> = {}): AchievementStats {
     perfectPredictions: 0,
     maxStreak: 0,
     totalPoints: 0,
+    predictedTournamentOpener: false,
+    maxCorrectStreak: 0,
     ...over,
   };
 }
@@ -55,6 +57,24 @@ describe("evaluateAchievements", () => {
   it("centurion con 100+ puntos", () => {
     expect(evaluateAchievements(stats({ totalPoints: 100 }))).toContain(
       "centurion",
+    );
+  });
+
+  it("tournament_opener si pronosticó el primer partido", () => {
+    expect(
+      evaluateAchievements(stats({ predictedTournamentOpener: true })),
+    ).toContain("tournament_opener");
+    expect(
+      evaluateAchievements(stats({ predictedTournamentOpener: false })),
+    ).not.toContain("tournament_opener");
+  });
+
+  it("hot_streak con más de 3 aciertos seguidos (>=4), no con 3", () => {
+    expect(evaluateAchievements(stats({ maxCorrectStreak: 4 }))).toContain(
+      "hot_streak",
+    );
+    expect(evaluateAchievements(stats({ maxCorrectStreak: 3 }))).not.toContain(
+      "hot_streak",
     );
   });
 

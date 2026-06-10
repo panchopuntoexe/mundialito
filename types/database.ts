@@ -330,7 +330,26 @@ export interface Database {
         ];
       };
     };
-    Views: Record<never, never>;
+    Views: {
+      // Precisión agregada por usuario (migración 0010). Alimenta el ranking por
+      // % de aciertos. Columnas nullables como en los tipos generados de views.
+      user_accuracy: {
+        Row: {
+          user_id: string | null;
+          total_predictions: number | null;
+          correct_predictions: number | null;
+          accuracy: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "predictions_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+    };
     Functions: {
       is_league_member: {
         Args: { p_league_id: string; p_user_id: string };

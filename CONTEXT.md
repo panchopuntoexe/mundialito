@@ -20,6 +20,10 @@ _Avoid_: "racha de aciertos" (term obsoleto de ARCHITECTURE.md §3 — la racha 
 Recompensa por **precisión** únicamente: 10 por acertar el `result_pred`, +15 de bonus si además se acierta el `goals_range_pred` (el bonus exige resultado correcto). NO hay multiplicador por racha. El leaderboard es un ranking de habilidad pura.
 _Avoid_: multiplicador de racha (la tabla ×1.2/×1.5/×2.0 de ARCHITECTURE.md §3 queda ELIMINADA).
 
+**Nivel** (Level):
+Capa de status **derivada** de `users.total_points` — no se persiste ni afecta el ranking. Cuatro tramos tipo "rol de jugador": **Suplente (0) → Titular (100) → Crack (300) → Leyenda (700+)**. Se calcula al vuelo donde se muestra: el header (junto al `@username`), las filas de leaderboard y la tarjeta Wrapped (snapshot `levelKey`). Umbrales y nombres centralizados en `lib/scoring/levels.ts`.
+_Avoid_: guardar el nivel en DB, o calcularlo desde los puntos de una fase (mira el **total acumulado** del torneo, no `stats.totalPoints` de la tarjeta).
+
 **Goles totales** (Total goals):
 Base del `goals_range`. Cuenta **todos los goles del partido en sí — tiempo reglamentario + alargue — excluyendo la tanda de penales** (la tanda es un desempate, no goles del partido). Buckets: 0-1 / 2-3 / 4-5 / 6+. En grupos nunca hay alargue, así que colapsa al marcador de 90'. `score_home`/`score_away` guardan el marcador **post-alargue, pre-tanda** (puede quedar empatado aunque haya un equipo que avanza).
 _Avoid_: contar goles de la tanda de penales en `total_goals`.
@@ -54,11 +58,22 @@ _Avoid_: interpretar "fase" como grupo individual para recargas/Wrapped.
 Para la tarjeta Wrapped: entre los pronósticos **incorrectos** del usuario en la fase, aquel que maximiza el **% de usuarios que SÍ acertaron** ese partido — el "todos lo vieron venir menos yo". Se calcula con la distribución de consenso que ya produce el endpoint `/consensus` (task 4.6).
 _Avoid_: "la predicción incorrecta que menos usuarios acertaron" (texto original de ARCHITECTURE.md §4.4 — está al revés: ese sería el fallo más excusable, no el más épico).
 
+**Logro / Insignia** (Achievement / Badge):
+Reconocimiento puntual que un usuario gana al cumplir un criterio. Vive en la tabla `achievements` (único por `(user_id, type)`), lo **otorga idempotente** el cron de resultados, y cada tipo lleva metadatos de presentación (`label`/`icon`/`description`) en `lib/scoring/achievements.ts`. Ejemplos: **Telonero** (pronosticó el primer partido del torneo, por orden de kickoff) y **En racha** (más de 3 aciertos de **resultado consecutivos**, ordenados por kickoff).
+_Avoid_: confundir **En racha** (aciertos consecutivos) con la **Racha** (participación) — son métricas distintas pese al nombre parecido.
+
+**Ranking** (sección pública):
+Pantalla de clasificación con **filtros orientados a datos**, separada del ranking de **Liga** (que es un filtro privado por miembros). Tres vistas: **Puntos** (total de torneo), **Precisión** (% de aciertos sobre la vista SQL `user_accuracy`, con mínimo de pronósticos para entrar) y **Racha** (racha máxima de participación). Cada métrica se cachea por separado en Redis.
+_Avoid_: mezclar la sección Ranking (global, pública) con el ranking de una Liga (subconjunto de miembros).
+
 ## Relationships
 
 - Un **Pronóstico** pertenece a exactamente un usuario y un **Partido del día**.
 - Una **Racha** mide días/participación consecutiva de un usuario, independientemente de si sus **Pronósticos** fueron correctos.
 - Una **Liga** rankea a sus miembros por el total de **Puntos** de torneo de cada uno (filtro, no ledger separado).
+- Un **Nivel** se deriva del total de **Puntos** de un usuario (no se persiste ni rankea).
+- Un **Logro** pertenece a un usuario; **En racha** cuenta **aciertos** consecutivos, no participación (≠ **Racha**).
+- El **Ranking** público ordena por una métrica de datos (Puntos / Precisión / Racha); la **Liga** es el mismo concepto acotado a sus miembros.
 
 ## Flagged ambiguities
 

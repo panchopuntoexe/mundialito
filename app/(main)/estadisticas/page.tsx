@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
+import { BadgeGrid } from "@/components/BadgeGrid";
 import { WrappedCard } from "@/components/WrappedCard";
+import {
+  ACHIEVEMENT_DEFS,
+  type AchievementType,
+} from "@/lib/scoring/achievements";
 import type { WrappedPhase, WrappedStats } from "@/lib/scoring/wrappedStats";
 import { createClient } from "@/lib/supabase/server";
 import { wrappedPhaseLabel } from "@/lib/wrapped/phases";
@@ -21,11 +26,16 @@ export default async function EstadisticasPage() {
     redirect("/login");
   }
 
-  const { data: cards } = await supabase
-    .from("wrapped_cards")
-    .select("id, phase, image_url, stats_json")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+  const [{ data: cards }, { data: earnedRows }] = await Promise.all([
+    supabase
+      .from("wrapped_cards")
+      .select("id, phase, image_url, stats_json")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+    supabase.from("achievements").select("type").eq("user_id", user.id),
+  ]);
+
+  const earned = (earnedRows ?? []).map((r) => r.type as AchievementType);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
@@ -35,6 +45,16 @@ export default async function EstadisticasPage() {
           Tus tarjetas de cada fase del Mundial. Compartilas y sumá amigos.
         </p>
       </header>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-bold tracking-tight">
+          Logros{" "}
+          <span className="font-normal text-foreground-muted">
+            · {earned.length}/{ACHIEVEMENT_DEFS.length}
+          </span>
+        </h2>
+        <BadgeGrid earned={earned} />
+      </section>
 
       {!cards || cards.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">

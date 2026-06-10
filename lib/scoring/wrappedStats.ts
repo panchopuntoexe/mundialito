@@ -11,6 +11,7 @@
  * Sin imports de env/red/DB: testeable sin Supabase (ADR de funciones puras).
  */
 import type { AchievementType } from "@/lib/scoring/achievements";
+import { levelForPoints, type LevelKey } from "@/lib/scoring/levels";
 import type { MacroRound } from "@/types/domain";
 
 /** Fase de la tarjeta: una macro-ronda o el torneo completo. */
@@ -53,6 +54,11 @@ export interface WrappedStats {
   maxStreak: number;
   epicMiss: EpicMiss | null;
   achievements: AchievementType[];
+  /**
+   * Nivel del usuario según su total ACUMULADO de torneo (no los puntos de la
+   * fase). Opcional: las tarjetas creadas antes de esta feature no lo tienen.
+   */
+  levelKey?: LevelKey;
 }
 
 /**
@@ -93,6 +99,8 @@ export function buildWrappedStats(params: {
   predictions: readonly WrappedPrediction[];
   maxStreak: number;
   achievements?: readonly AchievementType[];
+  /** Total ACUMULADO de torneo del usuario (define el nivel de la tarjeta). */
+  userTotalPoints?: number;
 }): WrappedStats {
   let correctPredictions = 0;
   let perfectPredictions = 0;
@@ -121,5 +129,9 @@ export function buildWrappedStats(params: {
     maxStreak: params.maxStreak,
     epicMiss: findEpicMiss(params.predictions),
     achievements: [...(params.achievements ?? [])],
+    levelKey:
+      params.userTotalPoints === undefined
+        ? undefined
+        : levelForPoints(params.userTotalPoints).key,
   };
 }
