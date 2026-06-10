@@ -360,39 +360,39 @@ Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit.
 
 ## FASE 8 — PWA y pulido
 
-### [ ] 8.1 — Manifest y configuración PWA
+### [x] 8.1 — Manifest y configuración PWA
 
 - **Objetivo**: App instalable en home screen.
-- **Archivos**: `public/manifest.json`, iconos, metadata.
-- **Aceptación**: Lighthouse PWA pasa. Instalable en móvil.
+- **Archivos**: `public/manifest.json`, `public/icons/*` (generados por `scripts/generate-icons.mjs`), metadata + viewport en `app/layout.tsx`, exclusión de `sw.js` en `proxy.ts`.
+- **Aceptación**: Lighthouse PWA pasa. Instalable en móvil. Iconos 192/512 + maskable + apple-touch.
 - **Depende de**: 4.4
 
-### [ ] 8.2 — Service Worker (offline + assets)
+### [x] 8.2 — Service Worker (offline + assets)
 
 - **Objetivo**: Cache de assets y historial offline.
-- **Archivos**: `app/sw.ts` o config de next-pwa.
-- **Aceptación**: Historial visible sin conexión.
+- **Archivos**: `public/sw.js`, `public/offline.html`, `components/ServiceWorkerRegister.tsx`.
+- **Aceptación**: Historial visible sin conexión (navegaciones cacheadas + fallback offline). Estáticos con stale-while-revalidate. API/cross-origin nunca se cachean.
 - **Depende de**: 8.1
 
-### [ ] 8.3 — Push notifications
+### [x] 8.3 — Push notifications
 
 - **Objetivo**: Notificar partido del día, cierre próximo, Wrapped listo.
-- **Archivos**: `lib/notifications/`, endpoints de suscripción.
-- **Aceptación**: Llega notificación de prueba al dispositivo.
+- **Archivos**: `lib/notifications/` (server `webPush.ts` + client `client.ts`), `lib/validations/push.ts`, `app/api/notifications/{subscribe,test}/route.ts`, `components/PushOptIn.tsx`, migración `0009_push_subscriptions.sql`, handlers `push`/`notificationclick` en `public/sw.js`, env VAPID + `scripts/generate-vapid.mjs`.
+- **Aceptación**: Llega notificación de prueba al dispositivo (`POST /api/notifications/test`). Push opcional: si faltan claves VAPID, la UI se autooculta.
 - **Depende de**: 8.2
 
-### [ ] 8.4 — Rate limiting en endpoints sensibles
+### [x] 8.4 — Rate limiting en endpoints sensibles
 
 - **Objetivo**: Limitar crear pronóstico y crear liga.
-- **Archivos**: `lib/redis/rateLimit.ts`, aplicar en routes.
-- **Aceptación**: Exceder el límite → 429.
+- **Archivos**: `lib/redis/rateLimit.ts` (+ test), `rateLimit()` en `lib/redis/client.ts`, aplicado en `app/api/predictions/route.ts` (20/min) y `app/api/leagues/route.ts` (5/5min).
+- **Aceptación**: Exceder el límite → 429 con header `Retry-After`.
 - **Depende de**: 1.9, 4.2, 6.1
 
-### [ ] 8.5 — Auditoría de seguridad (RLS + secrets)
+### [x] 8.5 — Auditoría de seguridad (RLS + secrets)
 
 - **Objetivo**: Verificar RLS en todas las tablas y que no haya secrets en el bundle.
-- **Archivos**: revisión transversal.
-- **Aceptación**: Ninguna service key en el cliente. RLS activo en todas las tablas.
+- **Archivos**: `docs/security-audit.md`, `lib/security/rls-audit.test.ts` (checks automatizados en CI).
+- **Aceptación**: Ninguna service key en el cliente. RLS activo en las 9 tablas. Tests rompen el build ante una regresión.
 - **Depende de**: todas las migraciones.
 
 ---

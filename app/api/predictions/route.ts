@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { tournamentDayRangeUtc, tournamentToday } from "@/lib/matches/day";
+import { rateLimit } from "@/lib/redis/client";
 import { isParticipationComplete } from "@/lib/predictions/participation";
 import { advanceStreak, type StreakState } from "@/lib/scoring/streaks";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
@@ -26,6 +27,16 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "No autenticado." }, { status: 401 });
+  }
+
+  // Rate limit (8.4): 20 pronósticos/min por usuario. Cubre pronosticar todos
+  // los partidos del día sin fricción, pero frena scripts abusivos.
+  const limit = await rateLimit(`predictions:${user.id}`, 20, 60);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Demasiados pronósticos seguidos. Probá en unos segundos." },
+      { status: 429, headers: { "Retry-After": String(limit.resetSeconds) } },
+    );
   }
 
   // El perfil debe existir: predictions y streaks referencian users(id) por FK.

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateInviteCode } from "@/lib/leagues/inviteCode";
+import { rateLimit } from "@/lib/redis/client";
 import { getServerUser } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { createLeagueSchema } from "@/lib/validations/league";
@@ -27,6 +28,15 @@ export async function POST(request: Request) {
   const user = await getServerUser();
   if (!user) {
     return NextResponse.json({ error: "No autenticado." }, { status: 401 });
+  }
+
+  // Rate limit (8.4): 5 ligas creadas / 5 min por usuario. Evita spam de ligas.
+  const limit = await rateLimit(`leagues:create:${user.id}`, 5, 300);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Creaste demasiadas ligas seguidas. Probá en unos minutos." },
+      { status: 429, headers: { "Retry-After": String(limit.resetSeconds) } },
+    );
   }
 
   const admin = createAdminClient();

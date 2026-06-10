@@ -116,6 +116,12 @@ UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 API_FOOTBALL_KEY=                 # Solo server-side
 CRON_SECRET=                      # Protege los endpoints de cron
+
+# Web Push / VAPID — opcionales (habilitan push notifications, tarea 8.3).
+# Generar con `npm run gen:vapid`. Si faltan, el push queda deshabilitado.
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=     # Pública (va al cliente)
+VAPID_PRIVATE_KEY=               # Solo server-side, NUNCA exponer
+VAPID_SUBJECT=                   # 'mailto:...' o URL de contacto del emisor
 ```
 
 ---

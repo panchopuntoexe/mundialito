@@ -162,6 +162,19 @@ create table wrapped_cards (
   image_url     text,                          -- URL en Supabase Storage
   created_at    timestamptz default now()
 );
+
+-- ───────────────────────────────────────────────
+-- PUSH_SUBSCRIPTIONS (Web Push / PWA — tarea 8.3)
+-- ───────────────────────────────────────────────
+create table push_subscriptions (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references users(id),
+  endpoint    text unique not null,           -- endpoint del push service del navegador
+  p256dh      text not null,                  -- claves de cifrado del cliente
+  auth        text not null,
+  user_agent  text,
+  created_at  timestamptz default now()       -- un usuario puede tener varios dispositivos
+);
 ```
 
 **Row Level Security (RLS):** activar en todas las tablas. Reglas base:
@@ -325,9 +338,12 @@ En POST /api/predictions, tras guardar (ver 4.1 paso 5):
 
 ## 7. PWA
 
-- `manifest.json` con iconos, theme color, display `standalone`.
-- Service Worker para: cache de assets, funcionamiento offline del historial, y push notifications.
-- Notificaciones push: "El partido del día ya está disponible", "Tu pronóstico cierra en 1 hora", "Tu Wrapped está listo".
+- `public/manifest.json` con iconos (192/512 + maskable + apple-touch), theme color y display `standalone`. Metadata/viewport en `app/layout.tsx`. Iconos generados sin dependencias por `scripts/generate-icons.mjs` (`npm run gen:icons`).
+- Service Worker (`public/sw.js`, registrado por `components/ServiceWorkerRegister.tsx`):
+  - Navegaciones → network-first con copia a cache de runtime → **historial offline**; fallback a `offline.html`.
+  - Estáticos (`_next/static`, iconos) → stale-while-revalidate.
+  - API y cross-origin (Supabase, Upstash, API-Football) → passthrough a la red, nunca se cachean.
+- Notificaciones push (Web Push + VAPID, tabla `push_subscriptions`): "El partido del día ya está disponible", "Tu pronóstico cierra en 1 hora", "Tu Wrapped está listo". El opt-in vive en `components/PushOptIn.tsx`; el envío server-side en `lib/notifications/webPush.ts`. **Opcional**: si faltan las claves VAPID, el push queda deshabilitado y la UI se autooculta.
 
 ---
 

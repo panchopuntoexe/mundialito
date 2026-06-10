@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Sin conexión · Prode Mundial</title>
+    <style>
+      :root {
+        --background: #0a0a0b;
+        --surface: #161618;
+        --border: #2a2a2f;
+        --foreground: #ededed;
+        --muted: #a1a1aa;
+        --brand: #22c55e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        background: var(--background);
+        color: var(--foreground);
+        font-family: system-ui, -apple-system, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .card {
+        max-width: 24rem;
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem 1.5rem;
+      }
+      h1 {
+        font-size: 1.25rem;
+        margin: 0 0 0.5rem;
+      }
+      p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0 0 1.5rem;
+      }
+      .brand {
+        color: var(--brand);
+      }
+      button {
+        background: var(--brand);
+        color: #06210f;
+        border: 0;
+        border-radius: 0.6rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 0.65rem 1.25rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Sin conexión</h1>
+      <p>
+        No pudimos cargar esta pantalla. Tu <span class="brand">historial</span>
+        ya visitado sigue disponible offline. Reconectate para pronosticar y
+        actualizar tus puntos.
+      </p>
+      <button onclick="location.reload()">Reintentar</button>
+    </main>
+  </body>
+</html>

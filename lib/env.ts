@@ -14,6 +14,9 @@ import { z } from "zod";
 const clientSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  // Clave pública VAPID para Web Push (8.3). Opcional: el push es una mejora;
+  // la app arranca sin él (la UI de notificaciones se oculta si no está).
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
 });
 
 const serverSchema = z.object({
@@ -25,6 +28,10 @@ const serverSchema = z.object({
   // Endpoint del fixture estático (worldcup26.ir). Solo lo usa el seed (3.3),
   // por eso es opcional: no se fuerza en cada boot de la app.
   WORLDCUP_FIXTURE_URL: z.url().optional(),
+  // Web Push (8.3) — opcionales: si faltan, el push queda deshabilitado.
+  // VAPID_SUBJECT debe ser 'mailto:...' o una URL (contacto del emisor).
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().optional(),
 });
 
 type ServerEnv = z.infer<typeof serverSchema>;
@@ -40,6 +47,7 @@ function loadClientEnv() {
   const parsed = clientSchema.safeParse({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   });
   if (!parsed.success) {
     throw new Error(

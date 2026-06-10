@@ -1,4 +1,5 @@
 import { MatchCard, type MatchCardData } from "@/components/MatchCard";
+import { PushOptIn } from "@/components/PushOptIn";
 import { tournamentDayRangeUtc, tournamentToday } from "@/lib/matches/day";
 import { TOURNAMENT_TIME_ZONE } from "@/lib/scoring/streaks";
 import { createClient } from "@/lib/supabase/server";
@@ -93,6 +94,8 @@ export default async function Home() {
           ))}
         </ul>
       )}
+
+      <PushOptIn />
     </main>
   );
 }
