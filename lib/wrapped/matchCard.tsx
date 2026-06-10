@@ -152,7 +152,7 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
             {`+${data.pointsEarned} pts`}
           </div>
           <div style={{ fontSize: 28, color: COLOR.muted, marginTop: 8 }}>
-            prode-mundial.app
+            mundialito26-six.vercel.app
           </div>
         </div>
       </div>

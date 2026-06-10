@@ -23,7 +23,7 @@ export default async function MainLayout({
     <>
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <span className="text-sm font-semibold tracking-tight">
-          Prode <span className="text-brand">Mundial</span>
+          Mundi<span className="text-brand">alito</span>
         </span>
         <div className="flex items-center gap-3 text-sm">
           <span className="text-foreground-muted">@{profile.username}</span>

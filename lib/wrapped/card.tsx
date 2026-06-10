@@ -214,7 +214,7 @@ export function renderWrappedImage(params: {
             {`${achievementsCount} ${achievementsCount === 1 ? "logro" : "logros"}`}
           </div>
           <div style={{ fontSize: 30, color: COLOR.muted }}>
-            prode-mundial.app
+            mundialito26-six.vercel.app
           </div>
         </div>
       </div>

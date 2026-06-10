@@ -112,7 +112,7 @@ Re-correrlo no duplica (upsert por `external_ref`).
 
 - [x] Abrir el dominio → login con Google/email funciona → onboarding pide username.
 - [x] La home muestra los partidos del día (tras el seed).
-- [ ] **PWA**: en Chrome/Android aparece "Instalar app"; en iOS, "Agregar a inicio".
+- [x] **PWA**: en Chrome/Android aparece "Instalar app"; en iOS, "Agregar a inicio".
   ```
   Correr Lighthouse → categoría PWA / "Installable".
   ```
