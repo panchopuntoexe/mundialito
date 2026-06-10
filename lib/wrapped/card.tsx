@@ -97,7 +97,7 @@ export function renderWrappedImage(params: {
               letterSpacing: 4,
             }}
           >
-            Prode Mundial 2026
+            Mundialito 2026
           </div>
           <div style={{ fontSize: 60, fontWeight: 800, marginTop: 8 }}>
             {wrappedPhaseLabel(stats.phase)}

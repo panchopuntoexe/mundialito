@@ -1,6 +1,6 @@
 # TASKS.md
 
-Backlog granular para **Prode Mundial**. Cada tarea es del tamaño de un commit. Trabajar en orden — las fases dependen de las anteriores. Marcar `[x]` al completar.
+Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Trabajar en orden — las fases dependen de las anteriores. Marcar `[x]` al completar.
 
 **Formato de cada tarea:**
 

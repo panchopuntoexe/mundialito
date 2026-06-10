@@ -27,7 +27,7 @@ export async function POST() {
 
   try {
     const { sent, pruned } = await sendPushToUser(user.id, {
-      title: "Prode Mundial",
+      title: "Mundialito",
       body: "¡Notificaciones activadas! Te avisaremos de los partidos del día. ⚽",
       url: "/",
       tag: "test",

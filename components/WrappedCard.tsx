@@ -24,7 +24,7 @@ export function WrappedCard({
 }: WrappedCardProps) {
   const fallbackPath = `/api/wrapped/image?card=${cardId}`;
   const src = imageUrl ?? fallbackPath;
-  const text = `Mi Wrapped de ${phaseLabel} en Prode Mundial 2026 — ${accuracy}% de aciertos 🔥`;
+  const text = `Mi Wrapped de ${phaseLabel} en Mundialito 2026 — ${accuracy}% de aciertos 🔥`;
   const downloadName = `wrapped-${phaseLabel.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (

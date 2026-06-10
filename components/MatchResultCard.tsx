@@ -25,7 +25,7 @@ export function MatchResultCard({
   pointsEarned,
 }: MatchResultCardProps) {
   const fallbackPath = `/api/matches/result-image?match=${matchId}&user=${userId}`;
-  const text = `Pronostiqué ${homeTeam} vs ${awayTeam} en Prode Mundial 2026 y saqué ${pointsEarned} pts 🎯`;
+  const text = `Pronostiqué ${homeTeam} vs ${awayTeam} en Mundialito 2026 y saqué ${pointsEarned} pts 🎯`;
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3">

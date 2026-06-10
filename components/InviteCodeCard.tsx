@@ -17,12 +17,12 @@ export function InviteCodeCard({
 }) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `Unite a mi liga "${leagueName}" en Prode Mundial con el código ${inviteCode}`;
+  const shareText = `Unite a mi liga "${leagueName}" en Mundialito con el código ${inviteCode}`;
 
   async function handleShare() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Prode Mundial", text: shareText });
+        await navigator.share({ title: "Mundialito", text: shareText });
         return;
       } catch {
         // Cancelado o no soportado: caemos a copiar.

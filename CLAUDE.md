@@ -7,7 +7,7 @@
 
 ## Qué es este proyecto
 
-**Prode Mundial** — Una PWA de pronósticos del Mundial de fútbol 2026, mobile-first.
+**Mundialito** — Una PWA de pronósticos del Mundial de fútbol 2026, mobile-first.
 
 El usuario pronostica los partidos del día (todos los del día actual) antes de cada kickoff, acumula puntos por precisión, sostiene una racha de participación diaria, compite con amigos en ligas privadas, y al final de cada macro-ronda obtiene una tarjeta "Wrapped" compartible en redes sociales.
 

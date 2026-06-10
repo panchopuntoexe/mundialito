@@ -19,14 +19,14 @@ const geistMono = Geist_Mono({
  * `icons.apple` apunta al apple-touch-icon PNG.
  */
 export const metadata: Metadata = {
-  title: "Prode Mundial",
+  title: "Mundialito",
   description: "Pronostica el Mundial 2026, suma puntos y compite con amigos.",
-  applicationName: "Prode Mundial",
+  applicationName: "Mundialito",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Prode",
+    title: "Mundialito",
   },
   icons: {
     icon: "/icons/icon-192.png",

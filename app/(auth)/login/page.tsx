@@ -22,7 +22,7 @@ export default async function LoginPage({
         <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-brand">
           Mundial 2026
         </span>
-        <h1 className="text-2xl font-bold tracking-tight">Prode Mundial</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Mundialito</h1>
         <p className="text-balance text-sm text-foreground-muted">
           Pronostica los partidos del día y competí con tus amigos.
         </p>

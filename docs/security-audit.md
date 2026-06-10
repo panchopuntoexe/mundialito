@@ -1,4 +1,4 @@
-# Auditoría de seguridad — Prode Mundial (tarea 8.5)
+# Auditoría de seguridad — Mundialito (tarea 8.5)
 
 Revisión transversal de seguridad antes del deploy. Cubre RLS en todas las
 tablas y que ningún secreto llegue al bundle del cliente (ARCHITECTURE §8).

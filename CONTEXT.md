@@ -1,4 +1,4 @@
-# Prode Mundial
+# Mundialito
 
 Lenguaje de dominio de la PWA de pronósticos del Mundial 2026. Esta es la fuente de verdad de los términos; si el código o los docs usan otra palabra para el mismo concepto, está mal — resolver aquí primero.
 

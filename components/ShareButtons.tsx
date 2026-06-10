@@ -44,7 +44,7 @@ export function ShareButtons({
     const url = shareUrl();
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Prode Mundial 2026", text, url });
+        await navigator.share({ title: "Mundialito 2026", text, url });
       } catch {
         // El usuario canceló el diálogo: no es un error.
       }

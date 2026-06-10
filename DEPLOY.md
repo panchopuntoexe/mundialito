@@ -1,4 +1,4 @@
-# Guía de deploy — Prode Mundial
+# Guía de deploy — Mundialito
 
 Deploy a producción en **Vercel** + **Supabase** + **Upstash**. Seguir en orden.
 Tiempo estimado: ~30–45 min la primera vez.

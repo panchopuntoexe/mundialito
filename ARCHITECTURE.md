@@ -1,6 +1,6 @@
 # ARCHITECTURE.md
 
-Diseño técnico de **Prode Mundial**. Este documento es la fuente de verdad de la arquitectura. Si el código y este documento difieren, uno de los dos está mal — resolver antes de continuar.
+Diseño técnico de **Mundialito**. Este documento es la fuente de verdad de la arquitectura. Si el código y este documento difieren, uno de los dos está mal — resolver antes de continuar.
 
 ---
 

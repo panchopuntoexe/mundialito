@@ -94,7 +94,7 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
               letterSpacing: 4,
             }}
           >
-            Prode Mundial 2026
+            Mundialito 2026
           </div>
           <div style={{ fontSize: 36, color: COLOR.muted, marginTop: 6 }}>
             {`@${data.username}`}

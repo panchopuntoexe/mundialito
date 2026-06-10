@@ -4,7 +4,7 @@ import { getServerProfile, getServerUser } from "@/lib/supabase/auth";
 import { OnboardingForm } from "./OnboardingForm";
 
 export const metadata: Metadata = {
-  title: "Elegí tu username · Prode Mundial",
+  title: "Elegí tu username · Mundialito",
 };
 
 /**

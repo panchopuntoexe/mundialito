@@ -1,5 +1,5 @@
 /**
- * Service Worker de Prode Mundial (tareas 8.2 y 8.3).
+ * Service Worker de Mundialito (tareas 8.2 y 8.3).
  *
  * Estrategias:
  *  - Precache del app shell (página offline + iconos) al instalar.
@@ -115,10 +115,10 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data ? event.data.json() : {};
   } catch {
-    payload = { title: "Prode Mundial", body: event.data?.text() ?? "" };
+    payload = { title: "Mundialito", body: event.data?.text() ?? "" };
   }
 
-  const title = payload.title ?? "Prode Mundial";
+  const title = payload.title ?? "Mundialito";
   const options = {
     body: payload.body ?? "",
     icon: payload.icon ?? "/icons/icon-192.png",

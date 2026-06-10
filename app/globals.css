@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Prode Mundial — tema base.
+ * Mundialito — tema base.
  * Mobile-first (Tailwind: las clases sin prefijo son el breakpoint móvil).
  * Tema OSCURO como base del producto (no depende del sistema operativo).
  * Tailwind v4: la config vive aquí (CSS-first), no en tailwind.config.ts.
