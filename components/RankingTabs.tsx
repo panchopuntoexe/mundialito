@@ -127,7 +127,7 @@ export function RankingTabs({
                   {level.emoji}
                 </span>
                 <span className="min-w-0 flex-1 truncate font-medium">
-                  {entry.display_name ?? `@${entry.username}`}
+                  @{entry.username}
                   {isMe && <span className="ml-1.5 text-xs text-brand">· vos</span>}
                 </span>
                 <span className="shrink-0 font-semibold tabular-nums">

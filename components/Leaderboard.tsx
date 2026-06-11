@@ -74,7 +74,7 @@ export function Leaderboard({
               {level.emoji}
             </span>
             <span className="min-w-0 flex-1 truncate font-medium">
-              {entry.display_name ?? `@${entry.username}`}
+              @{entry.username}
               {isMe && (
                 <span className="ml-1.5 text-xs text-brand">· vos</span>
               )}

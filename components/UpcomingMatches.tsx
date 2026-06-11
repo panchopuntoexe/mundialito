@@ -77,7 +77,7 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
           </h3>
           <ul className="flex flex-col gap-3 border-l border-border pl-4">
             {group.matches.map((match) => (
-              <li key={match.id} className="relative">
+              <li key={match.id} className="relative opacity-60">
                 <span
                   className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full bg-brand"
                   aria-hidden
