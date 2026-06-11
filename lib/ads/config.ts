@@ -10,8 +10,11 @@
  */
 import { env } from "@/lib/env";
 
-export const adsEnabled =
-  env.NEXT_PUBLIC_ENABLE_ADS === "true" && !!env.NEXT_PUBLIC_ADSENSE_CLIENT;
+/** El flag a secas: intención de mostrar ads (aunque falte el client id). */
+export const adsRequested = env.NEXT_PUBLIC_ENABLE_ADS === "true";
+
+/** Ads operativos de verdad: flag + client id de AdSense. */
+export const adsEnabled = adsRequested && !!env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 export const adsenseClient = env.NEXT_PUBLIC_ADSENSE_CLIENT;
 

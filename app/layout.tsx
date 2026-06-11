@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
@@ -54,6 +55,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ServiceWorkerRegister />
+        <AdSenseScript />
         {children}
       </body>
     </html>
