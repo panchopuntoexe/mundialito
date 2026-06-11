@@ -27,8 +27,8 @@ const GOALS_LABELS: Record<GoalsRange, string> = {
 };
 
 const GOALS_EXPLANATION =
-  "Sumá los goles de local y visitante durante el partido (90 min + alargue). " +
-  "Los penales no cuentan. Si acertás quién gana y el rango de goles, sumás 15 pts extra.";
+  "Suma los goles de local y visitante durante el partido (90 min + alargue). " +
+  "Si aciertas quién gana y el rango de goles, sumas 15 pts extra.Los penales no cuentan. ";
 
 export function PredictionForm({
   matchId,
@@ -294,9 +294,9 @@ function SegmentButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`truncate rounded-lg border px-2 py-2 text-xs font-medium transition ${
+      className={`truncate rounded-lg border px-2 py-6 text-xs font-medium transition ${
         active
-          ? "border-brand bg-brand/15 text-foreground"
+          ? "border-brand bg-brand/20 text-foreground"
           : "border-border bg-surface-muted text-foreground-muted hover:text-foreground"
       }`}
     >
