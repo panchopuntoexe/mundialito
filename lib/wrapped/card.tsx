@@ -33,7 +33,7 @@ const COLOR = {
   danger: "#ef4444",
 } as const;
 
-/** Stat grande con su etiqueta (puntos / racha / plenos). */
+/** Stat grande con su etiqueta (racha / plenos). */
 function StatBlock({
   value,
   label,
@@ -91,24 +91,57 @@ export async function renderWrappedImage(params: {
           fontFamily: "sans-serif",
         }}
       >
-        {/* Header */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* Header: branding a la izquierda, puntos estilo HP de Pokémon a la derecha */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                fontSize: 32,
+                color: COLOR.brand,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: 4,
+              }}
+            >
+              Mundialito 2026
+            </div>
+            <div style={{ fontSize: 60, fontWeight: 800, marginTop: 8 }}>
+              {wrappedPhaseLabel(stats.phase)}
+            </div>
+            <div style={{ fontSize: 40, color: COLOR.muted, marginTop: 4 }}>
+              {`@${username}`}
+            </div>
+          </div>
+          {/* Satori no soporta alignItems baseline: se simula con flex-end + margen. */}
           <div
             style={{
-              fontSize: 32,
-              color: COLOR.brand,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: 4,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "flex-end",
             }}
           >
-            Mundialito 2026
-          </div>
-          <div style={{ fontSize: 60, fontWeight: 800, marginTop: 8 }}>
-            {wrappedPhaseLabel(stats.phase)}
-          </div>
-          <div style={{ fontSize: 40, color: COLOR.muted, marginTop: 4 }}>
-            {`@${username}`}
+            <div
+              style={{
+                fontSize: 34,
+                fontWeight: 700,
+                color: COLOR.muted,
+                letterSpacing: 2,
+                marginRight: 12,
+                marginBottom: 14,
+              }}
+            >
+              PTS
+            </div>
+            <div style={{ fontSize: 88, fontWeight: 800, color: COLOR.foreground }}>
+              {String(stats.totalPoints)}
+            </div>
           </div>
         </div>
 
@@ -148,11 +181,6 @@ export async function renderWrappedImage(params: {
             padding: "36px 24px",
           }}
         >
-          <StatBlock
-            value={String(stats.totalPoints)}
-            label="Puntos"
-            color={COLOR.foreground}
-          />
           <StatBlock
             value={String(stats.maxStreak)}
             label="Racha máx"

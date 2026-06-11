@@ -34,7 +34,9 @@ export async function GET(request: Request) {
 
   const { data: match, error: matchErr } = await admin
     .from("matches")
-    .select("home_team, away_team, score_home, score_away, status")
+    .select(
+      "home_team, away_team, home_flag, away_flag, score_home, score_away, status",
+    )
     .eq("id", matchId)
     .maybeSingle();
   if (matchErr) {
@@ -69,6 +71,8 @@ export async function GET(request: Request) {
     username: pred.users?.username ?? "jugador",
     homeTeam: match.home_team,
     awayTeam: match.away_team,
+    homeFlag: match.home_flag,
+    awayFlag: match.away_flag,
     scoreHome: match.score_home,
     scoreAway: match.score_away,
     resultCorrect: pred.result_correct ?? false,

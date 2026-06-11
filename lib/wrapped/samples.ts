@@ -32,6 +32,8 @@ export const SAMPLE_MATCH_RESULT: MatchResultCardData = {
   username: "tu_usuario",
   homeTeam: "Argentina",
   awayTeam: "México",
+  homeFlag: "https://flagcdn.com/w80/ar.png",
+  awayFlag: "https://flagcdn.com/w80/mx.png",
   scoreHome: 2,
   scoreAway: 1,
   resultCorrect: true,

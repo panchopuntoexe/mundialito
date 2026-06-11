@@ -2,8 +2,9 @@
  * Renderizador de la mini-tarjeta de resultado de un partido (tarea 7.5).
  *
  * Estilo "cuadritos de Wordle": dos cuadros que resumen el pronóstico del usuario
- * frente al resultado real — Resultado y Goles, verde si acertó, gris si no — más
- * los puntos ganados. Compartible apenas el cron de resultados (5.5) procesa el
+ * frente al resultado real — Resultado y Goles, verde si acertó, rojo si no — con
+ * las banderas de ambos equipos y los puntos ganados arriba a la derecha, estilo
+ * "HP" de carta Pokémon. Compartible apenas el cron de resultados (5.5) procesa el
  * partido. Mismas restricciones de Satori que la tarjeta Wrapped (lib/wrapped/card).
  */
 import { ImageResponse } from "next/og";
@@ -20,12 +21,15 @@ const COLOR = {
   muted: "#a1a1aa",
   brand: "#22c55e",
   accent: "#f59e0b",
+  danger: "#ef4444",
 } as const;
 
 export interface MatchResultCardData {
   username: string;
   homeTeam: string;
   awayTeam: string;
+  homeFlag: string | null;
+  awayFlag: string | null;
   scoreHome: number;
   scoreAway: number;
   resultCorrect: boolean;
@@ -33,7 +37,65 @@ export interface MatchResultCardData {
   pointsEarned: number;
 }
 
-/** Un cuadro Wordle con su etiqueta: verde si acertó, gris si no. */
+/**
+ * La DB guarda banderas de flagcdn en w80 (suficiente para la UI); en la imagen
+ * de 1080px se verían pixeladas, así que pedimos la variante w160.
+ */
+function hiResFlag(url: string): string {
+  return url.replace("https://flagcdn.com/w80/", "https://flagcdn.com/w160/");
+}
+
+/** Bandera + nombre del equipo, a cada lado del marcador. */
+function TeamBlock({ flag, name }: { flag: string | null; name: string }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: 300,
+      }}
+    >
+      {flag ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={hiResFlag(flag)}
+          width={156}
+          height={104}
+          alt=""
+          style={{
+            borderRadius: 14,
+            objectFit: "cover",
+            border: `3px solid ${COLOR.border}`,
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            width: 156,
+            height: 104,
+            borderRadius: 14,
+            backgroundColor: COLOR.surfaceMuted,
+            border: `3px solid ${COLOR.border}`,
+          }}
+        />
+      )}
+      <div
+        style={{
+          fontSize: 38,
+          fontWeight: 700,
+          marginTop: 18,
+          textAlign: "center",
+        }}
+      >
+        {name}
+      </div>
+    </div>
+  );
+}
+
+/** Un cuadro Wordle con su etiqueta: verde si acertó, rojo si no. */
 function Square({ correct, label }: { correct: boolean; label: string }) {
   return (
     <div
@@ -49,8 +111,8 @@ function Square({ correct, label }: { correct: boolean; label: string }) {
           width: 200,
           height: 200,
           borderRadius: 28,
-          backgroundColor: correct ? COLOR.brand : COLOR.surfaceMuted,
-          border: `4px solid ${correct ? COLOR.brand : COLOR.border}`,
+          backgroundColor: correct ? COLOR.brand : COLOR.danger,
+          border: `4px solid ${correct ? COLOR.brand : COLOR.danger}`,
         }}
       />
       <div
@@ -83,46 +145,80 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
           fontFamily: "sans-serif",
         }}
       >
-        {/* Header */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              fontSize: 30,
-              color: COLOR.brand,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: 4,
-            }}
-          >
-            Mundialito 2026
-          </div>
-          <div style={{ fontSize: 36, color: COLOR.muted, marginTop: 6 }}>
-            {`@${data.username}`}
-          </div>
-        </div>
-
-        {/* Partido + marcador */}
+        {/* Header: branding a la izquierda, puntos estilo HP de Pokémon a la derecha */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            marginTop: 56,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
           }}
         >
-          <div style={{ fontSize: 48, fontWeight: 700, textAlign: "center" }}>
-            {`${data.homeTeam} vs ${data.awayTeam}`}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                fontSize: 30,
+                color: COLOR.brand,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: 4,
+              }}
+            >
+              Mundialito 2026
+            </div>
+            <div style={{ fontSize: 36, color: COLOR.muted, marginTop: 6 }}>
+              {`@${data.username}`}
+            </div>
           </div>
+          {/* Satori no soporta alignItems baseline: se simula con flex-end + margen. */}
           <div
             style={{
-              fontSize: 130,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "flex-end",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 36,
+                fontWeight: 700,
+                color: COLOR.muted,
+                letterSpacing: 2,
+                marginRight: 12,
+                marginBottom: 16,
+              }}
+            >
+              PTS
+            </div>
+            <div style={{ fontSize: 96, fontWeight: 800, color: COLOR.brand }}>
+              {`+${data.pointsEarned}`}
+            </div>
+          </div>
+        </div>
+
+        {/* Banderas + marcador */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 24,
+            marginTop: 64,
+          }}
+        >
+          <TeamBlock flag={data.homeFlag} name={data.homeTeam} />
+          <div
+            style={{
+              fontSize: 120,
               fontWeight: 800,
               color: COLOR.foreground,
-              marginTop: 8,
+              marginBottom: 56,
             }}
           >
             {`${data.scoreHome} - ${data.scoreAway}`}
           </div>
+          <TeamBlock flag={data.awayFlag} name={data.awayTeam} />
         </div>
 
         {/* Cuadritos Wordle */}
@@ -139,7 +235,7 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
           <Square correct={data.goalsCorrect} label="Goles" />
         </div>
 
-        {/* Puntos + footer */}
+        {/* Footer */}
         <div
           style={{
             display: "flex",
@@ -148,10 +244,7 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
             marginTop: "auto",
           }}
         >
-          <div style={{ fontSize: 84, fontWeight: 800, color: COLOR.brand }}>
-            {`+${data.pointsEarned} pts`}
-          </div>
-          <div style={{ fontSize: 28, color: COLOR.muted, marginTop: 8 }}>
+          <div style={{ fontSize: 28, color: COLOR.muted }}>
             mundialito26-six.vercel.app
           </div>
         </div>
