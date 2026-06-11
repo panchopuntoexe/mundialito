@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import {
   getExistingSubscription,
   isPushSupported,
+  isValidVapidPublicKey,
   subscribeToPush,
+  type PushSubscribeResult,
 } from "@/lib/notifications/client";
 
 /**
@@ -17,8 +19,22 @@ import {
  */
 type Status = "loading" | "unsupported" | "off" | "on" | "denied";
 
+const REASON_MESSAGES: Record<
+  Exclude<PushSubscribeResult, { ok: true }>["reason"],
+  string
+> = {
+  unsupported: "Tu navegador no soporta notificaciones push.",
+  denied: "Permiso denegado. Activá las notificaciones en la configuración del navegador.",
+  invalid_key:
+    "La clave de notificaciones no es válida. Regenerala con npm run gen:vapid y actualizá las variables en Vercel.",
+  service_error:
+    "El navegador no pudo conectar con el servicio de push. Probá Chrome o Edge, desactivá bloqueadores, o revisá que las notificaciones estén permitidas en Windows.",
+  backend_error: "No se pudo guardar la suscripción. Probá de nuevo.",
+  sw_unavailable: "Necesitás HTTPS y la app instalada o recargada para activar notificaciones.",
+};
+
 export function PushOptIn() {
-  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
   const [status, setStatus] = useState<Status>("loading");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -30,7 +46,9 @@ export function PushOptIn() {
     // suscripción existente. El setState ocurre en el callback diferido, no en
     // el cuerpo del efecto (evita cascadas de render).
     async function detect(): Promise<Status> {
-      if (!vapidKey || !isPushSupported()) return "unsupported";
+      if (!vapidKey || !isValidVapidPublicKey(vapidKey) || !isPushSupported()) {
+        return "unsupported";
+      }
       if (Notification.permission === "denied") return "denied";
       const sub = await getExistingSubscription().catch(() => null);
       return sub ? "on" : "off";
@@ -54,14 +72,17 @@ export function PushOptIn() {
     setBusy(true);
     setMessage(null);
     try {
-      const ok = await subscribeToPush(vapidKey);
-      if (ok) {
+      const result = await subscribeToPush(vapidKey);
+      if (result.ok) {
         // La tarjeta desaparece: la activación queda confirmada por su ausencia.
         setStatus("on");
-      } else {
-        setStatus(Notification.permission === "denied" ? "denied" : "off");
-        setMessage("No se pudo activar. Revisá los permisos del navegador.");
+        return;
       }
+      if (result.reason === "denied") {
+        setStatus("denied");
+        return;
+      }
+      setMessage(REASON_MESSAGES[result.reason]);
     } finally {
       setBusy(false);
     }
@@ -78,7 +99,7 @@ export function PushOptIn() {
         </div>
         <button
           type="button"
-          onClick={enable}
+          onClick={() => void enable()}
           disabled={busy}
           className="shrink-0 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-background transition hover:bg-brand-strong disabled:opacity-50"
         >
@@ -87,7 +108,9 @@ export function PushOptIn() {
       </div>
 
       {message && (
-        <p className="mt-2 text-xs text-foreground-muted">{message}</p>
+        <p role="alert" className="mt-2 text-xs text-danger">
+          {message}
+        </p>
       )}
     </section>
   );
