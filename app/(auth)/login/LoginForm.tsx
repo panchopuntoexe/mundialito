@@ -4,13 +4,20 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   type EmailSignInState,
+  signInAsGuest,
   signInWithEmail,
   signInWithGoogle,
 } from "../actions";
 
 const initialEmailState: EmailSignInState = { status: "idle" };
 
-function SubmitButton({ children }: { children: React.ReactNode }) {
+function SubmitButton({
+  children,
+  pendingLabel = "Enviando…",
+}: {
+  children: React.ReactNode;
+  pendingLabel?: string;
+}) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -18,13 +25,14 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
       disabled={pending}
       className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-strong disabled:opacity-50"
     >
-      {pending ? "Enviando…" : children}
+      {pending ? pendingLabel : children}
     </button>
   );
 }
 
 /**
- * Formulario de login (tarea 2.1). Dos métodos:
+ * Formulario de entrada (tarea 2.1 + modo invitado). Tres métodos:
+ *  - Invitado (primario): action `signInAsGuest` — anonymous sign-in, cero forms.
  *  - Google (OAuth): form que invoca la action `signInWithGoogle` (redirige).
  *  - Email (magic link): `useActionState` muestra "revisá tu correo" al enviar.
  */
@@ -57,6 +65,18 @@ export function LoginForm({ error }: { error?: string }) {
           {error}
         </p>
       )}
+
+      <form action={signInAsGuest} className="flex flex-col gap-2">
+        <SubmitButton pendingLabel="Entrando…">⚽ Jugar sin cuenta</SubmitButton>
+        <p className="text-center text-xs text-foreground-muted">
+          Sin registro. Después podés guardar tu progreso con Google.
+        </p>
+      </form>
+
+      <div className="flex items-center gap-3 text-xs text-foreground-muted">
+        <span className="h-px flex-1 bg-border" />o creá tu cuenta
+        <span className="h-px flex-1 bg-border" />
+      </div>
 
       <form action={signInWithGoogle}>
         <button
