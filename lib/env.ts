@@ -17,6 +17,12 @@ const clientSchema = z.object({
   // Clave pública VAPID para Web Push (8.3). Opcional: el push es una mejora;
   // la app arranca sin él (la UI de notificaciones se oculta si no está).
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
+  // Ads vía AdSense (11.1) — construido pero APAGADO por defecto. Se enciende
+  // solo con NEXT_PUBLIC_ENABLE_ADS="true" + el client id (ver lib/ads/config).
+  NEXT_PUBLIC_ENABLE_ADS: z.string().optional(),
+  NEXT_PUBLIC_ADSENSE_CLIENT: z.string().optional(),
+  NEXT_PUBLIC_ADSENSE_SLOT_HOME: z.string().optional(),
+  NEXT_PUBLIC_ADSENSE_SLOT_RANKING: z.string().optional(),
 });
 
 const serverSchema = z.object({
@@ -55,6 +61,11 @@ function loadClientEnv() {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    NEXT_PUBLIC_ENABLE_ADS: process.env.NEXT_PUBLIC_ENABLE_ADS,
+    NEXT_PUBLIC_ADSENSE_CLIENT: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
+    NEXT_PUBLIC_ADSENSE_SLOT_HOME: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME,
+    NEXT_PUBLIC_ADSENSE_SLOT_RANKING:
+      process.env.NEXT_PUBLIC_ADSENSE_SLOT_RANKING,
   });
   if (!parsed.success) {
     throw new Error(

@@ -128,6 +128,13 @@ VAPID_SUBJECT=                   # 'mailto:...' o URL de contacto del emisor
 RESEND_API_KEY=                   # Solo server-side
 ALERT_EMAIL_TO=                   # Destinatario de las alertas de crons
 ALERT_EMAIL_FROM=                 # Opcional; default onboarding@resend.dev
+
+# Ads / AdSense — opcionales (tarea 11.1). Construidos pero APAGADOS por
+# defecto: encender = ENABLE_ADS=true + client id. Públicas (van al cliente).
+NEXT_PUBLIC_ENABLE_ADS=           # "true" para encender
+NEXT_PUBLIC_ADSENSE_CLIENT=       # ca-pub-…
+NEXT_PUBLIC_ADSENSE_SLOT_HOME=    # id de bloque en Hoy
+NEXT_PUBLIC_ADSENSE_SLOT_RANKING= # id de bloque en Ranking
 ```
 
 ---
