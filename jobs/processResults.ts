@@ -14,6 +14,7 @@
  * La lógica de scoring/agregación vive pura en `lib/scoring/*` (testeada); acá
  * solo el cableado con Supabase y Redis.
  */
+import { sendAlert } from "@/lib/alerts/send";
 import { evaluateAchievements } from "@/lib/scoring/achievements";
 import {
   aggregateAchievementStats,
@@ -71,6 +72,12 @@ export async function runProcessResults(): Promise<ProcessResultsSummary> {
       .eq("match_id", match.id);
     if (predErr) {
       console.error(`[processResults] error leyendo predicciones de ${match.id}:`, predErr);
+      // Error silencioso (continue): no llega al catch de la ruta → alertar acá.
+      await sendAlert({
+        source: "processResults",
+        message: `Error leyendo predicciones del match ${match.id}.`,
+        error: new Error(predErr.message),
+      });
       continue;
     }
 
@@ -86,6 +93,11 @@ export async function runProcessResults(): Promise<ProcessResultsSummary> {
     });
     if (rpcErr) {
       console.error(`[processResults] error aplicando resultados de ${match.id}:`, rpcErr);
+      await sendAlert({
+        source: "processResults",
+        message: `Error aplicando resultados del match ${match.id} (RPC apply_match_results).`,
+        error: new Error(rpcErr.message),
+      });
       continue;
     }
     if (claimed !== true) {

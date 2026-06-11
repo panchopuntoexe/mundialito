@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendAlert } from "@/lib/alerts/send";
 import { isAuthorizedCron } from "@/lib/cron/auth";
 import { runProcessResults } from "@/jobs/processResults";
 import { runBotPredictions, type BotPredictionsSummary } from "@/jobs/botPredictions";
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
   } catch (err) {
     resultsError = true;
     console.error("[cron/process-results] error:", err);
+    await sendAlert({ source: "cron/process-results", error: err });
   }
 
   let bots: BotPredictionsSummary | null = null;
@@ -37,6 +39,7 @@ export async function GET(request: Request) {
   } catch (err) {
     botsError = true;
     console.error("[cron/process-results] error en bots:", err);
+    await sendAlert({ source: "cron/bot-predictions", error: err });
   }
 
   if (resultsError || botsError) {

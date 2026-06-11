@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendAlert } from "@/lib/alerts/send";
 import { isAuthorizedCron } from "@/lib/cron/auth";
 import { runMatchSync } from "@/jobs/matchSync";
 
@@ -20,6 +21,7 @@ export async function GET(request: Request) {
     return NextResponse.json(summary);
   } catch (err) {
     console.error("[cron/match-sync] error:", err);
+    await sendAlert({ source: "cron/match-sync", error: err });
     return NextResponse.json(
       { error: "Falló la sincronización de partidos." },
       { status: 500 },

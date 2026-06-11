@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendAlert } from "@/lib/alerts/send";
 import { isAuthorizedCron } from "@/lib/cron/auth";
 import { runGenerateWrapped } from "@/jobs/generateWrapped";
 import type { WrappedPhase } from "@/lib/scoring/wrappedStats";
@@ -36,6 +37,7 @@ export async function GET(request: Request) {
     return NextResponse.json(summary);
   } catch (err) {
     console.error("[cron/generate-wrapped] error:", err);
+    await sendAlert({ source: "cron/generate-wrapped", error: err });
     return NextResponse.json(
       { error: "Falló la generación de Wrapped." },
       { status: 500 },
