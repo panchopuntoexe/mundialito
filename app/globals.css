@@ -101,6 +101,24 @@ body {
     bottom: 140px;
   }
 }
+/* Ojos de Samy (<Samy/>): parpadeo sutil. fill-box hace que cada ojo
+   colapse sobre sí mismo y no sobre el origen del SVG. */
+.samy-eye {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: samy-blink 4s ease-in-out infinite;
+}
+@keyframes samy-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.08);
+  }
+}
+
 @keyframes loading-step {
   0% {
     box-shadow:

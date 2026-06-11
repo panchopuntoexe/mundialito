@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/(auth)/actions";
+import { Samy } from "@/components/Samy";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { getServerProfile } from "@/lib/supabase/auth";
 
@@ -25,8 +26,11 @@ export default async function MainLayout({
   return (
     <>
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
-        <span className="text-sm font-semibold tracking-tight">
-          Mundi<span className="text-brand">alito</span>
+        <span className="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+          <Samy />
+          <span>
+            Mundi<span className="text-brand">alito</span>
+          </span>
         </span>
         <div className="flex items-center gap-3 text-sm">
           <span className="flex items-center gap-1.5 text-foreground-muted">
@@ -43,9 +47,25 @@ export default async function MainLayout({
           <form action={signOut}>
             <button
               type="submit"
-              className="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+              aria-label="Salir"
+              title="Salir"
+              className="rounded-md border border-border p-1.5 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
             >
-              Salir
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
             </button>
           </form>
         </div>
@@ -58,6 +78,12 @@ export default async function MainLayout({
           Hoy
         </Link>
         <Link
+          href="/estadisticas"
+          className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+        >
+          Estadísticas
+        </Link>
+        <Link
           href="/ranking"
           className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
         >
@@ -68,12 +94,6 @@ export default async function MainLayout({
           className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
         >
           Ligas
-        </Link>
-        <Link
-          href="/estadisticas"
-          className="rounded-md px-3 py-1.5 font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
-        >
-          Estadísticas
         </Link>
       </nav>
       {children}
