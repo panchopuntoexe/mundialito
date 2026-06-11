@@ -23,7 +23,8 @@ export function Leaderboard({
 }: {
   endpoint: string;
   initial: LeaderboardEntry[];
-  currentUserId: string;
+  /** null = visitante sin sesión: sin fila resaltada ni realtime. */
+  currentUserId: string | null;
 }) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>(initial);
 
@@ -39,6 +40,7 @@ export function Leaderboard({
   }, [endpoint]);
 
   useEffect(() => {
+    if (!currentUserId) return;
     return subscribeToPointsChange(currentUserId, refetch);
   }, [currentUserId, refetch]);
 

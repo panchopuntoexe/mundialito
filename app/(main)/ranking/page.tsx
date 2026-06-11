@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { GuestCta } from "@/components/GuestCta";
 import { RankingTabs } from "@/components/RankingTabs";
 import {
   ACCURACY_LEADERBOARD_KEY,
@@ -18,6 +18,9 @@ import { createClient } from "@/lib/supabase/server";
  * (Puntos / Precisión / Racha). Server Component: pre-carga las 3 listas cacheadas
  * (mismas claves que el endpoint /api/ranking) para el render inicial; el switch de
  * pestañas y el realtime los maneja <RankingTabs/>.
+ *
+ * Página pública (viralidad): sin sesión también se ve, sin fila resaltada ni
+ * realtime, y con el CTA de "Jugar sin cuenta" al pie.
  */
 
 const LEADERBOARD_TTL_SECONDS = 300; // 5 min
@@ -27,9 +30,6 @@ export default async function RankingPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
-  }
 
   const [points, accuracy, streak] = await Promise.all([
     cached(GLOBAL_LEADERBOARD_KEY, LEADERBOARD_TTL_SECONDS, loadGlobalLeaderboard),
@@ -51,11 +51,13 @@ export default async function RankingPage() {
       </header>
 
       <RankingTabs
-        currentUserId={user.id}
+        currentUserId={user?.id ?? null}
         points={points}
         accuracy={accuracy}
         streak={streak}
       />
+
+      {!user && <GuestCta />}
     </main>
   );
 }

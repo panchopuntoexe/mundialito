@@ -47,7 +47,8 @@ export function RankingTabs({
   accuracy,
   streak,
 }: {
-  currentUserId: string;
+  /** null = visitante sin sesión: sin fila resaltada ni realtime. */
+  currentUserId: string | null;
   points: LeaderboardEntry[];
   accuracy: LeaderboardEntry[];
   streak: LeaderboardEntry[];
@@ -73,6 +74,7 @@ export function RankingTabs({
   }, [metric]);
 
   useEffect(() => {
+    if (!currentUserId) return;
     return subscribeToPointsChange(currentUserId, refetch);
   }, [currentUserId, refetch]);
 

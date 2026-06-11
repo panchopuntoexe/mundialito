@@ -1,5 +1,6 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
+import { GuestCta } from "@/components/GuestCta";
 import { loadPublicProfile } from "@/lib/profiles/load";
 import { ACHIEVEMENT_DEFS } from "@/lib/scoring/achievements";
 import { levelForPoints } from "@/lib/scoring/levels";
@@ -8,11 +9,11 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Perfil público de un usuario: la tarjeta de estadísticas detrás de cada fila
  * del ranking. URL compartible (/u/<username>) — pieza de viralidad: se puede
- * pegar en redes/WhatsApp y trae gente a la app.
+ * pegar en redes/WhatsApp y quien la abre la ve SIN sesión (ruta pública en el
+ * proxy), con el CTA de "Jugar sin cuenta" al pie.
  *
- * Server Component dentro de (main): hereda header/nav y el gate de onboarding.
- * Los datos los trae un loader server-only con service role (la RLS solo deja
- * leer la fila propia).
+ * Server Component dentro de (main): hereda header/nav. Los datos los trae un
+ * loader server-only con service role (la RLS solo deja leer la fila propia).
  */
 export default async function PublicProfilePage({
   params,
@@ -25,9 +26,6 @@ export default async function PublicProfilePage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
-  }
 
   const profile = await loadPublicProfile(
     decodeURIComponent(username).toLowerCase(),
@@ -37,7 +35,7 @@ export default async function PublicProfilePage({
   }
 
   const level = levelForPoints(profile.total_points);
-  const isMe = profile.user_id === user.id;
+  const isMe = profile.user_id === user?.id;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
@@ -90,6 +88,8 @@ export default async function PublicProfilePage({
         </h2>
         <BadgeGrid earned={profile.earned} />
       </section>
+
+      {!user && <GuestCta />}
     </main>
   );
 }

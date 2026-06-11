@@ -30,6 +30,10 @@ const PUBLIC_PATHS = [
   "/api/health",
   // Preview dev del Wrapped (mock, sin login). La página hace 404 en producción.
   "/wrapped-preview",
+  // Páginas públicas de viralidad: un link compartido se ve sin barrera y el
+  // visitante queda a un tap de "Jugar sin cuenta".
+  "/ranking",
+  "/u",
 ];
 
 function isPublic(pathname: string): boolean {
