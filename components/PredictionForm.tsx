@@ -12,11 +12,17 @@ import type { GoalsRange, ResultPred } from "@/types/domain";
  * 4.5 — tras confirmar (o tras el kickoff) el form se BLOQUEA y muestra el
  * pronóstico hecho. Antes del kickoff se puede reabrir con "Editar" (la RLS
  * permite editar hasta el kickoff; el server re-valida la ventana igual).
+ * Cuando el cron procesa el partido (5.5), el badge "Cerrado" se reemplaza por
+ * el veredicto: acierto/pleno con los puntos ganados, o fallo.
  */
 
 interface SavedPrediction {
   result_pred: ResultPred;
   goals_range_pred: GoalsRange | null;
+  /** Campos de scoring (5.5) — presentes solo si vino de la DB ya procesada. */
+  result_correct?: boolean | null;
+  goals_correct?: boolean | null;
+  points_earned?: number | null;
 }
 
 const GOALS_LABELS: Record<GoalsRange, string> = {
@@ -175,9 +181,22 @@ export function PredictionForm({
               </span>
             </div>
             {closed ? (
-              <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-medium text-foreground-muted">
-                Cerrado
-              </span>
+              saved.points_earned != null ? (
+                saved.result_correct ? (
+                  <span className="rounded-full bg-brand/15 px-2.5 py-1 text-[11px] font-semibold text-brand">
+                    {saved.goals_correct ? "Pleno" : "Acertaste"} · +
+                    {saved.points_earned} pts
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-danger/10 px-2.5 py-1 text-[11px] font-medium text-danger">
+                    No acertaste
+                  </span>
+                )
+              ) : (
+                <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-medium text-foreground-muted">
+                  Cerrado
+                </span>
+              )
             ) : (
               <button
                 type="button"

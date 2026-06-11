@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:seed": "node --env-file=.env.local --import tsx scripts/seed-fixtures.ts",
+    "db:backfill": "node --env-file=.env.local --import tsx scripts/backfill-api-football.ts",
     "bots:seed": "node --env-file=.env.local --import tsx scripts/seed-bots.ts",
     "bots:list": "node --env-file=.env.local --import tsx scripts/delete-bots.ts list",
     "bots:delete": "node --env-file=.env.local --import tsx scripts/delete-bots.ts delete",

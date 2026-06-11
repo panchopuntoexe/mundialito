@@ -1,6 +1,10 @@
 import { AdSlot } from "@/components/ads/AdSlot";
 import { DayCompleteCelebration } from "@/components/DayCompleteCelebration";
-import { MatchCard, type MatchCardData } from "@/components/MatchCard";
+import {
+  MatchCard,
+  type MatchCardData,
+  type MatchCardPrediction,
+} from "@/components/MatchCard";
 import { AD_SLOTS } from "@/lib/ads/config";
 import { PushOptIn } from "@/components/PushOptIn";
 import { UpcomingMatches } from "@/components/UpcomingMatches";
@@ -11,7 +15,6 @@ import {
 } from "@/lib/matches/day";
 import { TOURNAMENT_TIME_ZONE } from "@/lib/scoring/streaks";
 import { createClient } from "@/lib/supabase/server";
-import type { GoalsRange, ResultPred } from "@/types/domain";
 
 /**
  * Home de la app principal (tarea 4.4): los partidos del día con su formulario de
@@ -24,7 +27,7 @@ import type { GoalsRange, ResultPred } from "@/types/domain";
  */
 
 const MATCH_COLUMNS =
-  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status";
+  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status, score_home, score_away, winner_team";
 
 function dayLabel(day: string): string {
   // Mediodía UTC del día para evitar bordes de TZ al formatear la fecha.
@@ -72,14 +75,15 @@ export default async function Home() {
   const upcoming: MatchCardData[] = upcomingData ?? [];
 
   // Pronósticos propios de los partidos de hoy (RLS: solo los del usuario).
-  const predByMatch = new Map<
-    number,
-    { result_pred: ResultPred; goals_range_pred: GoalsRange | null }
-  >();
+  // Incluye los campos de scoring (5.5) para mostrar acierto/puntos y la
+  // mini-tarjeta compartible (7.5) cuando el partido ya fue procesado.
+  const predByMatch = new Map<number, MatchCardPrediction>();
   if (user && matches.length > 0) {
     const { data: preds } = await supabase
       .from("predictions")
-      .select("match_id, result_pred, goals_range_pred")
+      .select(
+        "match_id, result_pred, goals_range_pred, result_correct, goals_correct, points_earned",
+      )
       .eq("user_id", user.id)
       .in(
         "match_id",
@@ -89,6 +93,9 @@ export default async function Home() {
       predByMatch.set(p.match_id, {
         result_pred: p.result_pred,
         goals_range_pred: p.goals_range_pred,
+        result_correct: p.result_correct,
+        goals_correct: p.goals_correct,
+        points_earned: p.points_earned,
       });
     }
   }
@@ -113,6 +120,7 @@ export default async function Home() {
               <MatchCard
                 match={match}
                 prediction={predByMatch.get(match.id) ?? null}
+                userId={user?.id ?? null}
               />
               {/* Un solo ad por día, tras la 2ª card y solo si hay ≥3 (11.3).
                   Con el flag apagado AdSlot es null: DOM idéntico a hoy. */}

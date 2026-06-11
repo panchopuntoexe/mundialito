@@ -49,6 +49,8 @@ describe("mapFixture", () => {
       score_away: 1,
       winner_team: "home",
       kickoff_at: "2026-06-11T20:00:00.000Z",
+      home_name: "A",
+      away_name: "B",
     });
   });
 

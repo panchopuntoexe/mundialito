@@ -51,6 +51,8 @@ describe("buildSyncUpdates", () => {
     score_away: 0,
     winner_team: null,
     kickoff_at: NOW.toISOString(),
+    home_name: "Home",
+    away_name: "Away",
     ...over,
   });
 

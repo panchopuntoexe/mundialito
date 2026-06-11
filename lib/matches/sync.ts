@@ -7,9 +7,10 @@
  * join puro de los live scores a nuestras filas (`buildSyncUpdates`).
  *
  * El join es por `api_football_id` (ADR 0002): es la columna de lookup contra
- * API-Football. Las filas sin `api_football_id` aún no están mapeadas y se omiten
- * (no hay forma fiable de matchearlas desde el endpoint live, que no trae nombres
- * de equipo); el mapeo se completa con datos reales del proveedor.
+ * API-Football. Las filas sin `api_football_id` aún no están mapeadas y se omiten;
+ * el mapeo lo puebla `scripts/backfill-api-football.ts` (matchea el fixture de la
+ * temporada por kickoff + nombres de equipo y, de paso, repone resultados que el
+ * sync se haya perdido — p. ej. partidos terminados durante una caída).
  *
  * Sin imports de env/red/DB para que sea testeable sin Redis ni Supabase.
  */

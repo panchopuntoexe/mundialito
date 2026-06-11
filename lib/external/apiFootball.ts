@@ -45,6 +45,9 @@ export interface LiveScore {
   winner_team: WinnerTeam;
   /** Kickoff en ISO 8601 UTC. */
   kickoff_at: string;
+  /** Nombres según API-Football — para matchear filas aún sin `api_football_id`. */
+  home_name: string;
+  away_name: string;
 }
 
 // ── Shape (parcial) de la respuesta de API-Football v3 ─────────────
@@ -126,6 +129,8 @@ export function mapFixture(item: FixtureItem): LiveScore {
     score_away: item.goals.away,
     winner_team: winnerTeam,
     kickoff_at: new Date(item.fixture.date).toISOString(),
+    home_name: item.teams.home.name,
+    away_name: item.teams.away.name,
   };
 }
 
