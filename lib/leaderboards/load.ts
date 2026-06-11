@@ -54,6 +54,9 @@ export async function loadGlobalLeaderboard(): Promise<LeaderboardEntry[]> {
   const { data, error } = await admin
     .from("users")
     .select(SELECT)
+    // Solo quien ya sumó: los invitados recién creados (modo "Jugar sin
+    // cuenta") no inflan el top; el empty-state ya invita a pronosticar.
+    .gt("total_points", 0)
     .order("total_points", { ascending: false })
     .order("username", { ascending: true }) // desempate determinista (estable en caché)
     .limit(TOP_LIMIT);
