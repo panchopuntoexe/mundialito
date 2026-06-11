@@ -32,6 +32,13 @@ const serverSchema = z.object({
   // VAPID_SUBJECT debe ser 'mailto:...' o una URL (contacto del emisor).
   VAPID_PRIVATE_KEY: z.string().optional(),
   VAPID_SUBJECT: z.string().optional(),
+  // Alertas por email vía Resend (10.1) — opcionales: si faltan, las alertas
+  // quedan deshabilitadas (no-op con warning, mismo patrón que VAPID).
+  RESEND_API_KEY: z.string().optional(),
+  ALERT_EMAIL_TO: z.email().optional(),
+  // Default: onboarding@resend.dev (Resend lo permite hacia el propio dueño
+  // de la cuenta sin verificar dominio).
+  ALERT_EMAIL_FROM: z.email().optional(),
 });
 
 type ServerEnv = z.infer<typeof serverSchema>;

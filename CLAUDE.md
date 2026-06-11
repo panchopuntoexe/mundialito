@@ -122,6 +122,12 @@ CRON_SECRET=                      # Protege los endpoints de cron
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=     # Pública (va al cliente)
 VAPID_PRIVATE_KEY=               # Solo server-side, NUNCA exponer
 VAPID_SUBJECT=                   # 'mailto:...' o URL de contacto del emisor
+
+# Alertas por email vía Resend — opcionales (tarea 10.1). Si faltan, las
+# alertas quedan deshabilitadas (no-op con warning).
+RESEND_API_KEY=                   # Solo server-side
+ALERT_EMAIL_TO=                   # Destinatario de las alertas de crons
+ALERT_EMAIL_FROM=                 # Opcional; default onboarding@resend.dev
 ```
 
 ---
