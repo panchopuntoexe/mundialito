@@ -353,3 +353,27 @@ En POST /api/predictions, tras guardar (ver 4.1 paso 5):
 - `SUPABASE_SERVICE_ROLE_KEY` y `API_FOOTBALL_KEY` solo en server, nunca en bundle del cliente.
 - RLS en todas las tablas de Supabase.
 - Rate limiting en API Routes sensibles (crear pronóstico, crear liga) vía Upstash.
+
+### 8.1 Modo invitado (anonymous sign-ins)
+
+- Entrar a la app no requiere registro: el botón **"Jugar sin cuenta"** de `/login`
+  (action `signInAsGuest`) crea un usuario anónimo de Supabase + perfil con username
+  auto-generado `invitado_xxxxxx` (`lib/users/guest.ts`).
+- Los anónimos son usuarios `authenticated` **reales** (tienen `auth.uid()`,
+  `is_anonymous: true` en el JWT) → **la RLS, el scoring, las rachas y los rankings
+  funcionan sin cambios**. No hay políticas especiales para invitados.
+- La sesión de invitado **solo se crea con el tap del botón**, nunca al visitar una
+  URL (cada anónimo cuenta como MAU; los crawlers no deben crear usuarios). La action
+  además rate-limitea por IP (`guest:signup:{ip}`, 10/hora; `x-forwarded-for` es
+  confiable detrás de Vercel).
+- Rutas públicas sin sesión (viralidad): `/ranking` y `/u/[username]` (además de
+  `/login`, `/callback` y las imágenes compartibles). El layout de `(main)` tolera
+  visitantes (header con CTA "Jugar"); todo lo demás redirige a `/login`.
+- **Guardar progreso**: el invitado vincula Google vía `linkIdentity()`
+  (`components/SaveAccountButton.tsx`) — mismo `user.id`, puntos y username intactos.
+  Requiere `enable_manual_linking` además de `enable_anonymous_sign_ins` (config.toml
+  local; en producción ambos toggles en Dashboard → Authentication → Sign In / Up).
+- Mantenimiento opcional (no implementado): limpiar anónimos inactivos, p. ej.
+  `delete from auth.users where is_anonymous and created_at < now() - interval '30 days'
+  and id not in (select user_id from public.predictions)`. Si aparece abuso, el
+  siguiente escalón es CAPTCHA (Turnstile) para anonymous sign-ins.

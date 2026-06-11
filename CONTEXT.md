@@ -62,6 +62,10 @@ _Avoid_: "la predicción incorrecta que menos usuarios acertaron" (texto origina
 Reconocimiento puntual que un usuario gana al cumplir un criterio. Vive en la tabla `achievements` (único por `(user_id, type)`), lo **otorga idempotente** el cron de resultados, y cada tipo lleva metadatos de presentación (`label`/`icon`/`description`) en `lib/scoring/achievements.ts`. Ejemplos: **Telonero** (pronosticó el primer partido del torneo, por orden de kickoff) y **En racha** (más de 3 aciertos de **resultado consecutivos**, ordenados por kickoff).
 _Avoid_: confundir **En racha** (aciertos consecutivos) con la **Racha** (participación) — son métricas distintas pese al nombre parecido.
 
+**Invitado** (Guest):
+Usuario que entró con **"Jugar sin cuenta"**: un usuario anónimo de Supabase (usuario `authenticated` real, `is_anonymous: true`) con username auto-generado `invitado_xxxxxx`. Juega exactamente igual que un usuario registrado (pronostica, suma puntos, rachas, logros, ligas); su única diferencia es que la sesión vive solo en ese dispositivo hasta que **guarda su cuenta** vinculando Google (`linkIdentity`, mismo `user.id`, progreso intacto). Si cierra sesión sin guardar, el progreso se pierde.
+_Avoid_: "modo lectura" o usuario sin fila en `users` (el invitado tiene perfil completo); políticas RLS especiales para invitados (no existen — es un usuario authenticated normal).
+
 **Ranking** (sección pública):
 Pantalla de clasificación con **filtros orientados a datos**, separada del ranking de **Liga** (que es un filtro privado por miembros). Tres vistas: **Puntos** (total de torneo), **Precisión** (% de aciertos sobre la vista SQL `user_accuracy`, con mínimo de pronósticos para entrar) y **Racha** (racha máxima de participación). Cada métrica se cachea por separado en Redis.
 _Avoid_: mezclar la sección Ranking (global, pública) con el ranking de una Liga (subconjunto de miembros).
