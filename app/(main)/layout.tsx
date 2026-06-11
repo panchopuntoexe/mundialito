@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { signOut } from "@/app/(auth)/actions";
 import { Samy } from "@/components/Samy";
+import { SaveAccountButton } from "@/components/SaveAccountButton";
+import { SignOutButton } from "@/components/SignOutButton";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { getServerProfile, getServerUser } from "@/lib/supabase/auth";
 
@@ -24,6 +25,7 @@ export default async function MainLayout({
   }
 
   const level = profile ? levelForPoints(profile.total_points) : null;
+  const isAnonymous = user?.is_anonymous ?? false;
 
   return (
     <>
@@ -47,30 +49,8 @@ export default async function MainLayout({
               </span>
               @{profile.username}
             </span>
-            <form action={signOut}>
-              <button
-                type="submit"
-                aria-label="Salir"
-                title="Salir"
-                className="rounded-md border border-border p-1.5 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-              </button>
-            </form>
+            {isAnonymous && <SaveAccountButton />}
+            <SignOutButton isAnonymous={isAnonymous} />
           </div>
         ) : (
           <Link
