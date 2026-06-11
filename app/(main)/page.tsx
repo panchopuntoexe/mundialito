@@ -74,7 +74,7 @@ export default async function Home() {
   // Pronósticos propios de los partidos de hoy (RLS: solo los del usuario).
   const predByMatch = new Map<
     number,
-    { result_pred: ResultPred; goals_range_pred: GoalsRange }
+    { result_pred: ResultPred; goals_range_pred: GoalsRange | null }
   >();
   if (user && matches.length > 0) {
     const { data: preds } = await supabase

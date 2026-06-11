@@ -44,6 +44,18 @@ describe("calculatePoints", () => {
     });
   });
 
+  it("sin pronóstico de goles: acierto de resultado = 10, sin bonus", () => {
+    const r = calculatePoints(
+      { result_pred: "home", goals_range_pred: null },
+      groupMatch,
+    );
+    expect(r).toEqual({
+      points: RESULT_POINTS,
+      resultCorrect: true,
+      goalsCorrect: false,
+    });
+  });
+
   it("acierto de resultado + goles = 25 (bonus)", () => {
     const r = calculatePoints(
       { result_pred: "home", goals_range_pred: "2-3" },

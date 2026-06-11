@@ -111,7 +111,7 @@ export interface Database {
           user_id: string;
           match_id: number;
           result_pred: Database["public"]["Enums"]["result_pred"];
-          goals_range_pred: Database["public"]["Enums"]["goals_range"];
+          goals_range_pred: Database["public"]["Enums"]["goals_range"] | null;
           result_correct: boolean | null;
           goals_correct: boolean | null;
           points_earned: number | null;
@@ -122,7 +122,7 @@ export interface Database {
           user_id: string;
           match_id: number;
           result_pred: Database["public"]["Enums"]["result_pred"];
-          goals_range_pred: Database["public"]["Enums"]["goals_range"];
+          goals_range_pred?: Database["public"]["Enums"]["goals_range"] | null;
           result_correct?: boolean | null;
           goals_correct?: boolean | null;
           points_earned?: number | null;
@@ -130,7 +130,7 @@ export interface Database {
         };
         Update: {
           result_pred?: Database["public"]["Enums"]["result_pred"];
-          goals_range_pred?: Database["public"]["Enums"]["goals_range"];
+          goals_range_pred?: Database["public"]["Enums"]["goals_range"] | null;
           result_correct?: boolean | null;
           goals_correct?: boolean | null;
           points_earned?: number | null;

@@ -11,6 +11,26 @@ describe("createPredictionSchema", () => {
     expect(parsed.success).toBe(true);
   });
 
+  it("acepta pronóstico solo con resultado (goles omitidos)", () => {
+    const parsed = createPredictionSchema.safeParse({
+      match_id: 42,
+      result_pred: "home",
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.goals_range_pred).toBeUndefined();
+    }
+  });
+
+  it("acepta goals_range_pred null", () => {
+    const parsed = createPredictionSchema.safeParse({
+      match_id: 42,
+      result_pred: "away",
+      goals_range_pred: null,
+    });
+    expect(parsed.success).toBe(true);
+  });
+
   it("rechaza un result_pred fuera del enum", () => {
     const parsed = createPredictionSchema.safeParse({
       match_id: 1,

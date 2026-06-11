@@ -40,7 +40,7 @@ export interface ScoredMatch {
 
 export interface ScoredPrediction {
   result_pred: ResultPred;
-  goals_range_pred: GoalsRange;
+  goals_range_pred: GoalsRange | null;
 }
 
 export interface PointsResult {
@@ -66,7 +66,9 @@ export function calculatePoints(
   const actualGoalsRange = deriveGoalsRange(totalGoals);
 
   const resultCorrect = prediction.result_pred === actualResult;
-  const goalsCorrect = prediction.goals_range_pred === actualGoalsRange;
+  const goalsCorrect =
+    prediction.goals_range_pred !== null &&
+    prediction.goals_range_pred === actualGoalsRange;
 
   let points = 0;
   if (resultCorrect) {

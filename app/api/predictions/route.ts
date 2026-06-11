@@ -106,7 +106,7 @@ export async function POST(request: Request) {
         user_id: user.id,
         match_id: input.match_id,
         result_pred: input.result_pred,
-        goals_range_pred: input.goals_range_pred,
+        goals_range_pred: input.goals_range_pred ?? null,
       },
       { onConflict: "user_id,match_id" },
     )

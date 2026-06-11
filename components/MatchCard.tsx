@@ -23,7 +23,7 @@ export interface MatchCardData {
 
 export interface MatchCardPrediction {
   result_pred: ResultPred;
-  goals_range_pred: GoalsRange;
+  goals_range_pred: GoalsRange | null;
 }
 
 const PHASE_LABELS: Record<string, string> = {

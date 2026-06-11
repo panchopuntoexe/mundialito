@@ -7,8 +7,8 @@ import type { GoalsRange, ResultPred } from "@/types/domain";
 /**
  * Formulario de pronóstico (tareas 4.4 y 4.5).
  *
- * 4.4 — selector de resultado (Local/Empate/Visitante; en knockout sin empate) y
- * de rango de goles, con botón de confirmar. Mobile-first.
+ * 4.4 — selector de resultado (Local/Empate/Visitante; en knockout sin empate).
+ * El rango de goles es opcional y va en una sección colapsable (bonus +15 pts).
  * 4.5 — tras confirmar (o tras el kickoff) el form se BLOQUEA y muestra el
  * pronóstico hecho. Antes del kickoff se puede reabrir con "Editar" (la RLS
  * permite editar hasta el kickoff; el server re-valida la ventana igual).
@@ -16,7 +16,7 @@ import type { GoalsRange, ResultPred } from "@/types/domain";
 
 interface SavedPrediction {
   result_pred: ResultPred;
-  goals_range_pred: GoalsRange;
+  goals_range_pred: GoalsRange | null;
 }
 
 const GOALS_LABELS: Record<GoalsRange, string> = {
@@ -25,6 +25,10 @@ const GOALS_LABELS: Record<GoalsRange, string> = {
   "4-5": "4-5",
   "6+": "6+",
 };
+
+const GOALS_EXPLANATION =
+  "Sumá los goles de local y visitante durante el partido (90 min + alargue). " +
+  "Los penales no cuentan. Si acertás quién gana y el rango de goles, sumás 15 pts extra.";
 
 export function PredictionForm({
   matchId,
@@ -55,6 +59,9 @@ export function PredictionForm({
   const [goals, setGoals] = useState<GoalsRange | null>(
     initialPrediction?.goals_range_pred ?? null,
   );
+  const [showGoals, setShowGoals] = useState(
+    () => !!initialPrediction?.goals_range_pred,
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,11 +91,16 @@ export function PredictionForm({
   const resultLabel = (value: ResultPred) =>
     value === "home" ? homeTeam : value === "away" ? awayTeam : "Empate";
 
+  function openEdit() {
+    setShowGoals(!!saved?.goals_range_pred);
+    setEditing(true);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!result || !goals) {
-      setError("Elegí el resultado y el rango de goles.");
+    if (!result) {
+      setError("Elegí quién gana.");
       return;
     }
     setSubmitting(true);
@@ -145,10 +157,12 @@ export function PredictionForm({
               </span>
               <span className="font-semibold">
                 {resultLabel(saved.result_pred)}
-                <span className="text-foreground-muted">
-                  {" "}
-                  · {GOALS_LABELS[saved.goals_range_pred]} goles
-                </span>
+                {saved.goals_range_pred && (
+                  <span className="text-foreground-muted">
+                    {" "}
+                    · {GOALS_LABELS[saved.goals_range_pred]} goles
+                  </span>
+                )}
               </span>
             </div>
             {closed ? (
@@ -158,17 +172,25 @@ export function PredictionForm({
             ) : (
               <button
                 type="button"
-                onClick={() => setEditing(true)}
+                onClick={openEdit}
                 className="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
               >
                 Editar
               </button>
             )}
           </div>
-        ) : (
+        ) : closed ? (
           <p className="text-sm text-foreground-muted">
             Cerrado — no pronosticaste este partido.
           </p>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="w-full rounded-lg border border-dashed border-border px-4 py-2.5 text-sm font-medium text-foreground-muted transition hover:border-brand/40 hover:text-foreground"
+          >
+            Hacer pronóstico
+          </button>
         )}
       </div>
     );
@@ -181,7 +203,9 @@ export function PredictionForm({
         <legend className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
           ¿Quién gana?
         </legend>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div
+          className={`grid gap-1.5 ${isKnockout ? "grid-cols-2" : "grid-cols-3"}`}
+        >
           {resultOptions.map((opt) => (
             <SegmentButton
               key={opt.value}
@@ -193,21 +217,51 @@ export function PredictionForm({
         </div>
       </fieldset>
 
-      <fieldset className="mt-3 flex flex-col gap-1.5">
-        <legend className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
-          Goles totales
-        </legend>
-        <div className="grid grid-cols-4 gap-1.5">
-          {GOALS_RANGE_VALUES.map((range) => (
-            <SegmentButton
-              key={range}
-              active={goals === range}
-              onClick={() => setGoals(range)}
-              label={GOALS_LABELS[range]}
-            />
-          ))}
-        </div>
-      </fieldset>
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={() => setShowGoals((open) => !open)}
+          aria-expanded={showGoals}
+          className="flex w-full items-center justify-between rounded-lg border border-border bg-surface-muted px-3 py-2 text-left text-xs font-medium text-foreground-muted transition hover:text-foreground"
+        >
+          <span>
+            {showGoals
+              ? "Ocultar bonus de goles"
+              : "Bonus: pronosticar goles (+15 pts)"}
+          </span>
+          <span aria-hidden="true" className="text-foreground-muted">
+            {showGoals ? "▲" : "▼"}
+          </span>
+        </button>
+
+        {showGoals && (
+          <fieldset className="mt-2 flex flex-col gap-1.5 rounded-lg border border-border bg-surface-muted/50 p-3">
+            <legend className="sr-only">Rango de goles totales (opcional)</legend>
+            <p className="text-[11px] leading-relaxed text-foreground-muted">
+              {GOALS_EXPLANATION}
+            </p>
+            <div className="grid grid-cols-4 gap-1.5">
+              {GOALS_RANGE_VALUES.map((range) => (
+                <SegmentButton
+                  key={range}
+                  active={goals === range}
+                  onClick={() => setGoals(range)}
+                  label={GOALS_LABELS[range]}
+                />
+              ))}
+            </div>
+            {goals && (
+              <button
+                type="button"
+                onClick={() => setGoals(null)}
+                className="self-start text-[11px] text-foreground-muted underline-offset-2 hover:text-foreground hover:underline"
+              >
+                Quitar pronóstico de goles
+              </button>
+            )}
+          </fieldset>
+        )}
+      </div>
 
       {error && (
         <p role="alert" className="mt-2 text-xs text-danger">
@@ -217,7 +271,7 @@ export function PredictionForm({
 
       <button
         type="submit"
-        disabled={!result || !goals || submitting}
+        disabled={!result || submitting || closed}
         className="mt-3 w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-strong disabled:opacity-50"
       >
         {submitting ? "Guardando…" : "Confirmar pronóstico"}

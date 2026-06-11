@@ -17,7 +17,8 @@ export const GOALS_RANGE_VALUES = ["0-1", "2-3", "4-5", "6+"] as const;
 export const createPredictionSchema = z.object({
   match_id: z.number().int().positive(),
   result_pred: z.enum(RESULT_PRED_VALUES),
-  goals_range_pred: z.enum(GOALS_RANGE_VALUES),
+  /** Opcional: null = solo se pronosticó el resultado (sin bonus de goles). */
+  goals_range_pred: z.enum(GOALS_RANGE_VALUES).nullable().optional(),
 });
 
 export type CreatePredictionInput = z.infer<typeof createPredictionSchema>;
