@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:seed": "node --env-file=.env.local --import tsx scripts/seed-fixtures.ts",
+    "bots:seed": "node --env-file=.env.local --import tsx scripts/seed-bots.ts",
     "gen:icons": "node scripts/generate-icons.mjs",
     "gen:vapid": "node scripts/generate-vapid.mjs"
   },
