@@ -1,0 +1,106 @@
+import { notFound, redirect } from "next/navigation";
+import { BadgeGrid } from "@/components/BadgeGrid";
+import { loadPublicProfile } from "@/lib/profiles/load";
+import { ACHIEVEMENT_DEFS } from "@/lib/scoring/achievements";
+import { levelForPoints } from "@/lib/scoring/levels";
+import { createClient } from "@/lib/supabase/server";
+
+/**
+ * Perfil público de un usuario: la tarjeta de estadísticas detrás de cada fila
+ * del ranking. URL compartible (/u/<username>) — pieza de viralidad: se puede
+ * pegar en redes/WhatsApp y trae gente a la app.
+ *
+ * Server Component dentro de (main): hereda header/nav y el gate de onboarding.
+ * Los datos los trae un loader server-only con service role (la RLS solo deja
+ * leer la fila propia).
+ */
+export default async function PublicProfilePage({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
+  const { username } = await params;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    redirect("/login");
+  }
+
+  const profile = await loadPublicProfile(
+    decodeURIComponent(username).toLowerCase(),
+  );
+  if (!profile) {
+    notFound();
+  }
+
+  const level = levelForPoints(profile.total_points);
+  const isMe = profile.user_id === user.id;
+
+  return (
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
+      <header className="flex flex-col items-center gap-2 text-center">
+        {profile.avatar_url ? (
+          // Avatar viene como URL del proveedor OAuth; <img> simple basta acá.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profile.avatar_url}
+            alt=""
+            width={64}
+            height={64}
+            className="h-16 w-16 rounded-full object-cover"
+          />
+        ) : (
+          <span
+            aria-hidden
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-muted text-xl font-bold uppercase text-foreground-muted"
+          >
+            {profile.username[0]}
+          </span>
+        )}
+        <h1 className="text-lg font-bold tracking-tight">
+          @{profile.username}
+          {isMe && (
+            <span className="ml-1.5 text-xs font-normal text-brand">· vos</span>
+          )}
+        </h1>
+        <span
+          className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
+          style={{ color: level.color }}
+        >
+          <span aria-hidden>{level.emoji}</span>
+          {level.name}
+        </span>
+      </header>
+
+      <section className="grid grid-cols-3 gap-2">
+        <Stat value={`${profile.total_points}`} label="Puntos" />
+        <Stat value={`${profile.accuracy}%`} label="Precisión" />
+        <Stat value={`${profile.max_streak}`} label="Racha máx." />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-bold tracking-tight">
+          Logros{" "}
+          <span className="font-normal text-foreground-muted">
+            · {profile.earned.length}/{ACHIEVEMENT_DEFS.length}
+          </span>
+        </h2>
+        <BadgeGrid earned={profile.earned} />
+      </section>
+    </main>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5 rounded-xl border border-border bg-surface p-3">
+      <span className="text-lg font-bold tabular-nums">{value}</span>
+      <span className="text-[11px] uppercase tracking-wide text-foreground-muted">
+        {label}
+      </span>
+    </div>
+  );
+}

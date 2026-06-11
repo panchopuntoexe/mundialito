@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { LeaderboardEntry } from "@/lib/leaderboards/rankings";
 import { levelForPoints } from "@/lib/scoring/levels";
@@ -114,25 +115,29 @@ export function RankingTabs({
             const isMe = entry.user_id === currentUserId;
             const level = levelForPoints(entry.total_points);
             return (
-              <li
-                key={entry.user_id}
-                className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm ${
-                  isMe ? "border-brand bg-brand/10" : "border-border bg-surface"
-                }`}
-              >
-                <span className="w-6 shrink-0 text-center font-semibold tabular-nums text-foreground-muted">
-                  {entry.rank}
-                </span>
-                <span aria-hidden className="shrink-0" title={`Nivel: ${level.name}`}>
-                  {level.emoji}
-                </span>
-                <span className="min-w-0 flex-1 truncate font-medium">
-                  @{entry.username}
-                  {isMe && <span className="ml-1.5 text-xs text-brand">· vos</span>}
-                </span>
-                <span className="shrink-0 font-semibold tabular-nums">
-                  {metricLabel(metric, entry)}
-                </span>
+              <li key={entry.user_id}>
+                <Link
+                  href={`/u/${encodeURIComponent(entry.username)}`}
+                  className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition ${
+                    isMe
+                      ? "border-brand bg-brand/10 hover:bg-brand/15"
+                      : "border-border bg-surface hover:border-foreground-muted/40"
+                  }`}
+                >
+                  <span className="w-6 shrink-0 text-center font-semibold tabular-nums text-foreground-muted">
+                    {entry.rank}
+                  </span>
+                  <span aria-hidden className="shrink-0" title={`Nivel: ${level.name}`}>
+                    {level.emoji}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate font-medium">
+                    @{entry.username}
+                    {isMe && <span className="ml-1.5 text-xs text-brand">· vos</span>}
+                  </span>
+                  <span className="shrink-0 font-semibold tabular-nums">
+                    {metricLabel(metric, entry)}
+                  </span>
+                </Link>
               </li>
             );
           })}
