@@ -53,7 +53,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Debut",
     icon: "✏️",
     description: "Hiciste tu primer pronóstico.",
-    funFact: "Todo crack debutó alguna vez. Lo tuyo ya es historia grande.",
+    funFact: "Todo crack debutó alguna vez.",
     earned: (s) => s.totalPredictions >= 1,
   },
   {
@@ -61,7 +61,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Telonero",
     icon: "🎬",
     description: "Pronosticaste el primer partido del torneo.",
-    funFact: "Llegaste antes de que corten el pasto. Puntualidad de árbitro suizo.",
+    funFact: "Llegaste antes de que corten el pasto. ¿Tenés contactos en la organización?",
     earned: (s) => s.predictedTournamentOpener,
   },
   {
@@ -69,7 +69,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Primer acierto",
     icon: "🎯",
     description: "Acertaste el resultado de un partido.",
-    funFact: "Uno de uno: estadísticamente sos infalible. No lo arruines.",
+    funFact: "Uno de uno: estadísticamente sos infalible. No lo arruines - _ -",
     earned: (s) => s.correctPredictions >= 1,
   },
   {
@@ -77,7 +77,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Francotirador",
     icon: "💎",
     description: "Clavaste un pleno: resultado + rango de goles.",
-    funFact: "Resultado y goles clavados. ¿Vos viste el partido antes que todos?",
+    funFact: "Resultado y goles clavados. ¿Tienes otra cosa que hacer?",
     earned: (s) => s.perfectPredictions >= 1,
   },
   {
@@ -85,7 +85,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "En racha",
     icon: "🔥",
     description: "Más de 3 partidos seguidos acertados.",
-    funFact: "Estás más caliente que el mate recién cebado. Ni soples.",
+    funFact: "Messi",
     earned: (s) => s.maxCorrectStreak >= 4,
   },
   {
@@ -93,7 +93,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Constante",
     icon: "📅",
     description: "Racha de participación de 3 días.",
-    funFact: "Tres días seguidos. Ni tu despertador es tan constante.",
+    funFact: "Toca césped.",
     earned: (s) => s.maxStreak >= 3,
   },
   {
@@ -101,7 +101,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Leyenda de la racha",
     icon: "⚡",
     description: "Racha de participación de 10 días.",
-    funFact: "Diez días al hilo. Avisale a tu familia que estás bien.",
+    funFact: "Avísale a tu familia que estás bien.",
     earned: (s) => s.maxStreak >= 10,
   },
   {
@@ -109,7 +109,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Centurión",
     icon: "💯",
     description: "Llegaste a 100 puntos.",
-    funFact: "100 puntos. Messi hace jueguitos, vos hacés pronósticos.",
+    funFact: "100 puntos. ¿HUH?",
     earned: (s) => s.totalPoints >= 100,
   },
 ] as const;
