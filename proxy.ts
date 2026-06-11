@@ -26,6 +26,8 @@ const PUBLIC_PATHS = [
   "/callback",
   "/api/wrapped/image",
   "/api/matches/result-image",
+  // Liveness check (10.3): la apunta un monitor externo, sin sesión.
+  "/api/health",
   // Preview dev del Wrapped (mock, sin login). La página hace 404 en producción.
   "/wrapped-preview",
 ];
