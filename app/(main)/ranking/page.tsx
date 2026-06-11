@@ -1,5 +1,7 @@
+import { AdSlot } from "@/components/ads/AdSlot";
 import { GuestCta } from "@/components/GuestCta";
 import { RankingTabs } from "@/components/RankingTabs";
+import { AD_SLOTS } from "@/lib/ads/config";
 import {
   ACCURACY_LEADERBOARD_KEY,
   GLOBAL_LEADERBOARD_KEY,
@@ -56,6 +58,9 @@ export default async function RankingPage() {
         accuracy={accuracy}
         streak={streak}
       />
+
+      {/* Con el flag apagado AdSlot es null: DOM idéntico a hoy (11.3). */}
+      <AdSlot slot={AD_SLOTS.ranking} />
 
       {!user && <GuestCta />}
     </main>

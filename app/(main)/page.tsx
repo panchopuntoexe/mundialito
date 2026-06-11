@@ -1,5 +1,7 @@
+import { AdSlot } from "@/components/ads/AdSlot";
 import { DayCompleteCelebration } from "@/components/DayCompleteCelebration";
 import { MatchCard, type MatchCardData } from "@/components/MatchCard";
+import { AD_SLOTS } from "@/lib/ads/config";
 import { PushOptIn } from "@/components/PushOptIn";
 import { UpcomingMatches } from "@/components/UpcomingMatches";
 import {
@@ -106,12 +108,17 @@ export default async function Home() {
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {matches.map((match) => (
+          {matches.map((match, idx) => (
             <li key={match.id}>
               <MatchCard
                 match={match}
                 prediction={predByMatch.get(match.id) ?? null}
               />
+              {/* Un solo ad por día, tras la 2ª card y solo si hay ≥3 (11.3).
+                  Con el flag apagado AdSlot es null: DOM idéntico a hoy. */}
+              {idx === 1 && matches.length >= 3 && (
+                <AdSlot slot={AD_SLOTS.home} className="mt-3" />
+              )}
             </li>
           ))}
         </ul>
