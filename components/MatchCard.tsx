@@ -79,6 +79,8 @@ export function MatchCard({
         isKnockout={isKnockout}
         homeTeam={match.home_team}
         awayTeam={match.away_team}
+        homeFlag={match.home_flag}
+        awayFlag={match.away_flag}
         initialPrediction={prediction}
       />
 

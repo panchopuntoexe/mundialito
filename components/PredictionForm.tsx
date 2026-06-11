@@ -36,6 +36,8 @@ export function PredictionForm({
   isKnockout,
   homeTeam,
   awayTeam,
+  homeFlag,
+  awayFlag,
   initialPrediction,
 }: {
   matchId: number;
@@ -43,6 +45,8 @@ export function PredictionForm({
   isKnockout: boolean;
   homeTeam: string;
   awayTeam: string;
+  homeFlag: string | null;
+  awayFlag: string | null;
   initialPrediction: SavedPrediction | null;
 }) {
   const kickoffMs = new Date(kickoffAt).getTime();
@@ -77,15 +81,20 @@ export function PredictionForm({
     return () => clearTimeout(timer);
   }, [kickoffMs]);
 
-  const resultOptions: { value: ResultPred; label: string }[] = isKnockout
+  const resultOptions: {
+    value: ResultPred;
+    label: string;
+    flag: string | null;
+    variant: "home" | "draw" | "away";
+  }[] = isKnockout
     ? [
-        { value: "home", label: homeTeam },
-        { value: "away", label: awayTeam },
+        { value: "home", label: homeTeam, flag: homeFlag, variant: "home" },
+        { value: "away", label: awayTeam, flag: awayFlag, variant: "away" },
       ]
     : [
-        { value: "home", label: homeTeam },
-        { value: "draw", label: "Empate" },
-        { value: "away", label: awayTeam },
+        { value: "home", label: homeTeam, flag: homeFlag, variant: "home" },
+        { value: "draw", label: "Empate", flag: null, variant: "draw" },
+        { value: "away", label: awayTeam, flag: awayFlag, variant: "away" },
       ];
 
   const resultLabel = (value: ResultPred) =>
@@ -207,11 +216,13 @@ export function PredictionForm({
           className={`grid gap-1.5 ${isKnockout ? "grid-cols-2" : "grid-cols-3"}`}
         >
           {resultOptions.map((opt) => (
-            <SegmentButton
+            <ResultPickButton
               key={opt.value}
               active={result === opt.value}
               onClick={() => setResult(opt.value)}
               label={opt.label}
+              flag={opt.flag}
+              variant={opt.variant}
             />
           ))}
         </div>
@@ -280,6 +291,75 @@ export function PredictionForm({
   );
 }
 
+function ResultPickButton({
+  active,
+  onClick,
+  label,
+  flag,
+  variant,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  flag: string | null;
+  variant: "home" | "draw" | "away";
+}) {
+  const palette = {
+    home: {
+      active:
+        "border-sky-400 bg-sky-500/25 text-foreground shadow-[0_0_14px_rgba(56,189,248,0.35)] ring-2 ring-sky-400/50",
+      idle:
+        "border-sky-800/80 bg-sky-950/50 text-foreground hover:border-sky-500 hover:bg-sky-500/15",
+    },
+    draw: {
+      active:
+        "border-secondary-400 bg-secondary-500/25 text-foreground shadow-[0_0_14px_rgba(251,191,36,0.35)] ring-2 ring-secondary-400/50",
+      idle:
+        "border-secondary-900/70 bg-secondary-950/40 text-foreground hover:border-amber-500 hover:bg-amber-500/15",
+    },
+    away: {
+      active:
+        "border-rose-400 bg-rose-500/25 text-foreground shadow-[0_0_14px_rgba(251,113,133,0.35)] ring-2 ring-rose-400/50",
+      idle:
+        "border-rose-900/70 bg-rose-950/40 text-foreground hover:border-rose-500 hover:bg-rose-500/15",
+    },
+  } as const;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex min-h-[5.5rem] flex-col items-center justify-center gap-1.5 rounded-xl border px-2 py-3 transition-all ${
+        active ? palette[variant].active : palette[variant].idle
+      }`}
+    >
+      {flag ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={flag}
+          alt=""
+          width={36}
+          height={36}
+          className={`h-9 w-9 shrink-0 rounded-md object-cover shadow-md ${
+            active ? "ring-2 ring-white/30" : ""
+          }`}
+        />
+      ) : (
+        <span
+          className="flex h-9 w-9 items-center justify-center rounded-md text-lg"
+          aria-hidden
+        >
+          🟰
+        </span>
+      )}
+      <span className="w-full truncate text-center text-xs font-bold leading-tight">
+        {label}
+      </span>
+    </button>
+  );
+}
+
 function SegmentButton({
   active,
   onClick,
@@ -294,7 +374,7 @@ function SegmentButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`truncate rounded-lg border px-2 py-6 text-xs font-medium transition ${
+      className={`truncate rounded-lg border px-2 py-2 text-xs font-medium transition ${
         active
           ? "border-brand bg-brand/20 text-foreground"
           : "border-border bg-surface-muted text-foreground-muted hover:text-foreground"
