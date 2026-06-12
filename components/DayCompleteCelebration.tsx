@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { FaFire, FaXmark } from "react-icons/fa6";
 import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SaveAccountButton } from "@/components/SaveAccountButton";
 import { toTournamentDay } from "@/lib/scoring/streaks";
@@ -125,11 +126,14 @@ export function DayCompleteCelebration({
           aria-label="Cerrar"
           className="absolute right-3 top-3 rounded-md px-2 py-1 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
         >
-          ✕
+          <FaXmark aria-hidden />
         </button>
 
-        <div className="text-5xl" aria-hidden>
-          🔥
+        <div
+          className="flex justify-center text-5xl text-accent"
+          aria-hidden
+        >
+          <FaFire />
         </div>
         <h2
           id="day-complete-title"
@@ -175,7 +179,7 @@ export function DayCompleteCelebration({
         {isAnonymous && (
           <div className="mt-4 flex flex-col items-center gap-2 border-t border-border pt-4">
             <p className="text-xs text-foreground-muted">
-              Guarda tu progreso para no perder tu racha 🔥
+              Guarda tu progreso para no perder tu racha
             </p>
             <SaveAccountButton />
           </div>

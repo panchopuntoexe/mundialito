@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FaFire } from "react-icons/fa6";
 import { BottomNav } from "@/components/BottomNav";
+import { LevelIcon } from "@/components/icons";
 import { SaveAccountButton } from "@/components/SaveAccountButton";
 import { Samy } from "@/components/Samy";
 import { levelForPoints } from "@/lib/scoring/levels";
@@ -14,7 +16,7 @@ import { createClient } from "@/lib/supabase/server";
  *    public.users) → /onboarding.
  *  - Visitante SIN sesión (solo llega a las rutas públicas /ranking y /u, el
  *    proxy bloquea el resto): header con CTA "Jugar" en vez de perfil.
- *  - Con perfil: header compacto con racha 🔥, nivel y username. La navegación
+ *  - Con perfil: header compacto con racha, nivel y username. La navegación
  *    vive en <BottomNav/> (fija abajo, marca la tab activa); "Salir" se movió a
  *    Estadísticas → Cuenta para descomprimir el header.
  *  - Invitado (sesión anónima): barra fina bajo el header con "Guardar cuenta".
@@ -63,7 +65,7 @@ export default async function MainLayout({
               }`}
               title={`Racha: ${currentStreak} ${currentStreak === 1 ? "día" : "días"} pronosticando todos los partidos`}
             >
-              <span aria-hidden>🔥</span>
+              <FaFire aria-hidden />
               {currentStreak}
             </span>
             <span
@@ -71,7 +73,7 @@ export default async function MainLayout({
               style={{ color: level.color }}
               title={`Nivel: ${level.name} · ${profile.total_points} pts`}
             >
-              <span aria-hidden>{level.emoji}</span>
+              <LevelIcon level={level.key} />
               {level.name}
             </span>
             <span className="truncate">@{profile.username}</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BadgeIcon } from "@/components/icons";
 import {
   ACHIEVEMENT_DEFS,
   type AchievementType,
@@ -39,9 +40,11 @@ export function BadgeGrid({ earned }: { earned: AchievementType[] }) {
             >
               <span
                 aria-hidden
-                className={`text-xl leading-none ${has ? "" : "grayscale"}`}
+                className={`text-xl leading-none ${
+                  has ? "text-brand" : "text-foreground-muted"
+                }`}
               >
-                {def.icon}
+                <BadgeIcon type={def.type} />
               </span>
               <span className="flex min-w-0 flex-col items-center sm:items-start">
                 <span className="text-[10px] font-semibold leading-tight sm:text-sm">

@@ -37,9 +37,8 @@ export interface AchievementDef {
   type: AchievementType;
   /** Nombre visible de la insignia. */
   label: string;
-  /** Emoji para la web UI (NO usar en la imagen Satori). */
-  icon: string;
-  /** Cómo se desbloquea (texto para la UI). */
+  /** Cómo se desbloquea (texto para la UI). El ícono vive en
+   *  components/icons.tsx (<BadgeIcon/>, mapeado por `type`). */
   description: string;
   /** Frase graciosa para el tooltip de la web UI. */
   funFact: string;
@@ -50,65 +49,49 @@ export interface AchievementDef {
 export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
   {
     type: "first_prediction",
-    label: "Debut",
-    icon: "✏️",
-    description: "Hiciste tu primer pronóstico.",
+    label: "Debut",    description: "Hiciste tu primer pronóstico.",
     funFact: "Todo crack debutó alguna vez.",
     earned: (s) => s.totalPredictions >= 1,
   },
   {
     type: "tournament_opener",
-    label: "Telonero",
-    icon: "🎬",
-    description: "Pronosticaste el primer partido del torneo.",
+    label: "Telonero",    description: "Pronosticaste el primer partido del torneo.",
     funFact: "Llegaste antes de que corten el pasto. ¿Tienes contactos en la organización?",
     earned: (s) => s.predictedTournamentOpener,
   },
   {
     type: "first_win",
-    label: "Primer acierto",
-    icon: "🎯",
-    description: "Acertaste el resultado de un partido.",
+    label: "Primer acierto",    description: "Acertaste el resultado de un partido.",
     funFact: "Uno de uno: estadísticamente eres infalible. No lo arruines - _ -",
     earned: (s) => s.correctPredictions >= 1,
   },
   {
     type: "sharpshooter",
-    label: "Francotirador",
-    icon: "💎",
-    description: "Clavaste un pleno: resultado + rango de goles.",
+    label: "Francotirador",    description: "Clavaste un pleno: resultado + rango de goles.",
     funFact: "Resultado y goles clavados. ¿Tienes otra cosa que hacer?",
     earned: (s) => s.perfectPredictions >= 1,
   },
   {
     type: "hot_streak",
-    label: "En racha",
-    icon: "🔥",
-    description: "Más de 3 partidos seguidos acertados.",
+    label: "En racha",    description: "Más de 3 partidos seguidos acertados.",
     funFact: "Messi",
     earned: (s) => s.maxCorrectStreak >= 4,
   },
   {
     type: "streak_3",
-    label: "Constante",
-    icon: "📅",
-    description: "Racha de participación de 3 días.",
+    label: "Constante",    description: "Racha de participación de 3 días.",
     funFact: "Toca césped.",
     earned: (s) => s.maxStreak >= 3,
   },
   {
     type: "streak_legend",
-    label: "Leyenda de la racha",
-    icon: "⚡",
-    description: "Racha de participación de 10 días.",
+    label: "Leyenda de la racha",    description: "Racha de participación de 10 días.",
     funFact: "Avísale a tu familia que estás bien.",
     earned: (s) => s.maxStreak >= 10,
   },
   {
     type: "centurion",
-    label: "Centurión",
-    icon: "💯",
-    description: "Llegaste a 100 puntos.",
+    label: "Centurión",    description: "Llegaste a 100 puntos.",
     funFact: "100 puntos. ¿HUH?",
     earned: (s) => s.totalPoints >= 100,
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FaXmark } from "react-icons/fa6";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -61,7 +62,7 @@ export function SaveAccountButton() {
             aria-label="Cerrar"
             className="shrink-0 text-foreground-muted transition hover:text-foreground"
           >
-            ✕
+            <FaXmark aria-hidden />
           </button>
         </div>
       )}

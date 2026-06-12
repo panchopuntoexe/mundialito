@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { FaTrophy } from "react-icons/fa6";
 
 /**
  * Auto-unión a una liga desde el deep link (/leagues/join?code=…). Con sesión
@@ -66,8 +67,8 @@ export function AutoJoinLeague({
       className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-6 text-center"
       role="status"
     >
-      <span className="text-3xl" aria-hidden>
-        🏆
+      <span className="text-3xl text-brand" aria-hidden>
+        <FaTrophy />
       </span>
       <p className="text-sm text-foreground-muted">
         Uniéndote a <span className="font-semibold text-foreground">{leagueName}</span>…

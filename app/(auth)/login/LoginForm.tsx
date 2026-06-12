@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { FaEnvelopeOpenText, FaFutbol } from "react-icons/fa6";
 import {
   type EmailSignInState,
   signInAsGuest,
@@ -45,7 +46,9 @@ export function LoginForm({ error }: { error?: string }) {
   if (emailState.status === "sent") {
     return (
       <div className="rounded-lg border border-border bg-surface p-4 text-center text-sm">
-        <p className="font-medium text-foreground">Revisa tu correo 📬</p>
+        <p className="flex items-center justify-center gap-1.5 font-medium text-foreground">
+          <FaEnvelopeOpenText aria-hidden /> Revisa tu correo
+        </p>
         <p className="mt-1 text-foreground-muted">
           Te enviamos un enlace de acceso a{" "}
           <span className="text-foreground">{emailState.email}</span>. Ábrelo
@@ -67,7 +70,11 @@ export function LoginForm({ error }: { error?: string }) {
       )}
 
       <form action={signInAsGuest} className="flex flex-col gap-2">
-        <SubmitButton pendingLabel="Entrando…">⚽ Jugar sin cuenta</SubmitButton>
+        <SubmitButton pendingLabel="Entrando…">
+          <span className="inline-flex items-center gap-1.5">
+            <FaFutbol aria-hidden /> Jugar sin cuenta
+          </span>
+        </SubmitButton>
         <p className="text-center text-xs text-foreground-muted">
           Sin registro. Después puedes guardar tu progreso con Google.
         </p>

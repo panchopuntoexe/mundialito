@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { GuestCta } from "@/components/GuestCta";
+import { LevelIcon } from "@/components/icons";
 import { loadPublicProfile } from "@/lib/profiles/load";
 import { ACHIEVEMENT_DEFS } from "@/lib/scoring/achievements";
 import { levelForPoints } from "@/lib/scoring/levels";
@@ -68,7 +69,7 @@ export default async function PublicProfilePage({
           className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
           style={{ color: level.color }}
         >
-          <span aria-hidden>{level.emoji}</span>
+          <LevelIcon level={level.key} />
           {level.name}
         </span>
       </header>

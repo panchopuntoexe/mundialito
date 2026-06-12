@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaFutbol } from "react-icons/fa6";
 
 /**
  * CTA para visitantes sin sesión en las páginas públicas (/ranking, /u/...).
@@ -15,9 +16,10 @@ export function GuestCta() {
       </p>
       <Link
         href="/login"
-        className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background transition hover:bg-brand-strong"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background transition hover:bg-brand-strong"
       >
-        ⚽ Jugar sin cuenta
+        <FaFutbol aria-hidden />
+        Jugar sin cuenta
       </Link>
     </section>
   );

@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  FaChartColumn,
+  FaFutbol,
+  FaTrophy,
+  FaUserGroup,
+} from "react-icons/fa6";
 
 /**
  * Barra de navegación inferior fija (estilo app nativa). Reemplaza a las tabs
@@ -11,10 +17,10 @@ import { usePathname } from "next/navigation";
  */
 
 const TABS = [
-  { href: "/", label: "Hoy", icon: "⚽" },
-  { href: "/estadisticas", label: "Estadísticas", icon: "📊" },
-  { href: "/ranking", label: "Ranking", icon: "🏆" },
-  { href: "/leagues", label: "Ligas", icon: "👥" },
+  { href: "/", label: "Hoy", icon: FaFutbol },
+  { href: "/estadisticas", label: "Estadísticas", icon: FaChartColumn },
+  { href: "/ranking", label: "Ranking", icon: FaTrophy },
+  { href: "/leagues", label: "Ligas", icon: FaUserGroup },
 ] as const;
 
 export function BottomNav() {
@@ -48,7 +54,7 @@ export function BottomNav() {
                     active ? "bg-brand/15" : ""
                   }`}
                 >
-                  {tab.icon}
+                  <tab.icon />
                 </span>
                 {tab.label}
               </Link>

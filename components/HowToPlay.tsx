@@ -1,6 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import {
+  FaCircleQuestion,
+  FaFire,
+  FaFutbol,
+  FaGem,
+  FaXmark,
+} from "react-icons/fa6";
 
 /**
  * "¿Cómo se juega?" — la única educación explícita de las reglas (rediseño de
@@ -17,19 +24,19 @@ const STORAGE_KEY = "mundialito:howto-seen";
 
 const STEPS = [
   {
-    icon: "⚽",
+    icon: FaFutbol,
     title: "Pronostica los partidos del día",
     body: "Antes de cada kickoff, toca quién gana. Un toque y queda guardado (puedes cambiarlo hasta que empiece). Acertar el resultado suma 10 pts.",
   },
   {
-    icon: "💎",
+    icon: FaGem,
     title: "Suma el bonus de goles",
     body: "Si además pronosticas el rango de goles totales del partido y aciertas las dos cosas, es PLENO: 25 pts. Los penales no cuentan.",
   },
   {
-    icon: "🔥",
+    icon: FaFire,
     title: "Racha, niveles y amigos",
-    body: "Pronostica TODOS los partidos del día y tu racha suma un día. Con puntos subes de nivel: 🪑 Suplente → 👕 Titular (100) → ⭐ Crack (300) → 👑 Leyenda (700). Compite en el ranking o crea una liga con amigos.",
+    body: "Pronostica TODOS los partidos del día y tu racha suma un día. Con puntos subes de nivel: Suplente → Titular (100) → Crack (300) → Leyenda (700). Compite en el ranking o crea una liga con amigos.",
   },
 ] as const;
 
@@ -79,9 +86,10 @@ export function HowToPlay() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="self-start py-1 text-xs font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
+        className="inline-flex items-center gap-1.5 self-start py-1 text-xs font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
       >
-        ❓ ¿Cómo se juega?
+        <FaCircleQuestion aria-hidden />
+        ¿Cómo se juega?
       </button>
 
       {open && (
@@ -102,11 +110,14 @@ export function HowToPlay() {
               aria-label="Cerrar"
               className="absolute right-3 top-3 rounded-md px-2 py-1 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
             >
-              ✕
+              <FaXmark aria-hidden />
             </button>
 
-            <div className="text-5xl" aria-hidden>
-              {current.icon}
+            <div
+              className="flex justify-center text-5xl text-brand"
+              aria-hidden
+            >
+              <current.icon />
             </div>
             <h2
               id="howto-title"

@@ -5,8 +5,8 @@
  * no se persiste ni afecta el ranking, solo se calcula al vuelo donde se muestra
  * (header, tarjeta Wrapped, filas de leaderboard). Tema: "rol de jugador".
  *
- * `emoji` se usa SOLO en la web UI (el renderer Satori de la tarjeta no soporta
- * emojis: ahí se usa `color` + `name`). Sin imports de env/red/DB: testeable.
+ * El ícono de cada nivel vive en components/icons.tsx (<LevelIcon/>, mapeado
+ * por `key`): acá solo datos serializables. Sin imports de env/red/DB: testeable.
  */
 
 export type LevelKey = "suplente" | "titular" | "crack" | "leyenda";
@@ -15,8 +15,6 @@ export interface Level {
   key: LevelKey;
   /** Nombre visible, p.ej. "Crack". */
   name: string;
-  /** Emoji para la web UI (NO usar en la imagen Satori). */
-  emoji: string;
   /** Color del badge (alineado con la paleta de la tarjeta). */
   color: string;
   /** Cota inferior inclusiva de puntos para alcanzar el nivel. */
@@ -25,10 +23,10 @@ export interface Level {
 
 /** Niveles ordenados por `minPoints` ascendente. El primero arranca en 0. */
 export const LEVELS: readonly Level[] = [
-  { key: "suplente", name: "Suplente", emoji: "🪑", color: "#a1a1aa", minPoints: 0 },
-  { key: "titular", name: "Titular", emoji: "👕", color: "#22c55e", minPoints: 100 },
-  { key: "crack", name: "Crack", emoji: "⭐", color: "#f59e0b", minPoints: 300 },
-  { key: "leyenda", name: "Leyenda", emoji: "👑", color: "#eab308", minPoints: 700 },
+  { key: "suplente", name: "Suplente", color: "#a1a1aa", minPoints: 0 },
+  { key: "titular", name: "Titular", color: "#22c55e", minPoints: 100 },
+  { key: "crack", name: "Crack", color: "#f59e0b", minPoints: 300 },
+  { key: "leyenda", name: "Leyenda", color: "#eab308", minPoints: 700 },
 ] as const;
 
 /** El nivel correspondiente a una cantidad de puntos (el mayor `minPoints` ≤ points). */

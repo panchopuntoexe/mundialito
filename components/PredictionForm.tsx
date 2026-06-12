@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FaEquals } from "react-icons/fa6";
 import { GOALS_RANGE_VALUES } from "@/lib/validations/prediction";
 import type { GoalsRange, ResultPred } from "@/types/domain";
 
@@ -401,7 +402,7 @@ function ResultPickButton({
           className="flex h-9 w-9 items-center justify-center rounded-md text-lg"
           aria-hidden
         >
-          🟰
+          <FaEquals />
         </span>
       )}
       <span className="w-full truncate text-center text-xs font-bold leading-tight">

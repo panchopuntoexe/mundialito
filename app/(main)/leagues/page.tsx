@@ -56,7 +56,7 @@ export default async function LeaguesPage() {
         {myLeagues.length === 0 ? (
           <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
             Todavía no estás en ninguna liga. Crea una y comparte el código con tus
-            amigos. 🏆
+            amigos.
           </p>
         ) : (
           <ul className="flex flex-col gap-2">

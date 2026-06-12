@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FaFutbol, FaTrophy } from "react-icons/fa6";
 import { signInAsGuest } from "@/app/(auth)/actions";
 import { AutoJoinLeague } from "@/components/AutoJoinLeague";
 import { getServerUser } from "@/lib/supabase/auth";
@@ -71,8 +72,8 @@ export default async function JoinLeaguePage({
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 p-4">
       <header className="flex flex-col items-center gap-2 text-center">
-        <span className="text-4xl" aria-hidden>
-          🏆
+        <span className="text-4xl text-brand" aria-hidden>
+          <FaTrophy />
         </span>
         <h1 className="text-lg font-bold tracking-tight">
           Te invitaron a la liga «{league.name}»
@@ -89,9 +90,10 @@ export default async function JoinLeaguePage({
       >
         <button
           type="submit"
-          className="rounded-lg bg-brand px-4 py-3 text-sm font-semibold text-background transition hover:bg-brand-strong"
+          className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand px-4 py-3 text-sm font-semibold text-background transition hover:bg-brand-strong"
         >
-          ⚽ Unirme sin cuenta
+          <FaFutbol aria-hidden />
+          Unirme sin cuenta
         </button>
         <p className="text-center text-xs text-foreground-muted">
           Sin registro. Después puedes guardar tu progreso con Google.

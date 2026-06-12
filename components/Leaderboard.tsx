@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { LevelIcon } from "@/components/icons";
 import type { LeaderboardEntry } from "@/lib/leaderboards/rankings";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { subscribeToPointsChange } from "@/lib/supabase/realtime";
@@ -73,9 +74,10 @@ export function Leaderboard({
               <span
                 aria-hidden
                 className="shrink-0"
+                style={{ color: level.color }}
                 title={`Nivel: ${level.name}`}
               >
-                {level.emoji}
+                <LevelIcon level={level.key} />
               </span>
               <span className="min-w-0 flex-1 truncate font-medium">
                 @{entry.username}

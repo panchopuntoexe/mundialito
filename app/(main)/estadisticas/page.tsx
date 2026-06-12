@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
+import { LevelIcon } from "@/components/icons";
 import { ChangeUsernameForm } from "@/components/ChangeUsernameForm";
 import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SignOutButton } from "@/components/SignOutButton";
@@ -85,12 +86,15 @@ export default async function EstadisticasPage() {
         </div>
         <div className="rounded-xl border border-border bg-surface px-4 py-3">
           <div className="flex items-center justify-between gap-2 text-xs">
-            <span style={{ color: level.color }} className="font-semibold">
-              {level.emoji} {level.name}
+            <span
+              style={{ color: level.color }}
+              className="inline-flex items-center gap-1 font-semibold"
+            >
+              <LevelIcon level={level.key} /> {level.name}
             </span>
             <span className="text-foreground-muted">
               {next
-                ? `${next.minPoints - points} pts para ${next.emoji} ${next.name}`
+                ? `${next.minPoints - points} pts para ${next.name}`
                 : "Nivel máximo"}
             </span>
           </div>
@@ -141,13 +145,10 @@ export default async function EstadisticasPage() {
         <BadgeGrid earned={earned} />
       </section>
 
-      {!cards || cards.length === 0 ? (
-        <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-          Tu primera tarjeta de fase llega al cerrar la fase de grupos (27 de
-          junio). Mientras tanto, comparte tu tarjeta en vivo y pronostica los
-          partidos de cada día para sumar puntos. 🎁
-        </p>
-      ) : (
+      {/* Tarjetas de fase: solo se renderizan cuando existen (las crea el cron
+          al cerrar cada macro-ronda). Sin estado vacío: antes de la primera
+          tarjeta la sección simplemente no aparece. */}
+      {cards && cards.length > 0 && (
         <ul className="flex flex-col gap-6">
           {cards.map((card) => {
             const stats = card.stats_json as unknown as WrappedStats | null;

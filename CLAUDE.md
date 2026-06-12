@@ -61,6 +61,11 @@ El usuario pronostica los partidos del día (todos los del día actual) antes de
 - **Nombres de archivos**: `kebab-case.ts` para utils, `PascalCase.tsx` para componentes.
 - **Imports absolutos** con alias `@/` (configurado en `tsconfig.json`).
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`).
+- **Íconos: react-icons (set `fa6`, Font Awesome 6 Free). NUNCA emojis en la UI.**
+  Los íconos de niveles e insignias se mapean por clave en `components/icons.tsx`
+  (`<LevelIcon/>` / `<BadgeIcon/>`); los datos en `lib/scoring` quedan serializables.
+  Excepción: textos planos que salen de la app (share texts, push notifications)
+  pueden llevar emojis — ahí no se puede renderizar SVG.
 
 ---
 

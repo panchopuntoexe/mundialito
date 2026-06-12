@@ -48,7 +48,7 @@ export default async function RankingPage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-bold tracking-tight">Ranking</h1>
         <p className="text-sm text-foreground-muted">
-          Los mejores del Mundialito, por la métrica que elijas. 🏆
+          Los mejores del Mundialito, por la métrica que elijas.
         </p>
       </header>
 

@@ -51,7 +51,7 @@ export function DayProgress({
           className={complete ? "font-semibold text-brand" : "text-foreground-muted"}
         >
           {complete
-            ? "¡Día completo! Tu racha sigue viva 🔥"
+            ? "¡Día completo! Tu racha sigue viva"
             : `Pronosticaste ${count} de ${totalMatches} ${
                 totalMatches === 1 ? "partido" : "partidos"
               } de hoy`}

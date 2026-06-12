@@ -395,6 +395,20 @@ Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Tr
 - **Aceptación**: Ninguna service key en el cliente. RLS activo en las 9 tablas. Tests rompen el build ante una regresión.
 - **Depende de**: todas las migraciones.
 
+### [x] 8.6 — Push: recordatorio de pronóstico olvidado (una vez por día)
+
+- **Objetivo**: Avisar por push al usuario que no pronosticó un partido que abre dentro de la próxima hora — como máximo UNA vez por día del torneo, para no hostigar.
+- **Archivos**: migración `0014_push_notification_log.sql` (claim unique user/kind/dedupe_key), lógica pura `lib/notifications/reminders.ts` (+ test), job `jobs/predictionReminders.ts`, piggyback en `app/api/cron/process-results/route.ts`, tipos en `types/database.ts`.
+- **Aceptación**: Usuario suscrito sin pronóstico a <60 min del kickoff recibe el push. Corridas repetidas del cron NO re-envían (claim en DB antes de enviar). Usuario con todo pronosticado no recibe nada. Sin claves VAPID el job es no-op.
+- **Depende de**: 8.3, 5.5
+
+### [x] 8.7 — Push: anuncio a demanda (broadcast)
+
+- **Objetivo**: Endpoint manual para anunciar novedades a todos los suscritos (p. ej. la tarjeta compartible de resultados).
+- **Archivos**: `app/api/notifications/broadcast/route.ts`, `sendPushToAll` en `lib/notifications/webPush.ts`, `pushBroadcastSchema` en `lib/validations/push.ts`.
+- **Aceptación**: `POST /api/notifications/broadcast` con `Authorization: Bearer CRON_SECRET` envía a todos los dispositivos suscritos (default: anuncio de la tarjeta compartible → `/estadisticas`; body opcional personaliza). Sin el secreto → 401. Ningún cron lo dispara.
+- **Depende de**: 8.3
+
 ---
 
 ## FASE 9 — Bots (la app se siente viva desde el día 1)

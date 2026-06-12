@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { LevelIcon } from "@/components/icons";
 import type { LeaderboardEntry } from "@/lib/leaderboards/rankings";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { subscribeToPointsChange } from "@/lib/supabase/realtime";
@@ -129,8 +130,13 @@ export function RankingTabs({
                   <span className="w-6 shrink-0 text-center font-semibold tabular-nums text-foreground-muted">
                     {entry.rank}
                   </span>
-                  <span aria-hidden className="shrink-0" title={`Nivel: ${level.name}`}>
-                    {level.emoji}
+                  <span
+                    aria-hidden
+                    className="shrink-0"
+                    style={{ color: level.color }}
+                    title={`Nivel: ${level.name}`}
+                  >
+                    <LevelIcon level={level.key} />
                   </span>
                   <span className="min-w-0 flex-1 truncate font-medium">
                     @{entry.username}

@@ -124,7 +124,7 @@ export default async function Home() {
 
       {matches.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-          No hay partidos hoy. Vuelve mañana para sostener tu racha. 🔥
+          No hay partidos hoy. Vuelve mañana para sostener tu racha.
         </p>
       ) : (
         <ul className="flex flex-col gap-3">

@@ -343,7 +343,10 @@ En POST /api/predictions, tras guardar (ver 4.1 paso 5):
   - Navegaciones → network-first con copia a cache de runtime → **historial offline**; fallback a `offline.html`.
   - Estáticos (`_next/static`, iconos) → stale-while-revalidate.
   - API y cross-origin (Supabase, Upstash, API-Football) → passthrough a la red, nunca se cachean.
-- Notificaciones push (Web Push + VAPID, tabla `push_subscriptions`): "El partido del día ya está disponible", "Tu pronóstico cierra en 1 hora", "Tu Wrapped está listo". El opt-in vive en `components/PushOptIn.tsx`; el envío server-side en `lib/notifications/webPush.ts`. **Opcional**: si faltan las claves VAPID, el push queda deshabilitado y la UI se autooculta.
+- Notificaciones push (Web Push + VAPID, tabla `push_subscriptions`). El opt-in vive en `components/PushOptIn.tsx`; el envío server-side en `lib/notifications/webPush.ts`. **Opcional**: si faltan las claves VAPID, el push queda deshabilitado y la UI se autooculta. Tipos de notificación:
+  - **Recordatorio de pronóstico olvidado** (8.6): si dentro de la próxima hora abre un partido que el usuario no pronosticó, recibe un push — **como máximo uno por día del torneo** (anti-spam). El claim "una sola vez" lo garantiza la tabla `push_notification_log` (unique sobre user/kind/dedupe_key); la decisión vive pura en `lib/notifications/reminders.ts` y el job `jobs/predictionReminders.ts` corre piggyback en el cron de process-results.
+  - **Anuncio a demanda** (8.7): `POST /api/notifications/broadcast` (protegido con `CRON_SECRET`, nunca lo dispara un cron) envía un anuncio a todos los suscritos; por defecto, las novedades de la tarjeta compartible. Body opcional para personalizar título/texto/destino.
+  - **Prueba** (8.3): `POST /api/notifications/test` envía un push al usuario autenticado para verificar la activación.
 
 ---
 
