@@ -7,6 +7,7 @@ import {
   type MatchCardPrediction,
 } from "@/components/MatchCard";
 import { AD_SLOTS } from "@/lib/ads/config";
+import { HowToPlay } from "@/components/HowToPlay";
 import { PushOptIn } from "@/components/PushOptIn";
 import { UpcomingMatches } from "@/components/UpcomingMatches";
 import {
@@ -109,6 +110,8 @@ export default async function Home() {
           {dayLabel(today)}
         </span>
       </div>
+
+      <HowToPlay />
 
       {user && matches.length > 0 && (
         <DayProgress

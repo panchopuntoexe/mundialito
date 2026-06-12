@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { SignOutButton } from "@/components/SignOutButton";
@@ -6,7 +7,9 @@ import {
   ACHIEVEMENT_DEFS,
   type AchievementType,
 } from "@/lib/scoring/achievements";
+import { levelForPoints, nextLevel } from "@/lib/scoring/levels";
 import type { WrappedPhase, WrappedStats } from "@/lib/scoring/wrappedStats";
+import { getServerProfile } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/server";
 import { wrappedPhaseLabel } from "@/lib/wrapped/phases";
 
@@ -27,16 +30,38 @@ export default async function EstadisticasPage() {
     redirect("/login");
   }
 
-  const [{ data: cards }, { data: earnedRows }] = await Promise.all([
-    supabase
-      .from("wrapped_cards")
-      .select("id, phase, image_url, stats_json")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false }),
-    supabase.from("achievements").select("type").eq("user_id", user.id),
-  ]);
+  const [profile, { data: cards }, { data: earnedRows }, { data: accuracyRow }, { data: streakRow }] =
+    await Promise.all([
+      getServerProfile(),
+      supabase
+        .from("wrapped_cards")
+        .select("id, phase, image_url, stats_json")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }),
+      supabase.from("achievements").select("type").eq("user_id", user.id),
+      supabase
+        .from("user_accuracy")
+        .select("accuracy")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("streaks")
+        .select("max_streak")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ]);
 
   const earned = (earnedRows ?? []).map((r) => r.type as AchievementType);
+
+  const points = profile?.total_points ?? 0;
+  const level = levelForPoints(points);
+  const next = nextLevel(points);
+  // Progreso dentro del nivel actual hacia el siguiente (0–100).
+  const levelPct = next
+    ? Math.round(
+        ((points - level.minPoints) / (next.minPoints - level.minPoints)) * 100,
+      )
+    : 100;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
@@ -46,6 +71,50 @@ export default async function EstadisticasPage() {
           Tus tarjetas de cada fase del Mundial. Compartilas y sumá amigos.
         </p>
       </header>
+
+      {/* Stats propios siempre visibles (rediseño de usabilidad): antes esta
+          pantalla quedaba vacía hasta la primera tarjeta Wrapped y los números
+          del usuario no se veían en ningún lado. */}
+      <section className="flex flex-col gap-2">
+        <div className="grid grid-cols-3 gap-2">
+          <Stat value={`${points}`} label="Puntos" />
+          <Stat value={`${accuracyRow?.accuracy ?? 0}%`} label="Precisión" />
+          <Stat value={`${streakRow?.max_streak ?? 0}`} label="Racha máx." />
+        </div>
+        <div className="rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="flex items-center justify-between gap-2 text-xs">
+            <span style={{ color: level.color }} className="font-semibold">
+              {level.emoji} {level.name}
+            </span>
+            <span className="text-foreground-muted">
+              {next
+                ? `${next.minPoints - points} pts para ${next.emoji} ${next.name}`
+                : "Nivel máximo"}
+            </span>
+          </div>
+          <div
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={levelPct}
+            aria-label="Progreso al siguiente nivel"
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-muted"
+          >
+            <div
+              className="h-full rounded-full bg-brand/70"
+              style={{ width: `${levelPct}%` }}
+            />
+          </div>
+        </div>
+        {profile && (
+          <Link
+            href={`/u/${encodeURIComponent(profile.username)}`}
+            className="self-start py-1 text-xs font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
+          >
+            Ver tu perfil público →
+          </Link>
+        )}
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-bold tracking-tight">
@@ -98,5 +167,16 @@ export default async function EstadisticasPage() {
         <SignOutButton isAnonymous={user.is_anonymous ?? false} showLabel />
       </section>
     </main>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5 rounded-xl border border-border bg-surface p-3">
+      <span className="text-lg font-bold tabular-nums">{value}</span>
+      <span className="text-[11px] uppercase tracking-wide text-foreground-muted">
+        {label}
+      </span>
+    </div>
   );
 }
