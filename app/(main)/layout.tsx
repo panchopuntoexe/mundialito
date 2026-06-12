@@ -13,6 +13,11 @@ import { getServerProfile, getServerUser } from "@/lib/supabase/auth";
  *  - Visitante SIN sesión (solo llega a las rutas públicas /ranking y /u, el
  *    proxy bloquea el resto): header con CTA "Jugar" en vez de perfil/salir.
  *  - Con perfil: header con nivel, username y cerrar sesión.
+ *  - Invitado (sesión anónima): las acciones "Guardar cuenta" y "Salir" van en
+ *    una barra propia bajo el header — en celular no caben en la misma fila
+ *    que el logo + nivel + username, y quedaban aplastadas o fuera de vista.
+ *    "Salir" cierra la sesión y vuelve a /login (con sesión activa el proxy
+ *    redirige /login → /, así que esta es la única vía de regreso al login).
  */
 export default async function MainLayout({
   children,
@@ -37,20 +42,19 @@ export default async function MainLayout({
           </span>
         </span>
         {profile && level ? (
-          <div className="flex items-center gap-3 text-sm">
-            <span className="flex items-center gap-1.5 text-foreground-muted">
+          <div className="flex min-w-0 items-center gap-3 text-sm">
+            <span className="flex min-w-0 items-center gap-1.5 text-foreground-muted">
               <span
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
                 style={{ color: level.color }}
                 title={`Nivel: ${level.name} · ${profile.total_points} pts`}
               >
                 <span aria-hidden>{level.emoji}</span>
                 {level.name}
               </span>
-              @{profile.username}
+              <span className="truncate">@{profile.username}</span>
             </span>
-            {isAnonymous && <SaveAccountButton />}
-            <SignOutButton isAnonymous={isAnonymous} />
+            {!isAnonymous && <SignOutButton isAnonymous={false} />}
           </div>
         ) : (
           <Link
@@ -61,6 +65,17 @@ export default async function MainLayout({
           </Link>
         )}
       </header>
+      {profile && isAnonymous && (
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border bg-brand/5 px-4 py-2 text-xs">
+          <span className="text-foreground-muted">
+            Estás jugando como invitado
+          </span>
+          <span className="flex items-center gap-2">
+            <SaveAccountButton />
+            <SignOutButton isAnonymous showLabel />
+          </span>
+        </div>
+      )}
       <nav className="flex items-center gap-1 border-b border-border px-4 py-2 text-sm">
         <Link
           href="/"

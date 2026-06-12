@@ -5,9 +5,16 @@ import { signOut } from "@/app/(auth)/actions";
 /**
  * Botón de cerrar sesión del header. Para invitados (sesión anónima) pide
  * confirmación antes del POST: salir sin guardar la cuenta pierde el progreso
- * para siempre (la sesión anónima no se puede recuperar).
+ * para siempre (la sesión anónima no se puede recuperar). Con `showLabel`
+ * muestra el texto "Salir" junto al ícono (usado en la barra de invitado).
  */
-export function SignOutButton({ isAnonymous }: { isAnonymous: boolean }) {
+export function SignOutButton({
+  isAnonymous,
+  showLabel = false,
+}: {
+  isAnonymous: boolean;
+  showLabel?: boolean;
+}) {
   return (
     <form
       action={signOut}
@@ -26,7 +33,11 @@ export function SignOutButton({ isAnonymous }: { isAnonymous: boolean }) {
         type="submit"
         aria-label="Salir"
         title={isAnonymous ? "Salir (perdés tu progreso)" : "Salir"}
-        className="rounded-md border border-border p-1.5 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+        className={
+          showLabel
+            ? "flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+            : "rounded-md border border-border p-1.5 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+        }
       >
         <svg
           width="16"
@@ -43,6 +54,7 @@ export function SignOutButton({ isAnonymous }: { isAnonymous: boolean }) {
           <polyline points="16 17 21 12 16 7" />
           <line x1="21" y1="12" x2="9" y2="12" />
         </svg>
+        {showLabel && <span>Salir</span>}
       </button>
     </form>
   );
