@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import { ShareButtons } from "@/components/ShareButtons";
 import { WrappedCard } from "@/components/WrappedCard";
 import { wrappedPhaseLabel } from "@/lib/wrapped/phases";
-import { SAMPLE_MATCH_RESULT, SAMPLE_WRAPPED_STATS } from "@/lib/wrapped/samples";
+import {
+  SAMPLE_LIVE_STATS,
+  SAMPLE_MATCH_RESULT,
+  SAMPLE_WRAPPED_STATS,
+} from "@/lib/wrapped/samples";
 
 /**
  * Preview dev del Wrapped con datos mock (sin login ni DB).
@@ -23,6 +27,9 @@ export default function WrappedPreviewPage() {
   const match = SAMPLE_MATCH_RESULT;
   const matchImage = "/api/matches/result-image?preview=1";
   const matchText = `Mi resultado en Mundialito 2026: ${match.homeTeam} ${match.scoreHome}-${match.scoreAway} ${match.awayTeam} — +${match.pointsEarned} pts ⚽`;
+  const live = SAMPLE_LIVE_STATS;
+  const liveImage = "/api/wrapped/live-image?preview=1";
+  const liveText = `Llevo ${live.totalPoints} pts y ${live.accuracy}% de aciertos en Mundialito 2026 ⚽ ¿Me ganás?`;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
@@ -66,6 +73,27 @@ export default function WrappedPreviewPage() {
             fallbackPath={matchImage}
             text={matchText}
             downloadName="resultado-preview"
+          />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-bold tracking-tight">
+          Tarjeta de stats en vivo
+        </h2>
+        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={liveImage}
+            alt="Tarjeta de stats en vivo — preview"
+            className="w-full rounded-lg"
+            loading="lazy"
+          />
+          <ShareButtons
+            imageUrl={null}
+            fallbackPath={liveImage}
+            text={liveText}
+            downloadName="stats-preview"
           />
         </div>
       </section>

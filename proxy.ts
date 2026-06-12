@@ -25,6 +25,7 @@ const PUBLIC_PATHS = [
   "/login",
   "/callback",
   "/api/wrapped/image",
+  "/api/wrapped/live-image",
   "/api/matches/result-image",
   // Liveness check (10.3): la apunta un monitor externo, sin sesión.
   "/api/health",

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SaveAccountButton } from "@/components/SaveAccountButton";
 import { toTournamentDay } from "@/lib/scoring/streaks";
 
@@ -10,8 +11,9 @@ import { toTournamentDay } from "@/lib/scoring/streaks";
  *
  * Escucha el evento global `mundialito:day-complete` que dispara <PredictionForm/>
  * cuando el endpoint informa `completed_today` (todos los partidos abiertos del día
- * quedaron pronosticados). Lanza confeti y abre una hoja con la racha y un atajo a
- * Estadísticas para compartir.
+ * quedaron pronosticados). Lanza confeti y abre una hoja con la racha, la tarjeta
+ * de stats en vivo lista para compartir (el momento de máxima emoción) y un atajo
+ * a Estadísticas.
  *
  * Dedupe POR DÍA con localStorage: editar un pronóstico ya completo, recargar o
  * volver a la pantalla no re-dispara el confeti. La clave usa el "día" en la TZ del
@@ -26,9 +28,12 @@ interface DayCompleteDetail {
 
 export function DayCompleteCelebration({
   isAnonymous = false,
+  userId = null,
 }: {
   /** Invitado: el momento de máxima intención para ofrecer guardar la cuenta. */
   isAnonymous?: boolean;
+  /** Dueño de la tarjeta de stats en vivo; sin id se cae al share de solo texto. */
+  userId?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -82,6 +87,7 @@ export function DayCompleteCelebration({
 
   const shareText = `Pronostiqué los partidos de hoy en Mundialito 2026 — racha de ${streak} 🔥`;
 
+  /** Fallback sin `userId` (sin tarjeta): comparte solo texto + link. */
   async function handleShare() {
     const url = typeof window !== "undefined" ? window.location.origin : "";
     if (typeof navigator !== "undefined" && navigator.share) {
@@ -110,7 +116,7 @@ export function DayCompleteCelebration({
       onClick={() => setOpen(false)}
     >
       <div
-        className="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 text-center"
+        className="relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -139,6 +145,14 @@ export function DayCompleteCelebration({
           .
         </p>
 
+        {/* La tarjeta de stats en vivo, lista para compartir en el pico de
+            emoción del día. ShareButtons manda la IMAGEN (no solo texto). */}
+        {userId && (
+          <div className="mt-5 text-left">
+            <LiveStatsCard userId={userId} text={shareText} />
+          </div>
+        )}
+
         <div className="mt-5 flex flex-col gap-2">
           <Link
             href="/estadisticas"
@@ -147,13 +161,15 @@ export function DayCompleteCelebration({
           >
             Ver mis estadísticas
           </Link>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="rounded-lg border border-border bg-surface-muted px-4 py-2.5 text-sm font-medium transition hover:bg-border"
-          >
-            {copied ? "¡Link copiado!" : "Compartir e invitar amigos"}
-          </button>
+          {!userId && (
+            <button
+              type="button"
+              onClick={handleShare}
+              className="rounded-lg border border-border bg-surface-muted px-4 py-2.5 text-sm font-medium transition hover:bg-border"
+            >
+              {copied ? "¡Link copiado!" : "Compartir e invitar amigos"}
+            </button>
+          )}
         </div>
 
         {isAnonymous && (

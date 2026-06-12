@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
+import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SignOutButton } from "@/components/SignOutButton";
 import { WrappedCard } from "@/components/WrappedCard";
 import {
@@ -116,6 +117,19 @@ export default async function EstadisticasPage() {
         )}
       </section>
 
+      {/* Tarjeta de stats en vivo: compartible SIEMPRE, sin esperar al cierre
+          de fase (las Wrapped de abajo recién llegan con cada macro-ronda). */}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-bold tracking-tight">Tu tarjeta en vivo</h2>
+        <p className="text-xs text-foreground-muted">
+          Tus stats al día de hoy, lista para compartir.
+        </p>
+        <LiveStatsCard
+          userId={user.id}
+          text={`Llevo ${points} pts y ${accuracyRow?.accuracy ?? 0}% de aciertos en Mundialito 2026 ⚽ ¿Me ganás?`}
+        />
+      </section>
+
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-bold tracking-tight">
           Logros{" "}
@@ -128,9 +142,9 @@ export default async function EstadisticasPage() {
 
       {!cards || cards.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-          Tu primera tarjeta llega al cerrar la fase de grupos (27 de junio).
-          Mientras tanto, pronosticá los partidos de cada día para sumar
-          puntos. 🎁
+          Tu primera tarjeta de fase llega al cerrar la fase de grupos (27 de
+          junio). Mientras tanto, compartí tu tarjeta en vivo y pronosticá los
+          partidos de cada día para sumar puntos. 🎁
         </p>
       ) : (
         <ul className="flex flex-col gap-6">

@@ -7,6 +7,7 @@
  * `/wrapped-preview`) sin arrastrar el runtime de generación de imágenes.
  */
 import type { WrappedStats } from "@/lib/scoring/wrappedStats";
+import type { LiveStatsCardData } from "./liveStatsCard";
 import type { MatchResultCardData } from "./matchCard";
 
 /** Stats de muestra para previsualizar el diseño del Wrapped (`?preview=1`). */
@@ -25,6 +26,19 @@ export const SAMPLE_WRAPPED_STATS: WrappedStats = {
   },
   achievements: ["first_win", "sharpshooter", "streak_3"],
   levelKey: "crack",
+};
+
+/** Datos de muestra para previsualizar la tarjeta de stats en vivo (`?preview=1`). */
+export const SAMPLE_LIVE_STATS: LiveStatsCardData = {
+  username: "tu_usuario",
+  totalPoints: 145,
+  levelKey: "crack",
+  accuracy: 67,
+  correctPredictions: 8,
+  totalPredictions: 12,
+  currentStreak: 4,
+  rank: 14,
+  rankTotal: 230,
 };
 
 /** Datos de muestra para previsualizar la mini-tarjeta de resultado (`?preview=1`). */
