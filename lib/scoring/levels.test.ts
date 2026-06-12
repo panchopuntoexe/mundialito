@@ -8,30 +8,33 @@ describe("levelForPoints", () => {
   });
 
   it("Titular a partir de 100", () => {
-    expect(levelForPoints(100).key).toBe("titular");
-    expect(levelForPoints(299).key).toBe("titular");
+    expect(levelForPoints(25).key).toBe("titular");
+    expect(levelForPoints(49).key).toBe("titular");
   });
 
   it("Crack a partir de 300", () => {
-    expect(levelForPoints(300).key).toBe("crack");
-    expect(levelForPoints(699).key).toBe("crack");
+    expect(levelForPoints(50).key).toBe("crack");
+    expect(levelForPoints(149).key).toBe("leyenda");
   });
 
   it("Leyenda a partir de 700 (y se mantiene en el máximo)", () => {
-    expect(levelForPoints(700).key).toBe("leyenda");
-    expect(levelForPoints(99999).key).toBe("leyenda");
+    expect(levelForPoints(100).key).toBe("leyenda");
+    expect(levelForPoints(199).key).toBe("campeon");
   });
 });
 
 describe("nextLevel", () => {
   it("devuelve el siguiente nivel por alcanzar", () => {
     expect(nextLevel(0)?.key).toBe("titular");
-    expect(nextLevel(150)?.key).toBe("crack");
-    expect(nextLevel(699)?.key).toBe("leyenda");
+    expect(nextLevel(24)?.key).toBe("titular");
+    expect(nextLevel(50)?.key).toBe("leyenda");
+    expect(nextLevel(99)?.key).toBe("leyenda");
+    expect(nextLevel(150)?.key).toBe("cesped");
+    expect(nextLevel(199)?.key).toBe("cesped");
   });
 
   it("devuelve null en el nivel máximo", () => {
-    expect(nextLevel(700)).toBeNull();
+    expect(nextLevel(200)).toBeNull();
     expect(nextLevel(5000)).toBeNull();
   });
 });

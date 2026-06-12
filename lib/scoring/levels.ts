@@ -9,7 +9,7 @@
  * por `key`): acá solo datos serializables. Sin imports de env/red/DB: testeable.
  */
 
-export type LevelKey = "suplente" | "titular" | "crack" | "leyenda";
+export type LevelKey = "suplente" | "titular" | "crack" | "leyenda" | "campeon" | "cesped";
 
 export interface Level {
   key: LevelKey;
@@ -24,9 +24,12 @@ export interface Level {
 /** Niveles ordenados por `minPoints` ascendente. El primero arranca en 0. */
 export const LEVELS: readonly Level[] = [
   { key: "suplente", name: "Suplente", color: "#a1a1aa", minPoints: 0 },
-  { key: "titular", name: "Titular", color: "#22c55e", minPoints: 100 },
-  { key: "crack", name: "Crack", color: "#f59e0b", minPoints: 300 },
-  { key: "leyenda", name: "Leyenda", color: "#eab308", minPoints: 700 },
+  { key: "titular", name: "Titular", color: "#22c55e", minPoints: 25 },
+  { key: "crack", name: "Crack", color: "#f59e0b", minPoints: 50 },
+  { key: "leyenda", name: "Leyenda", color: "#eab308", minPoints: 100 },
+  { key: "campeon", name: "Campeón", color: "#0ea5e9", minPoints: 150 },
+  { key: "cesped", name: "Stop", color: "#ef4444", minPoints: 200 },
+
 ] as const;
 
 /** El nivel correspondiente a una cantidad de puntos (el mayor `minPoints` ≤ points). */

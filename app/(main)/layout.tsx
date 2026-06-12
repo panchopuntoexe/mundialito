@@ -16,7 +16,7 @@ import { createClient } from "@/lib/supabase/server";
  *    public.users) → /onboarding.
  *  - Visitante SIN sesión (solo llega a las rutas públicas /ranking y /u, el
  *    proxy bloquea el resto): header con CTA "Jugar" en vez de perfil.
- *  - Con perfil: header compacto con racha, nivel y username. La navegación
+ *  - Con perfil: header compacto con racha, nivel, username y puntos. La navegación
  *    vive en <BottomNav/> (fija abajo, marca la tab activa); "Salir" se movió a
  *    Estadísticas → Cuenta para descomprimir el header.
  *  - Invitado (sesión anónima): barra fina bajo el header con "Guardar cuenta".
@@ -77,6 +77,9 @@ export default async function MainLayout({
               {level.name}
             </span>
             <span className="truncate">@{profile.username}</span>
+            <span className="shrink-0 text-xs font-semibold tabular-nums text-foreground">
+              {profile.total_points} pts
+            </span>
           </span>
         ) : (
           <Link

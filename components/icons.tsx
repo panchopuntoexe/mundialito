@@ -12,6 +12,7 @@ import {
   FaPencil,
   FaShirt,
   FaStar,
+  FaStopwatch,
 } from "react-icons/fa6";
 import type { AchievementType } from "@/lib/scoring/achievements";
 import type { LevelKey } from "@/lib/scoring/levels";
@@ -28,6 +29,8 @@ const LEVEL_ICONS: Record<LevelKey, IconType> = {
   titular: FaShirt,
   crack: FaStar,
   leyenda: FaCrown,
+  campeon: FaMedal,
+  cesped: FaStopwatch,
 };
 
 const BADGE_ICONS: Record<AchievementType, IconType> = {

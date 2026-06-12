@@ -21,7 +21,7 @@ describe("toLiveStatsCardData", () => {
     expect(toLiveStatsCardData(rows())).toEqual({
       username: "franchu",
       totalPoints: 145,
-      levelKey: "titular", // 145 pts: Titular (100) sin llegar a Crack (300).
+      levelKey: "leyenda", // 145 pts: Crack (50) sin llegar a Campeón (150).
       accuracy: 67,
       correctPredictions: 8,
       totalPredictions: 12,
@@ -52,8 +52,8 @@ describe("toLiveStatsCardData", () => {
     });
   });
 
-  it("deriva el nivel de los puntos totales (700 → Leyenda)", () => {
-    expect(toLiveStatsCardData(rows({ totalPoints: 700 })).levelKey).toBe(
+  it("deriva el nivel de los puntos totales (100 → Leyenda)", () => {
+    expect(toLiveStatsCardData(rows({ totalPoints: 100 })).levelKey).toBe(
       "leyenda",
     );
   });
