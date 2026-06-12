@@ -61,7 +61,7 @@ export function Leaderboard({
           <li key={entry.user_id}>
             <Link
               href={`/u/${encodeURIComponent(entry.username)}`}
-              className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition ${
+              className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition ${
                 isMe
                   ? "border-brand bg-brand/10 hover:bg-brand/15"
                   : "border-border bg-surface hover:border-foreground-muted/40"

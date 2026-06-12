@@ -40,11 +40,16 @@ export function DayCompleteCelebration() {
     setStreak(detail.currentStreak);
     setOpen(true);
 
-    try {
-      const confetti = (await import("canvas-confetti")).default;
-      confetti({ particleCount: 140, spread: 70, origin: { y: 0.6 } });
-    } catch {
-      // El confeti es decorativo: si falla la carga, la hoja igual se muestra.
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (!reducedMotion) {
+      try {
+        const confetti = (await import("canvas-confetti")).default;
+        confetti({ particleCount: 140, spread: 70, origin: { y: 0.6 } });
+      } catch {
+        // El confeti es decorativo: si falla la carga, la hoja igual se muestra.
+      }
     }
   }, []);
 

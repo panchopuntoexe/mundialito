@@ -119,6 +119,18 @@ body {
   }
 }
 
+/* Accesibilidad: si el usuario pide menos movimiento, apagamos las
+   animaciones decorativas (spinner, parpadeo de Samy, pulso "en vivo").
+   El confeti se saltea en JS con la misma media query. */
+@media (prefers-reduced-motion: reduce) {
+  .loader:before,
+  .loader:after,
+  .samy-eye,
+  .animate-pulse {
+    animation: none;
+  }
+}
+
 @keyframes loading-step {
   0% {
     box-shadow:

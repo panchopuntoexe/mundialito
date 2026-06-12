@@ -34,7 +34,7 @@ const GOALS_LABELS: Record<GoalsRange, string> = {
 
 const GOALS_EXPLANATION =
   "Suma los goles de local y visitante durante el partido (90 min + alargue). " +
-  "Si aciertas quién gana y el rango de goles, sumas 15 pts extra.Los penales no cuentan. ";
+  "Si aciertas quién gana y el rango de goles, sumas 15 pts extra. Los penales no cuentan.";
 
 export function PredictionForm({
   matchId,
@@ -201,7 +201,7 @@ export function PredictionForm({
               <button
                 type="button"
                 onClick={openEdit}
-                className="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+                className="min-h-11 rounded-md border border-border px-3 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
               >
                 Editar
               </button>

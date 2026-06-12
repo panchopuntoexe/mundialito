@@ -35,8 +35,8 @@ export function SignOutButton({
         title={isAnonymous ? "Salir (perdés tu progreso)" : "Salir"}
         className={
           showLabel
-            ? "flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
-            : "rounded-md border border-border p-1.5 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+            ? "flex min-h-11 items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
+            : "flex h-11 w-11 items-center justify-center rounded-md border border-border text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
         }
       >
         <svg
