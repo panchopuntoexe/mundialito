@@ -301,6 +301,36 @@ export interface Database {
           },
         ];
       };
+      // Registro de pushes enviados (migración 0014). Garantiza "como máximo
+      // una vez" por (user, kind, dedupe_key) vía unique; server-only.
+      push_notification_log: {
+        Row: {
+          id: string;
+          user_id: string;
+          kind: string;
+          dedupe_key: string;
+          sent_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          kind: string;
+          dedupe_key: string;
+          sent_at?: string;
+        };
+        Update: {
+          kind?: string;
+          dedupe_key?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "push_notification_log_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       push_subscriptions: {
         Row: {
           id: string;
