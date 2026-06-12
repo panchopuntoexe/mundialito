@@ -25,8 +25,8 @@ export function SaveAccountButton() {
     if (error) {
       setMessage(
         /already linked|identity_already_exists/i.test(error.message)
-          ? "Esa cuenta de Google ya tiene un perfil en Mundialito. Cerrá sesión y entrá con Google."
-          : "No pudimos vincular tu cuenta. Probá de nuevo.",
+          ? "Esa cuenta de Google ya tiene un perfil en Mundialito. Cierra sesión y entra con Google."
+          : "No pudimos vincular tu cuenta. Intenta de nuevo.",
       );
       setBusy(false);
       return;
@@ -44,7 +44,7 @@ export function SaveAccountButton() {
         type="button"
         onClick={save}
         disabled={busy}
-        title="Guardá tu progreso con Google para no perderlo"
+        title="Guarda tu progreso con Google para no perderlo"
         className="rounded-full border border-brand/50 bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand transition hover:bg-brand/20 disabled:opacity-50"
       >
         {busy ? "Vinculando…" : "Guardar cuenta"}

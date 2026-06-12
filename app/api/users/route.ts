@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (existingProfile) {
     return NextResponse.json(
-      { error: "Ya tenés un perfil." },
+      { error: "Ya tienes un perfil." },
       { status: 409 },
     );
   }
@@ -149,7 +149,7 @@ export async function PATCH(request: Request) {
   }
   if (user.is_anonymous) {
     return NextResponse.json(
-      { error: "Primero guardá tu cuenta para poder cambiar tu nombre." },
+      { error: "Primero guarda tu cuenta para poder cambiar tu nombre." },
       { status: 403 },
     );
   }
@@ -178,7 +178,7 @@ export async function PATCH(request: Request) {
     .eq("id", user.id)
     .maybeSingle();
   if (!profile) {
-    return NextResponse.json({ error: "No tenés perfil." }, { status: 404 });
+    return NextResponse.json({ error: "No tienes perfil." }, { status: 404 });
   }
   if (profile.username_changed_at) {
     return NextResponse.json(

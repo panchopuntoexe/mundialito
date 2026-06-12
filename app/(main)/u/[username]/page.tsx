@@ -61,7 +61,7 @@ export default async function PublicProfilePage({
         <h1 className="text-lg font-bold tracking-tight">
           @{profile.username}
           {isMe && (
-            <span className="ml-1.5 text-xs font-normal text-brand">· vos</span>
+            <span className="ml-1.5 text-xs font-normal text-brand">· tú</span>
           )}
         </h1>
         <span

@@ -61,7 +61,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Telonero",
     icon: "🎬",
     description: "Pronosticaste el primer partido del torneo.",
-    funFact: "Llegaste antes de que corten el pasto. ¿Tenés contactos en la organización?",
+    funFact: "Llegaste antes de que corten el pasto. ¿Tienes contactos en la organización?",
     earned: (s) => s.predictedTournamentOpener,
   },
   {
@@ -69,7 +69,7 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Primer acierto",
     icon: "🎯",
     description: "Acertaste el resultado de un partido.",
-    funFact: "Uno de uno: estadísticamente sos infalible. No lo arruines - _ -",
+    funFact: "Uno de uno: estadísticamente eres infalible. No lo arruines - _ -",
     earned: (s) => s.correctPredictions >= 1,
   },
   {

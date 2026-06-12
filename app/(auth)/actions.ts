@@ -57,7 +57,7 @@ export type EmailSignInState =
 
 /**
  * Envía un magic link al email. Usado con `useActionState` desde el formulario.
- * No revela si el email existe: siempre responde "revisá tu correo".
+ * No revela si el email existe: siempre responde "revisa tu correo".
  */
 export async function signInWithEmail(
   _prevState: EmailSignInState,
@@ -68,7 +68,7 @@ export async function signInWithEmail(
     .toLowerCase();
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { status: "error", message: "Ingresá un email válido." };
+    return { status: "error", message: "Ingresa un email válido." };
   }
 
   const supabase = await createClient();
@@ -107,7 +107,7 @@ export async function signInAsGuest(nextPath?: unknown) {
   const { allowed } = await rateLimit(`guest:signup:${ip}`, 10, 3600);
   if (!allowed) {
     redirect(
-      `/login?error=${encodeURIComponent("Demasiados intentos. Probá de nuevo en un rato.")}`,
+      `/login?error=${encodeURIComponent("Demasiados intentos. Intenta de nuevo en un rato.")}`,
     );
   }
 
@@ -115,7 +115,7 @@ export async function signInAsGuest(nextPath?: unknown) {
   const { data, error } = await supabase.auth.signInAnonymously();
   if (error || !data.user) {
     redirect(
-      `/login?error=${encodeURIComponent("No pudimos crear tu sesión de invitado. Probá de nuevo.")}`,
+      `/login?error=${encodeURIComponent("No pudimos crear tu sesión de invitado. Intenta de nuevo.")}`,
     );
   }
 

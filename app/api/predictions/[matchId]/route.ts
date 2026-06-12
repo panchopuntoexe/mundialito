@@ -44,7 +44,7 @@ export async function GET(
   }
   if (!data) {
     return NextResponse.json(
-      { error: "No tenés un pronóstico para este partido." },
+      { error: "No tienes un pronóstico para este partido." },
       { status: 404 },
     );
   }

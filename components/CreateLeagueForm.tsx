@@ -18,7 +18,7 @@ export function CreateLeagueForm() {
     e.preventDefault();
     setError(null);
     if (!name.trim()) {
-      setError("Poné un nombre para la liga.");
+      setError("Ponle un nombre a la liga.");
       return;
     }
     setSubmitting(true);
@@ -38,7 +38,7 @@ export function CreateLeagueForm() {
       }
       setError(data.error ?? "No se pudo crear la liga.");
     } catch {
-      setError("Error de red. Probá de nuevo.");
+      setError("Error de red. Intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }

@@ -35,10 +35,10 @@ function metricLabel(metric: Metric, entry: LeaderboardEntry): string {
 }
 
 const EMPTY_HINT: Record<Metric, string> = {
-  points: "Todavía no hay puntos. Pronosticá los partidos del día para aparecer acá.",
+  points: "Todavía no hay puntos. Pronostica los partidos del día para aparecer aquí.",
   accuracy:
     "Todavía no hay suficientes pronósticos para rankear por precisión.",
-  streak: "Todavía no hay rachas. Pronosticá varios días seguidos para aparecer acá.",
+  streak: "Todavía no hay rachas. Pronostica varios días seguidos para aparecer aquí.",
 };
 
 export function RankingTabs({
@@ -134,7 +134,7 @@ export function RankingTabs({
                   </span>
                   <span className="min-w-0 flex-1 truncate font-medium">
                     @{entry.username}
-                    {isMe && <span className="ml-1.5 text-xs text-brand">· vos</span>}
+                    {isMe && <span className="ml-1.5 text-xs text-brand">· tú</span>}
                   </span>
                   <span className="shrink-0 font-semibold tabular-nums">
                     {metricLabel(metric, entry)}

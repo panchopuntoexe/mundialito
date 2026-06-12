@@ -8,9 +8,9 @@ import Link from "next/link";
 export function GuestCta() {
   return (
     <section className="flex flex-col items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 p-5 text-center">
-      <p className="text-sm font-semibold">¿Te animás a hacerlo mejor?</p>
+      <p className="text-sm font-semibold">¿Te animas a hacerlo mejor?</p>
       <p className="text-xs text-foreground-muted">
-        Pronosticá los partidos del Mundial 2026 y aparecé en este ranking. Sin
+        Pronostica los partidos del Mundial 2026 y aparece en este ranking. Sin
         registro.
       </p>
       <Link

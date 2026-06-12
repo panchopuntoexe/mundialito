@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   const limit = await rateLimit(`predictions:${user.id}`, 20, 60);
   if (!limit.allowed) {
     return NextResponse.json(
-      { error: "Demasiados pronósticos seguidos. Probá en unos segundos." },
+      { error: "Demasiados pronósticos seguidos. Intenta de nuevo en unos segundos." },
       { status: 429, headers: { "Retry-After": String(limit.resetSeconds) } },
     );
   }
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!profile) {
     return NextResponse.json(
-      { error: "Completá el onboarding antes de pronosticar." },
+      { error: "Completa el onboarding antes de pronosticar." },
       { status: 403 },
     );
   }

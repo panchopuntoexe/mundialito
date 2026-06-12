@@ -13,7 +13,7 @@ import { z } from "zod";
 export const leagueNameSchema = z
   .string()
   .trim()
-  .min(1, "Poné un nombre para la liga.")
+  .min(1, "Ponle un nombre a la liga.")
   .max(40, "El nombre no puede superar los 40 caracteres.");
 
 export const createLeagueSchema = z.object({

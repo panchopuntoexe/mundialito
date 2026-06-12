@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const limit = await rateLimit(`leagues:create:${user.id}`, 5, 300);
   if (!limit.allowed) {
     return NextResponse.json(
-      { error: "Creaste demasiadas ligas seguidas. Probá en unos minutos." },
+      { error: "Creaste demasiadas ligas seguidas. Intenta de nuevo en unos minutos." },
       { status: 429, headers: { "Retry-After": String(limit.resetSeconds) } },
     );
   }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!profile) {
     return NextResponse.json(
-      { error: "Completá el onboarding antes de crear una liga." },
+      { error: "Completa el onboarding antes de crear una liga." },
       { status: 403 },
     );
   }
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
   if (!league) {
     console.error("[api/leagues] no se obtuvo invite_code único tras reintentos.");
     return NextResponse.json(
-      { error: "No se pudo generar un código único. Probá de nuevo." },
+      { error: "No se pudo generar un código único. Intenta de nuevo." },
       { status: 500 },
     );
   }

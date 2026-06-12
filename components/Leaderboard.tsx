@@ -47,7 +47,7 @@ export function Leaderboard({
   if (entries.length === 0) {
     return (
       <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-        Todavía no hay puntos. Pronosticá los partidos del día para aparecer acá.
+        Todavía no hay puntos. Pronostica los partidos del día para aparecer aquí.
       </p>
     );
   }
@@ -80,7 +80,7 @@ export function Leaderboard({
               <span className="min-w-0 flex-1 truncate font-medium">
                 @{entry.username}
                 {isMe && (
-                  <span className="ml-1.5 text-xs text-brand">· vos</span>
+                  <span className="ml-1.5 text-xs text-brand">· tú</span>
                 )}
               </span>
               <span className="shrink-0 tabular-nums font-semibold">

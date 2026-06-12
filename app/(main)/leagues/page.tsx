@@ -55,7 +55,7 @@ export default async function LeaguesPage() {
         <h2 className="text-sm font-bold tracking-tight">Mis ligas</h2>
         {myLeagues.length === 0 ? (
           <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-            Todavía no estás en ninguna liga. Creá una y compartí el código con tus
+            Todavía no estás en ninguna liga. Crea una y comparte el código con tus
             amigos. 🏆
           </p>
         ) : (

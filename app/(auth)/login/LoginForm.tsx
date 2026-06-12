@@ -34,7 +34,7 @@ function SubmitButton({
  * Formulario de entrada (tarea 2.1 + modo invitado). Tres métodos:
  *  - Invitado (primario): action `signInAsGuest` — anonymous sign-in, cero forms.
  *  - Google (OAuth): form que invoca la action `signInWithGoogle` (redirige).
- *  - Email (magic link): `useActionState` muestra "revisá tu correo" al enviar.
+ *  - Email (magic link): `useActionState` muestra "revisa tu correo" al enviar.
  */
 export function LoginForm({ error }: { error?: string }) {
   const [emailState, emailAction] = useActionState(
@@ -45,10 +45,10 @@ export function LoginForm({ error }: { error?: string }) {
   if (emailState.status === "sent") {
     return (
       <div className="rounded-lg border border-border bg-surface p-4 text-center text-sm">
-        <p className="font-medium text-foreground">Revisá tu correo 📬</p>
+        <p className="font-medium text-foreground">Revisa tu correo 📬</p>
         <p className="mt-1 text-foreground-muted">
           Te enviamos un enlace de acceso a{" "}
-          <span className="text-foreground">{emailState.email}</span>. Abrilo
+          <span className="text-foreground">{emailState.email}</span>. Ábrelo
           para entrar.
         </p>
       </div>
@@ -69,12 +69,12 @@ export function LoginForm({ error }: { error?: string }) {
       <form action={signInAsGuest} className="flex flex-col gap-2">
         <SubmitButton pendingLabel="Entrando…">⚽ Jugar sin cuenta</SubmitButton>
         <p className="text-center text-xs text-foreground-muted">
-          Sin registro. Después podés guardar tu progreso con Google.
+          Sin registro. Después puedes guardar tu progreso con Google.
         </p>
       </form>
 
       <div className="flex items-center gap-3 text-xs text-foreground-muted">
-        <span className="h-px flex-1 bg-border" />o creá tu cuenta
+        <span className="h-px flex-1 bg-border" />o crea tu cuenta
         <span className="h-px flex-1 bg-border" />
       </div>
 

@@ -18,18 +18,18 @@ const STORAGE_KEY = "mundialito:howto-seen";
 const STEPS = [
   {
     icon: "⚽",
-    title: "Pronosticá los partidos del día",
-    body: "Antes de cada kickoff, tocá quién gana. Un toque y queda guardado (podés cambiarlo hasta que empiece). Acertar el resultado suma 10 pts.",
+    title: "Pronostica los partidos del día",
+    body: "Antes de cada kickoff, toca quién gana. Un toque y queda guardado (puedes cambiarlo hasta que empiece). Acertar el resultado suma 10 pts.",
   },
   {
     icon: "💎",
-    title: "Sumá el bonus de goles",
-    body: "Si además pronosticás el rango de goles totales del partido y acertás las dos cosas, es PLENO: 25 pts. Los penales no cuentan.",
+    title: "Suma el bonus de goles",
+    body: "Si además pronosticas el rango de goles totales del partido y aciertas las dos cosas, es PLENO: 25 pts. Los penales no cuentan.",
   },
   {
     icon: "🔥",
     title: "Racha, niveles y amigos",
-    body: "Pronosticá TODOS los partidos del día y tu racha suma un día. Con puntos subís de nivel: 🪑 Suplente → 👕 Titular (100) → ⭐ Crack (300) → 👑 Leyenda (700). Competí en el ranking o creá una liga con amigos.",
+    body: "Pronostica TODOS los partidos del día y tu racha suma un día. Con puntos subes de nivel: 🪑 Suplente → 👕 Titular (100) → ⭐ Crack (300) → 👑 Leyenda (700). Compite en el ranking o crea una liga con amigos.",
   },
 ] as const;
 

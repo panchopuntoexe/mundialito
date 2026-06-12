@@ -89,7 +89,7 @@ export function ChangeUsernameForm({
       setError(data.error ?? "No se pudo cambiar el username.");
       if (res.status === 409) setCheck({ name: parsed.data, available: false });
     } catch {
-      setError("Error de red. Probá de nuevo.");
+      setError("Error de red. Intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }
@@ -98,7 +98,7 @@ export function ChangeUsernameForm({
   if (done) {
     return (
       <p className="rounded-lg border border-brand/40 bg-brand/10 px-3 py-2 text-xs text-brand">
-        ¡Listo! Ahora sos <span className="font-semibold">@{done}</span>.
+        ¡Listo! Ahora eres <span className="font-semibold">@{done}</span>.
       </p>
     );
   }
@@ -121,7 +121,7 @@ export function ChangeUsernameForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <p className="text-xs text-foreground-muted">
-        Elegí con cuidado: el nombre de usuario se puede cambiar{" "}
+        Elige con cuidado: el nombre de usuario se puede cambiar{" "}
         <span className="font-semibold text-foreground">una sola vez</span>.
       </p>
       <div className="flex items-center rounded-lg border border-border bg-surface-muted focus-within:border-brand">

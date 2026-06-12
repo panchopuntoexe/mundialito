@@ -57,7 +57,7 @@ export async function GET(
   }
   if (!membership) {
     return NextResponse.json(
-      { error: "No sos miembro de esta liga." },
+      { error: "No eres miembro de esta liga." },
       { status: 403 },
     );
   }

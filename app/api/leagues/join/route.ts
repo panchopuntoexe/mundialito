@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!profile) {
     return NextResponse.json(
-      { error: "Completá el onboarding antes de unirte a una liga." },
+      { error: "Completa el onboarding antes de unirte a una liga." },
       { status: 403 },
     );
   }

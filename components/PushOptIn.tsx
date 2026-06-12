@@ -24,13 +24,13 @@ const REASON_MESSAGES: Record<
   string
 > = {
   unsupported: "Tu navegador no soporta notificaciones push.",
-  denied: "Permiso denegado. Activá las notificaciones en la configuración del navegador.",
+  denied: "Permiso denegado. Activa las notificaciones en la configuración del navegador.",
   invalid_key:
-    "La clave de notificaciones no es válida. Regenerala con npm run gen:vapid y actualizá las variables en Vercel.",
+    "La clave de notificaciones no es válida. Regenérala con npm run gen:vapid y actualiza las variables en Vercel.",
   service_error:
-    "El navegador no pudo conectar con el servicio de push. Probá Chrome o Edge, desactivá bloqueadores, o revisá que las notificaciones estén permitidas en Windows.",
-  backend_error: "No se pudo guardar la suscripción. Probá de nuevo.",
-  sw_unavailable: "Necesitás HTTPS y la app instalada o recargada para activar notificaciones.",
+    "El navegador no pudo conectar con el servicio de push. Prueba Chrome o Edge, desactiva bloqueadores, o revisa que las notificaciones estén permitidas en Windows.",
+  backend_error: "No se pudo guardar la suscripción. Intenta de nuevo.",
+  sw_unavailable: "Necesitas HTTPS y la app instalada o recargada para activar notificaciones.",
 };
 
 export function PushOptIn() {
@@ -94,7 +94,7 @@ export function PushOptIn() {
         <div>
           <h2 className="text-sm font-semibold">Notificaciones</h2>
           <p className="text-xs text-foreground-muted">
-            Activá avisos del partido del día y cierre próximo.
+            Activa avisos del partido del día y cierre próximo.
           </p>
         </div>
         <button

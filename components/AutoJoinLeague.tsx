@@ -40,7 +40,7 @@ export function AutoJoinLeague({
         }
         setError(data.error ?? "No se pudo unir a la liga.");
       } catch {
-        setError("Error de red. Probá de nuevo.");
+        setError("Error de red. Intenta de nuevo.");
       }
     })();
   }, [code, router]);

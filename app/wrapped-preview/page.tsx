@@ -29,7 +29,7 @@ export default function WrappedPreviewPage() {
   const matchText = `Mi resultado en Mundialito 2026: ${match.homeTeam} ${match.scoreHome}-${match.scoreAway} ${match.awayTeam} — +${match.pointsEarned} pts ⚽`;
   const live = SAMPLE_LIVE_STATS;
   const liveImage = "/api/wrapped/live-image?preview=1";
-  const liveText = `Llevo ${live.totalPoints} pts y ${live.accuracy}% de aciertos en Mundialito 2026 ⚽ ¿Me ganás?`;
+  const liveText = `Llevo ${live.totalPoints} pts y ${live.accuracy}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">

@@ -70,7 +70,7 @@ export default async function EstadisticasPage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-bold tracking-tight">Tus estadísticas</h1>
         <p className="text-sm text-foreground-muted">
-          Tus tarjetas de cada fase del Mundial. Compartilas y sumá amigos.
+          Tus tarjetas de cada fase del Mundial. Compártelas y suma amigos.
         </p>
       </header>
 
@@ -127,7 +127,7 @@ export default async function EstadisticasPage() {
         </p>
         <LiveStatsCard
           userId={user.id}
-          text={`Llevo ${points} pts y ${accuracyRow?.accuracy ?? 0}% de aciertos en Mundialito 2026 ⚽ ¿Me ganás?`}
+          text={`Llevo ${points} pts y ${accuracyRow?.accuracy ?? 0}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`}
         />
       </section>
 
@@ -144,7 +144,7 @@ export default async function EstadisticasPage() {
       {!cards || cards.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
           Tu primera tarjeta de fase llega al cerrar la fase de grupos (27 de
-          junio). Mientras tanto, compartí tu tarjeta en vivo y pronosticá los
+          junio). Mientras tanto, comparte tu tarjeta en vivo y pronostica los
           partidos de cada día para sumar puntos. 🎁
         </p>
       ) : (
@@ -179,7 +179,7 @@ export default async function EstadisticasPage() {
             <h2 className="text-sm font-bold tracking-tight">Cuenta</h2>
             <p className="text-xs text-foreground-muted">
               {user.is_anonymous
-                ? "Jugando como invitado. Si salís sin guardar, perdés tu progreso."
+                ? "Jugando como invitado. Si sales sin guardar, pierdes tu progreso."
                 : `Sesión iniciada como @${profile?.username ?? ""}.`}
             </p>
           </div>

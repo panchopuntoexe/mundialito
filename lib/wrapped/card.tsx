@@ -222,7 +222,7 @@ export async function renderWrappedImage(params: {
                 {stats.epicMiss.matchLabel}
               </div>
               <div style={{ fontSize: 34, color: COLOR.muted, marginTop: 6 }}>
-                {`${stats.epicMiss.communityCorrectPct}% lo vio venir… menos vos`}
+                {`${stats.epicMiss.communityCorrectPct}% lo vio venir… menos tú`}
               </div>
             </div>
           ) : (

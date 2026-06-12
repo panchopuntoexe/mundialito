@@ -101,7 +101,7 @@ export default async function MainLayout({
         !profile.username_changed_at && (
           <div className="flex items-center justify-between gap-3 border-b border-border bg-brand/5 px-4 py-1.5 text-xs">
             <span className="truncate text-foreground-muted">
-              Cuenta guardada ✓ Todavía tenés un nombre de invitado
+              Cuenta guardada ✓ Todavía tienes un nombre de invitado
             </span>
             <Link
               href="/estadisticas#cuenta"

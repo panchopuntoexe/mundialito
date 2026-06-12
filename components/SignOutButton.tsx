@@ -22,7 +22,7 @@ export function SignOutButton({
         if (
           isAnonymous &&
           !window.confirm(
-            "Estás jugando como invitado: si salís, perdés tu progreso para siempre. ¿Salir igual?",
+            "Estás jugando como invitado: si sales, pierdes tu progreso para siempre. ¿Salir igual?",
           )
         ) {
           e.preventDefault();
@@ -32,7 +32,7 @@ export function SignOutButton({
       <button
         type="submit"
         aria-label="Salir"
-        title={isAnonymous ? "Salir (perdés tu progreso)" : "Salir"}
+        title={isAnonymous ? "Salir (pierdes tu progreso)" : "Salir"}
         className={
           showLabel
             ? "flex min-h-11 items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"

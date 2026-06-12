@@ -78,7 +78,7 @@ export default async function JoinLeaguePage({
           Te invitaron a la liga «{league.name}»
         </h1>
         <p className="text-sm text-foreground-muted">
-          Pronosticá los partidos del Mundial 2026, sumá puntos y competí con
+          Pronostica los partidos del Mundial 2026, suma puntos y compite con
           tus amigos.
         </p>
       </header>
@@ -94,19 +94,19 @@ export default async function JoinLeaguePage({
           ⚽ Unirme sin cuenta
         </button>
         <p className="text-center text-xs text-foreground-muted">
-          Sin registro. Después podés guardar tu progreso con Google.
+          Sin registro. Después puedes guardar tu progreso con Google.
         </p>
       </form>
 
       <p className="text-center text-xs text-foreground-muted">
-        ¿Ya tenés cuenta?{" "}
+        ¿Ya tienes cuenta?{" "}
         <Link
           href="/login"
           className="font-medium text-foreground underline-offset-2 hover:underline"
         >
-          Iniciá sesión
+          Inicia sesión
         </Link>{" "}
-        y unite con el código{" "}
+        y únete con el código{" "}
         <span className="font-semibold tabular-nums text-foreground">
           {code}
         </span>

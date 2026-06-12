@@ -18,7 +18,7 @@ export function JoinLeagueForm() {
     e.preventDefault();
     setError(null);
     if (!code.trim()) {
-      setError("Ingresá el código de invitación.");
+      setError("Ingresa el código de invitación.");
       return;
     }
     setSubmitting(true);
@@ -38,7 +38,7 @@ export function JoinLeagueForm() {
       }
       setError(data.error ?? "No se pudo unir a la liga.");
     } catch {
-      setError("Error de red. Probá de nuevo.");
+      setError("Error de red. Intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }

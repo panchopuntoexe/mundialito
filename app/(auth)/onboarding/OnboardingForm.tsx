@@ -88,7 +88,7 @@ export function OnboardingForm({
       setError(data.error ?? "No se pudo crear el perfil.");
       if (res.status === 409) setCheck({ name: parsed.data, available: false });
     } catch {
-      setError("Error de red. Probá de nuevo.");
+      setError("Error de red. Intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }

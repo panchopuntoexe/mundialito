@@ -177,7 +177,7 @@ export function PredictionForm({
       setResult(savedRef.current?.result_pred ?? null);
       setGoals(savedRef.current?.goals_range_pred ?? null);
       setStatus("idle");
-      setError("Error de red. Probá de nuevo.");
+      setError("Error de red. Intenta de nuevo.");
     }
   }
 
@@ -264,7 +264,7 @@ export function PredictionForm({
     <div className="mt-3 border-t border-border pt-3">
       <fieldset className="flex flex-col gap-1.5">
         <legend className="mb-1.5 flex w-full items-center justify-between text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
-          <span>¿Quién gana? · tocá y listo</span>
+          <span>¿Quién gana? · toca y listo</span>
           <span aria-live="polite" className="normal-case tracking-normal">
             {status === "saving" ? (
               <span className="text-foreground-muted">Guardando…</span>
@@ -338,7 +338,7 @@ export function PredictionForm({
             </div>
             {goals && !result && (
               <p className="text-[11px] text-foreground-muted">
-                Elegí quién gana y el bonus se guarda junto.
+                Elige quién gana y el bonus se guarda junto.
               </p>
             )}
             {goals && (

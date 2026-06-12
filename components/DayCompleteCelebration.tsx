@@ -175,7 +175,7 @@ export function DayCompleteCelebration({
         {isAnonymous && (
           <div className="mt-4 flex flex-col items-center gap-2 border-t border-border pt-4">
             <p className="text-xs text-foreground-muted">
-              Guardá tu progreso para no perder tu racha 🔥
+              Guarda tu progreso para no perder tu racha 🔥
             </p>
             <SaveAccountButton />
           </div>

@@ -35,7 +35,7 @@ export async function POST() {
 
     if (sent === 0) {
       return NextResponse.json(
-        { error: "No tenés dispositivos suscritos. Activá las notificaciones primero." },
+        { error: "No tienes dispositivos suscritos. Activa las notificaciones primero." },
         { status: 409 },
       );
     }

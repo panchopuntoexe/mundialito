@@ -18,7 +18,7 @@ export function InviteCodeCard({
 }) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `Unite a mi liga "${leagueName}" en Mundialito 2026 ⚽`;
+  const shareText = `Únete a mi liga "${leagueName}" en Mundialito 2026 ⚽`;
 
   function joinUrl(): string {
     return `${window.location.origin}/leagues/join?code=${encodeURIComponent(inviteCode)}`;

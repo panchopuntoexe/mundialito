@@ -4,7 +4,7 @@ import { getServerProfile, getServerUser } from "@/lib/supabase/auth";
 import { OnboardingForm } from "./OnboardingForm";
 
 export const metadata: Metadata = {
-  title: "Elegí tu username · Mundialito",
+  title: "Elige tu username · Mundialito",
 };
 
 /**
@@ -29,10 +29,10 @@ export default async function OnboardingPage() {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Elegí tu username</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Elige tu username</h1>
         <p className="text-balance text-sm text-foreground-muted">
           Así te van a ver tus amigos en los rankings y ligas. Después no se
-          puede cambiar fácil, pensalo bien.
+          puede cambiar fácil, piénsalo bien.
         </p>
       </header>
 

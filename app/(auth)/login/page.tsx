@@ -3,7 +3,7 @@ import { Samy } from "@/components/Samy";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
-  title: "Mundialito · Pronosticá el Mundial",
+  title: "Mundialito · Pronostica el Mundial",
 };
 
 /**
@@ -29,7 +29,7 @@ export default async function LoginPage({
           <h1 className="text-2xl font-bold tracking-tight">Mundialito</h1>
         </span>
         <p className="text-balance text-sm text-foreground-muted">
-          Pronosticá los partidos del Mundial 2026, sumá puntos y competí con
+          Pronostica los partidos del Mundial 2026, suma puntos y compite con
           tus amigos.
         </p>
       </header>
