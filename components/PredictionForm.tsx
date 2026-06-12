@@ -1,19 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GOALS_RANGE_VALUES } from "@/lib/validations/prediction";
 import type { GoalsRange, ResultPred } from "@/types/domain";
 
 /**
- * Formulario de pronóstico (tareas 4.4 y 4.5).
+ * Selector de pronóstico de UN TOQUE (rediseño de usabilidad; antes 4.4/4.5).
  *
- * 4.4 — selector de resultado (Local/Empate/Visitante; en knockout sin empate).
- * El rango de goles es opcional y va en una sección colapsable (bonus +15 pts).
- * 4.5 — tras confirmar (o tras el kickoff) el form se BLOQUEA y muestra el
- * pronóstico hecho. Antes del kickoff se puede reabrir con "Editar" (la RLS
- * permite editar hasta el kickoff; el server re-valida la ventana igual).
- * Cuando el cron procesa el partido (5.5), el badge "Cerrado" se reemplaza por
- * el veredicto: acierto/pleno con los puntos ganados, o fallo.
+ * Mientras el partido está abierto, los botones de resultado están SIEMPRE
+ * visibles y tocar uno guarda al instante (UI optimista + POST debounced).
+ * Re-tocar otro cambia el pronóstico — sin "Hacer pronóstico" ni "Confirmar"
+ * ni "Editar". El bonus de goles sigue colapsable y también guarda al tocar.
+ *
+ * Al kickoff el selector se bloquea y muestra el pronóstico hecho; cuando el
+ * cron procesa el partido (5.5), el badge "Cerrado" se reemplaza por el
+ * veredicto (acierto/pleno con puntos, o fallo). El server re-valida la
+ * ventana igual (regla de arquitectura 3).
+ *
+ * Eventos globales que emite:
+ *  - `mundialito:prediction-saved` ({ matchId }) → actualiza <DayProgress/>.
+ *  - `mundialito:day-complete` ({ currentStreak }) → confeti + hoja (igual que antes).
  */
 
 interface SavedPrediction {
@@ -35,6 +41,12 @@ const GOALS_LABELS: Record<GoalsRange, string> = {
 const GOALS_EXPLANATION =
   "Suma los goles de local y visitante durante el partido (90 min + alargue). " +
   "Si aciertas quién gana y el rango de goles, sumas 15 pts extra. Los penales no cuentan.";
+
+/** Espera entre el toque y el POST: si el usuario duda entre dos opciones,
+ *  solo viaja la última (no quemamos el rate limit de 20/min). */
+const SAVE_DEBOUNCE_MS = 350;
+
+type SaveStatus = "idle" | "saving" | "saved";
 
 export function PredictionForm({
   matchId,
@@ -58,11 +70,9 @@ export function PredictionForm({
   const kickoffMs = new Date(kickoffAt).getTime();
 
   const [closed, setClosed] = useState(() => Date.now() >= kickoffMs);
+  // Último pronóstico CONFIRMADO por el server; `result`/`goals` es lo elegido
+  // en pantalla (optimista). Si el POST falla, se revierte a `saved`.
   const [saved, setSaved] = useState<SavedPrediction | null>(initialPrediction);
-  const [editing, setEditing] = useState(
-    () => !initialPrediction && Date.now() < kickoffMs,
-  );
-
   const [result, setResult] = useState<ResultPred | null>(
     initialPrediction?.result_pred ?? null,
   );
@@ -72,61 +82,54 @@ export function PredictionForm({
   const [showGoals, setShowGoals] = useState(
     () => !!initialPrediction?.goals_range_pred,
   );
-  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState<SaveStatus>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  // Cierra el form al llegar el kickoff si la página queda abierta. Si ya pasó,
-  // `closed` ya se inicializó en true (lazy init), así que no hace falta tocarlo.
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const statusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Lo último que el usuario eligió (el debounce manda SIEMPRE este valor).
+  const pendingRef = useRef<{ result: ResultPred; goals: GoalsRange | null } | null>(
+    null,
+  );
+  const savedRef = useRef<SavedPrediction | null>(initialPrediction);
+
+  // Cierra el selector al llegar el kickoff si la página queda abierta. Si ya
+  // pasó, `closed` ya se inicializó en true (lazy init).
   useEffect(() => {
     const remaining = kickoffMs - Date.now();
     if (remaining <= 0) return;
-    const timer = setTimeout(() => {
-      setClosed(true);
-      setEditing(false);
-    }, remaining);
+    const timer = setTimeout(() => setClosed(true), remaining);
     return () => clearTimeout(timer);
   }, [kickoffMs]);
 
-  const resultOptions: {
-    value: ResultPred;
-    label: string;
-    flag: string | null;
-    variant: "home" | "draw" | "away";
-  }[] = isKnockout
-    ? [
-        { value: "home", label: homeTeam, flag: homeFlag, variant: "home" },
-        { value: "away", label: awayTeam, flag: awayFlag, variant: "away" },
-      ]
-    : [
-        { value: "home", label: homeTeam, flag: homeFlag, variant: "home" },
-        { value: "draw", label: "Empate", flag: null, variant: "draw" },
-        { value: "away", label: awayTeam, flag: awayFlag, variant: "away" },
-      ];
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+      if (statusTimer.current) clearTimeout(statusTimer.current);
+    };
+  }, []);
 
-  const resultLabel = (value: ResultPred) =>
-    value === "home" ? homeTeam : value === "away" ? awayTeam : "Empate";
-
-  function openEdit() {
-    setShowGoals(!!saved?.goals_range_pred);
-    setEditing(true);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!result) {
-      setError("Elegí quién gana.");
-      return;
+  async function flushSave() {
+    const pending = pendingRef.current;
+    if (!pending) return;
+    const prev = savedRef.current;
+    if (
+      prev &&
+      prev.result_pred === pending.result &&
+      prev.goals_range_pred === pending.goals
+    ) {
+      setStatus("idle");
+      return; // Nada cambió respecto a lo guardado.
     }
-    setSubmitting(true);
+    setStatus("saving");
     try {
       const res = await fetch("/api/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           match_id: matchId,
-          result_pred: result,
-          goals_range_pred: goals,
+          result_pred: pending.result,
+          goals_range_pred: pending.goals,
         }),
       });
       const data: {
@@ -134,11 +137,23 @@ export function PredictionForm({
         streak?: { current_streak: number; completed_today: boolean };
       } = await res.json().catch(() => ({}));
       if (res.status === 201) {
-        setSaved({ result_pred: result, goals_range_pred: goals });
-        setEditing(false);
+        const confirmed: SavedPrediction = {
+          result_pred: pending.result,
+          goals_range_pred: pending.goals,
+        };
+        savedRef.current = confirmed;
+        setSaved(confirmed);
+        setStatus("saved");
+        if (statusTimer.current) clearTimeout(statusTimer.current);
+        statusTimer.current = setTimeout(() => setStatus("idle"), 1500);
+        window.dispatchEvent(
+          new CustomEvent("mundialito:prediction-saved", {
+            detail: { matchId },
+          }),
+        );
         // Al completar TODOS los partidos abiertos del día, avisamos al
-        // celebrador global (confeti + atajo a Estadísticas). El dedupe por día
-        // vive en <DayCompleteCelebration/>: editar luego no re-dispara.
+        // celebrador global (confeti + atajo a Estadísticas). El dedupe por
+        // día vive en <DayCompleteCelebration/>.
         if (data.streak?.completed_today) {
           window.dispatchEvent(
             new CustomEvent("mundialito:day-complete", {
@@ -148,30 +163,63 @@ export function PredictionForm({
         }
         return;
       }
+      // Falló: revertimos la elección optimista a lo último confirmado.
+      setResult(savedRef.current?.result_pred ?? null);
+      setGoals(savedRef.current?.goals_range_pred ?? null);
+      setStatus("idle");
       if (res.status === 409) {
         setClosed(true);
-        setEditing(false);
+        setError("El partido ya empezó; el pronóstico está cerrado.");
+        return;
       }
       setError(data.error ?? "No se pudo guardar el pronóstico.");
     } catch {
+      setResult(savedRef.current?.result_pred ?? null);
+      setGoals(savedRef.current?.goals_range_pred ?? null);
+      setStatus("idle");
       setError("Error de red. Probá de nuevo.");
-    } finally {
-      setSubmitting(false);
     }
   }
 
-  // ── Estado bloqueado (4.5): pronóstico hecho o ventana cerrada ──────
-  if (!editing) {
+  /** Programa el guardado de la elección actual (optimista + debounce). */
+  function scheduleSave(next: { result: ResultPred; goals: GoalsRange | null }) {
+    setError(null);
+    pendingRef.current = next;
+    setStatus("saving");
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => void flushSave(), SAVE_DEBOUNCE_MS);
+  }
+
+  function pickResult(value: ResultPred) {
+    if (closed) return;
+    setResult(value);
+    scheduleSave({ result: value, goals });
+  }
+
+  function pickGoals(value: GoalsRange | null) {
+    if (closed) return;
+    setGoals(value);
+    // Sin resultado elegido el server rechaza el POST: guardamos la elección
+    // local y viaja junto con el resultado cuando lo toque.
+    if (result) scheduleSave({ result, goals: value });
+  }
+
+  // ── Estado bloqueado: kickoff pasado ────────────────────────────────
+  if (closed) {
     return (
       <div className="mt-3 border-t border-border pt-3">
         {saved ? (
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col gap-0.5 text-sm">
               <span className="text-xs text-foreground-muted">
-                {closed ? "Tu pronóstico" : "Ya pronosticaste"}
+                Tu pronóstico
               </span>
               <span className="font-semibold">
-                {resultLabel(saved.result_pred)}
+                {saved.result_pred === "home"
+                  ? homeTeam
+                  : saved.result_pred === "away"
+                    ? awayTeam
+                    : "Empate"}
                 {saved.goals_range_pred && (
                   <span className="text-foreground-muted">
                     {" "}
@@ -180,71 +228,79 @@ export function PredictionForm({
                 )}
               </span>
             </div>
-            {closed ? (
-              saved.points_earned != null ? (
-                saved.result_correct ? (
-                  <span className="rounded-full bg-brand/15 px-2.5 py-1 text-[11px] font-semibold text-brand">
-                    {saved.goals_correct ? "Pleno" : "Acertaste"} · +
-                    {saved.points_earned} pts
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-danger/10 px-2.5 py-1 text-[11px] font-medium text-danger">
-                    No acertaste
-                  </span>
-                )
+            {saved.points_earned != null ? (
+              saved.result_correct ? (
+                <span className="rounded-full bg-brand/15 px-2.5 py-1 text-[11px] font-semibold text-brand">
+                  {saved.goals_correct ? "Pleno" : "Acertaste"} · +
+                  {saved.points_earned} pts
+                </span>
               ) : (
-                <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-medium text-foreground-muted">
-                  Cerrado
+                <span className="rounded-full bg-danger/10 px-2.5 py-1 text-[11px] font-medium text-danger">
+                  No acertaste
                 </span>
               )
             ) : (
-              <button
-                type="button"
-                onClick={openEdit}
-                className="min-h-11 rounded-md border border-border px-3 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
-              >
-                Editar
-              </button>
+              <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-medium text-foreground-muted">
+                Cerrado
+              </span>
             )}
           </div>
-        ) : closed ? (
+        ) : (
           <p className="text-sm text-foreground-muted">
             Cerrado — no pronosticaste este partido.
           </p>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="w-full rounded-lg border border-dashed border-border px-4 py-2.5 text-sm font-medium text-foreground-muted transition hover:border-brand/40 hover:text-foreground"
-          >
-            Hacer pronóstico
-          </button>
+        )}
+        {error && (
+          <p role="alert" className="mt-2 text-xs text-danger">
+            {error}
+          </p>
         )}
       </div>
     );
   }
 
-  // ── Form editable (4.4) ────────────────────────────────────────────
+  // ── Selector de un toque (partido abierto) ──────────────────────────
   return (
-    <form onSubmit={handleSubmit} className="mt-3 border-t border-border pt-3">
+    <div className="mt-3 border-t border-border pt-3">
       <fieldset className="flex flex-col gap-1.5">
-        <legend className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
-          ¿Quién gana?
+        <legend className="mb-1.5 flex w-full items-center justify-between text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
+          <span>¿Quién gana? · tocá y listo</span>
+          <span aria-live="polite" className="normal-case tracking-normal">
+            {status === "saving" ? (
+              <span className="text-foreground-muted">Guardando…</span>
+            ) : status === "saved" ? (
+              <span className="font-semibold text-brand">✓ Guardado</span>
+            ) : null}
+          </span>
         </legend>
         <div
           className={`grid gap-1.5 ${isKnockout ? "grid-cols-2" : "grid-cols-3"}`}
         >
-          {resultOptions.map((opt) => (
+          {(isKnockout
+            ? ([
+                { value: "home", label: homeTeam, flag: homeFlag },
+                { value: "away", label: awayTeam, flag: awayFlag },
+              ] as const)
+            : ([
+                { value: "home", label: homeTeam, flag: homeFlag },
+                { value: "draw", label: "Empate", flag: null },
+                { value: "away", label: awayTeam, flag: awayFlag },
+              ] as const)
+          ).map((opt) => (
             <ResultPickButton
               key={opt.value}
               active={result === opt.value}
-              onClick={() => setResult(opt.value)}
+              onClick={() => pickResult(opt.value)}
               label={opt.label}
               flag={opt.flag}
-              variant={opt.variant}
             />
           ))}
         </div>
+        {isKnockout && (
+          <p className="text-[11px] text-foreground-muted">
+            Eliminación directa: no hay empate.
+          </p>
+        )}
       </fieldset>
 
       <div className="mt-3">
@@ -275,16 +331,21 @@ export function PredictionForm({
                 <SegmentButton
                   key={range}
                   active={goals === range}
-                  onClick={() => setGoals(range)}
+                  onClick={() => pickGoals(range)}
                   label={GOALS_LABELS[range]}
                 />
               ))}
             </div>
+            {goals && !result && (
+              <p className="text-[11px] text-foreground-muted">
+                Elegí quién gana y el bonus se guarda junto.
+              </p>
+            )}
             {goals && (
               <button
                 type="button"
-                onClick={() => setGoals(null)}
-                className="self-start text-[11px] text-foreground-muted underline-offset-2 hover:text-foreground hover:underline"
+                onClick={() => pickGoals(null)}
+                className="self-start py-1.5 text-[11px] text-foreground-muted underline-offset-2 hover:text-foreground hover:underline"
               >
                 Quitar pronóstico de goles
               </button>
@@ -298,15 +359,7 @@ export function PredictionForm({
           {error}
         </p>
       )}
-
-      <button
-        type="submit"
-        disabled={!result || submitting || closed}
-        className="mt-3 w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-background transition hover:bg-brand-strong disabled:opacity-50"
-      >
-        {submitting ? "Guardando…" : "Confirmar pronóstico"}
-      </button>
-    </form>
+    </div>
   );
 }
 
@@ -315,42 +368,21 @@ function ResultPickButton({
   onClick,
   label,
   flag,
-  variant,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   flag: string | null;
-  variant: "home" | "draw" | "away";
 }) {
-  const palette = {
-    home: {
-      active:
-        "border-sky-400 bg-sky-500/25 text-foreground shadow-[0_0_14px_rgba(56,189,248,0.35)] ring-2 ring-sky-400/50",
-      idle:
-        "border-sky-800/80 bg-sky-950/50 text-foreground hover:border-sky-500 hover:bg-sky-500/15",
-    },
-    draw: {
-      active:
-        "border-secondary-400 bg-secondary-500/25 text-foreground shadow-[0_0_14px_rgba(251,191,36,0.35)] ring-2 ring-secondary-400/50",
-      idle:
-        "border-secondary-900/70 bg-secondary-950/40 text-foreground hover:border-amber-500 hover:bg-amber-500/15",
-    },
-    away: {
-      active:
-        "border-rose-400 bg-rose-500/25 text-foreground shadow-[0_0_14px_rgba(251,113,133,0.35)] ring-2 ring-rose-400/50",
-      idle:
-        "border-rose-900/70 bg-rose-950/40 text-foreground hover:border-rose-500 hover:bg-rose-500/15",
-    },
-  } as const;
-
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
       className={`flex min-h-[5.5rem] flex-col items-center justify-center gap-1.5 rounded-xl border px-2 py-3 transition-all ${
-        active ? palette[variant].active : palette[variant].idle
+        active
+          ? "border-brand bg-brand/20 text-foreground shadow-[0_0_14px_rgba(34,197,94,0.3)] ring-2 ring-brand/50"
+          : "border-border bg-surface-muted text-foreground hover:border-brand/40 hover:bg-brand/10"
       }`}
     >
       {flag ? (

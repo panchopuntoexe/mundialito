@@ -1,5 +1,6 @@
 import { AdSlot } from "@/components/ads/AdSlot";
 import { DayCompleteCelebration } from "@/components/DayCompleteCelebration";
+import { DayProgress } from "@/components/DayProgress";
 import {
   MatchCard,
   type MatchCardData,
@@ -108,6 +109,15 @@ export default async function Home() {
           {dayLabel(today)}
         </span>
       </div>
+
+      {user && matches.length > 0 && (
+        <DayProgress
+          totalMatches={matches.length}
+          initialPredictedIds={matches
+            .filter((m) => predByMatch.has(m.id))
+            .map((m) => m.id)}
+        />
+      )}
 
       {matches.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
