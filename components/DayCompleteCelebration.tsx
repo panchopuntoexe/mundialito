@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { SaveAccountButton } from "@/components/SaveAccountButton";
 import { toTournamentDay } from "@/lib/scoring/streaks";
 
 /**
@@ -23,7 +24,12 @@ interface DayCompleteDetail {
   currentStreak: number;
 }
 
-export function DayCompleteCelebration() {
+export function DayCompleteCelebration({
+  isAnonymous = false,
+}: {
+  /** Invitado: el momento de máxima intención para ofrecer guardar la cuenta. */
+  isAnonymous?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [streak, setStreak] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -146,9 +152,18 @@ export function DayCompleteCelebration() {
             onClick={handleShare}
             className="rounded-lg border border-border bg-surface-muted px-4 py-2.5 text-sm font-medium transition hover:bg-border"
           >
-            {copied ? "¡Link copiado!" : "Compartir"}
+            {copied ? "¡Link copiado!" : "Compartir e invitar amigos"}
           </button>
         </div>
+
+        {isAnonymous && (
+          <div className="mt-4 flex flex-col items-center gap-2 border-t border-border pt-4">
+            <p className="text-xs text-foreground-muted">
+              Guardá tu progreso para no perder tu racha 🔥
+            </p>
+            <SaveAccountButton />
+          </div>
+        )}
       </div>
     </div>
   );

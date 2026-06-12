@@ -148,7 +148,7 @@ export default async function Home() {
       <UpcomingMatches matches={upcoming} />
 
       <PushOptIn />
-      <DayCompleteCelebration />
+      <DayCompleteCelebration isAnonymous={user?.is_anonymous ?? false} />
     </main>
   );
 }

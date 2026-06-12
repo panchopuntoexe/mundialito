@@ -8,6 +8,8 @@
  * partido. Mismas restricciones de Satori que la tarjeta Wrapped (lib/wrapped/card).
  */
 import { ImageResponse } from "next/og";
+import { APP_HOST, APP_URL } from "@/lib/appUrl";
+import { qrDataUrl } from "@/lib/wrapped/qr";
 
 /** Cuadrada 1:1, cómoda para feed/stories y previews de chat. */
 export const MATCH_CARD_SIZE = 1080;
@@ -130,7 +132,13 @@ function Square({ correct, label }: { correct: boolean; label: string }) {
   );
 }
 
-export function renderMatchResultImage(data: MatchResultCardData): ImageResponse {
+export async function renderMatchResultImage(
+  data: MatchResultCardData,
+): Promise<ImageResponse> {
+  // QR a la app (mismo de la tarjeta Wrapped): quien ve la imagen compartida
+  // queda a un escaneo de jugar.
+  const qr = await qrDataUrl(APP_URL);
+
   return new ImageResponse(
     (
       <div
@@ -235,18 +243,25 @@ export function renderMatchResultImage(data: MatchResultCardData): ImageResponse
           <Square correct={data.goalsCorrect} label="Goles" />
         </div>
 
-        {/* Footer */}
+        {/* Footer: QR + host (igual que la tarjeta Wrapped) */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            gap: 10,
             marginTop: "auto",
           }}
         >
-          <div style={{ fontSize: 28, color: COLOR.muted }}>
-            mundialito26-six.vercel.app
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={qr}
+            width={110}
+            height={110}
+            alt=""
+            style={{ borderRadius: 14, backgroundColor: "#ffffff" }}
+          />
+          <div style={{ fontSize: 28, color: COLOR.muted }}>{APP_HOST}</div>
         </div>
       </div>
     ),
