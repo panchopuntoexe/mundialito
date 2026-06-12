@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { usernameSchema } from "@/lib/validations/user";
+import { chosenUsernameSchema } from "@/lib/validations/user";
 
 type Availability = "idle" | "checking" | "available" | "taken" | "invalid";
 
@@ -26,7 +26,7 @@ export function OnboardingForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const parsed = usernameSchema.safeParse(username);
+  const parsed = chosenUsernameSchema.safeParse(username);
   const formatError = !parsed.success
     ? (parsed.error.issues[0]?.message ?? "Username inválido.")
     : null;
@@ -43,7 +43,7 @@ export function OnboardingForm({
   // Chequeo de disponibilidad con debounce (solo si el formato es válido).
   // El setState vive dentro del callback async, no en el cuerpo del effect.
   useEffect(() => {
-    const result = usernameSchema.safeParse(username);
+    const result = chosenUsernameSchema.safeParse(username);
     if (!result.success) return;
     const name = result.data;
     const controller = new AbortController();

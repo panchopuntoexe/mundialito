@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
+import { ChangeUsernameForm } from "@/components/ChangeUsernameForm";
 import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SignOutButton } from "@/components/SignOutButton";
 import { WrappedCard } from "@/components/WrappedCard";
@@ -169,16 +170,26 @@ export default async function EstadisticasPage() {
 
       {/* "Salir" vive acá (no en el header) para descomprimir la barra
           superior; para invitados el botón confirma la pérdida de progreso. */}
-      <section className="mt-2 flex items-center justify-between gap-3 border-t border-border pt-4">
-        <div className="flex flex-col">
-          <h2 className="text-sm font-bold tracking-tight">Cuenta</h2>
-          <p className="text-xs text-foreground-muted">
-            {user.is_anonymous
-              ? "Jugando como invitado. Si salís sin guardar, perdés tu progreso."
-              : "Sesión iniciada."}
-          </p>
+      <section
+        id="cuenta"
+        className="mt-2 flex scroll-mt-20 flex-col gap-3 border-t border-border pt-4"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col">
+            <h2 className="text-sm font-bold tracking-tight">Cuenta</h2>
+            <p className="text-xs text-foreground-muted">
+              {user.is_anonymous
+                ? "Jugando como invitado. Si salís sin guardar, perdés tu progreso."
+                : `Sesión iniciada como @${profile?.username ?? ""}.`}
+            </p>
+          </div>
+          <SignOutButton isAnonymous={user.is_anonymous ?? false} showLabel />
         </div>
-        <SignOutButton isAnonymous={user.is_anonymous ?? false} showLabel />
+        {/* Cambio de username (una sola vez): solo con cuenta guardada — el
+            gancho principal es el ex-invitado que quedó como invitado_xxxxxx. */}
+        {profile && !user.is_anonymous && !profile.username_changed_at && (
+          <ChangeUsernameForm currentUsername={profile.username} />
+        )}
       </section>
     </main>
   );

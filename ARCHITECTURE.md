@@ -373,6 +373,13 @@ En POST /api/predictions, tras guardar (ver 4.1 paso 5):
   (`components/SaveAccountButton.tsx`) — mismo `user.id`, puntos y username intactos.
   Requiere `enable_manual_linking` además de `enable_anonymous_sign_ins` (config.toml
   local; en producción ambos toggles en Dashboard → Authentication → Sign In / Up).
+- **Cambio de username (una sola vez)**: tras guardar la cuenta, el ex-invitado puede
+  reemplazar su `invitado_xxxxxx` vía `PATCH /api/users` (Estadísticas → Cuenta;
+  el layout muestra una barra "Elegir mi nombre" mientras conserve el prefijo). La
+  regla "solo una vez" la garantiza el trigger de `0013_username_change.sql`
+  (estampa `username_changed_at`; la RLS `users_update_own` permite updates directos,
+  así que no alcanza con validar en la API). El prefijo `invitado_` queda reservado
+  (`chosenUsernameSchema`); los anónimos no pueden renombrarse (incentivo a guardar).
 - Mantenimiento opcional (no implementado): limpiar anónimos inactivos, p. ej.
   `delete from auth.users where is_anonymous and created_at < now() - interval '30 days'
   and id not in (select user_id from public.predictions)`. Si aparece abuso, el

@@ -26,6 +26,7 @@ export interface Database {
           avatar_url: string | null;
           total_points: number;
           is_bot: boolean;
+          username_changed_at: string | null;
           created_at: string;
         };
         Insert: {
@@ -35,6 +36,7 @@ export interface Database {
           avatar_url?: string | null;
           total_points?: number;
           is_bot?: boolean;
+          username_changed_at?: string | null;
           created_at?: string;
         };
         Update: {
@@ -44,6 +46,7 @@ export interface Database {
           avatar_url?: string | null;
           total_points?: number;
           is_bot?: boolean;
+          username_changed_at?: string | null;
           created_at?: string;
         };
         Relationships: [];

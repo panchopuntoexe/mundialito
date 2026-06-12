@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { createUserSchema, usernameSchema } from "@/lib/validations/user";
+import {
+  chosenUsernameSchema,
+  createUserSchema,
+  updateUsernameSchema,
+  usernameSchema,
+} from "@/lib/validations/user";
 
 describe("usernameSchema", () => {
   it("acepta usernames válidos y los normaliza a minúsculas", () => {
@@ -28,5 +33,31 @@ describe("usernameSchema", () => {
     );
     expect(createUserSchema.safeParse({}).success).toBe(false);
     expect(createUserSchema.safeParse({ username: "x" }).success).toBe(false);
+  });
+});
+
+describe("chosenUsernameSchema", () => {
+  it("reserva el prefijo invitado_ (auto-generados de guest.ts)", () => {
+    expect(chosenUsernameSchema.safeParse("invitado_abc123").success).toBe(
+      false,
+    );
+    // El refine corre DESPUÉS del lowercase: "Invitado_x" también cae.
+    expect(chosenUsernameSchema.safeParse("Invitado_abc123").success).toBe(
+      false,
+    );
+    expect(chosenUsernameSchema.parse("invitadox")).toBe("invitadox");
+    expect(chosenUsernameSchema.parse("Messi10")).toBe("messi10");
+  });
+
+  it("createUserSchema y updateUsernameSchema rechazan el prefijo reservado", () => {
+    expect(
+      createUserSchema.safeParse({ username: "invitado_abc123" }).success,
+    ).toBe(false);
+    expect(
+      updateUsernameSchema.safeParse({ username: "invitado_abc123" }).success,
+    ).toBe(false);
+    expect(
+      updateUsernameSchema.safeParse({ username: "nuevo_nombre" }).success,
+    ).toBe(true);
   });
 });

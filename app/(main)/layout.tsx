@@ -5,6 +5,7 @@ import { SaveAccountButton } from "@/components/SaveAccountButton";
 import { Samy } from "@/components/Samy";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { getServerProfile, getServerUser } from "@/lib/supabase/auth";
+import { GUEST_PREFIX } from "@/lib/users/guest";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -92,6 +93,24 @@ export default async function MainLayout({
           <SaveAccountButton />
         </div>
       )}
+      {/* Ex-invitado que guardó su cuenta pero sigue con el username
+          auto-generado: invitarlo a elegir su nombre (se puede una sola vez). */}
+      {profile &&
+        !isAnonymous &&
+        profile.username.startsWith(GUEST_PREFIX) &&
+        !profile.username_changed_at && (
+          <div className="flex items-center justify-between gap-3 border-b border-border bg-brand/5 px-4 py-1.5 text-xs">
+            <span className="truncate text-foreground-muted">
+              Cuenta guardada ✓ Todavía tenés un nombre de invitado
+            </span>
+            <Link
+              href="/estadisticas#cuenta"
+              className="shrink-0 rounded-full border border-brand/50 bg-brand/10 px-2 py-0.5 font-medium text-brand transition hover:bg-brand/20"
+            >
+              Elegir mi nombre
+            </Link>
+          </div>
+        )}
       <div className="flex flex-1 flex-col pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
         {children}
       </div>

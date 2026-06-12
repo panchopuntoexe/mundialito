@@ -533,6 +533,13 @@ Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Tr
 - **Aceptación**: Link con código válido + "Unirme sin cuenta" → terminás dentro de la liga; `?preview=1` de result-image muestra el QR.
 - **Depende de**: —
 
+### [x] 12.6 — Cambio de username (una sola vez) para cuentas guardadas
+
+- **Objetivo**: El ex-invitado que guardó su cuenta puede reemplazar su `invitado_xxxxxx` por un nombre propio, **una sola vez**. Migración `0013` (`users.username_changed_at` + trigger que impone el único cambio aun ante updates directos por RLS); `PATCH /api/users` (solo no-anónimos, valida disponibilidad); `chosenUsernameSchema` reserva el prefijo `invitado_` (onboarding incluido); form en Estadísticas → Cuenta y barra "Elegir mi nombre" en el layout mientras conserve el prefijo.
+- **Archivos**: `supabase/migrations/0013_username_change.sql`, `app/api/users/route.ts`, `lib/validations/user.ts`, `components/ChangeUsernameForm.tsx`, `app/(main)/{layout,estadisticas/page}.tsx`, `app/(auth)/onboarding/OnboardingForm.tsx`, `types/database.ts`.
+- **Aceptación**: Invitado guardado cambia su nombre y los rankings lo muestran; segundo intento de cambio → 409; anónimo → 403; `invitado_*` no disponible ni en onboarding ni en rename.
+- **Depende de**: 12.5
+
 ---
 
 ## Orden sugerido de ejecución

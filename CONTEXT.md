@@ -63,7 +63,7 @@ Reconocimiento puntual que un usuario gana al cumplir un criterio. Vive en la ta
 _Avoid_: confundir **En racha** (aciertos consecutivos) con la **Racha** (participación) — son métricas distintas pese al nombre parecido.
 
 **Invitado** (Guest):
-Usuario que entró con **"Jugar sin cuenta"**: un usuario anónimo de Supabase (usuario `authenticated` real, `is_anonymous: true`) con username auto-generado `invitado_xxxxxx`. Juega exactamente igual que un usuario registrado (pronostica, suma puntos, rachas, logros, ligas); su única diferencia es que la sesión vive solo en ese dispositivo hasta que **guarda su cuenta** vinculando Google (`linkIdentity`, mismo `user.id`, progreso intacto). Si cierra sesión sin guardar, el progreso se pierde.
+Usuario que entró con **"Jugar sin cuenta"**: un usuario anónimo de Supabase (usuario `authenticated` real, `is_anonymous: true`) con username auto-generado `invitado_xxxxxx`. Juega exactamente igual que un usuario registrado (pronostica, suma puntos, rachas, logros, ligas); su única diferencia es que la sesión vive solo en ese dispositivo hasta que **guarda su cuenta** vinculando Google (`linkIdentity`, mismo `user.id`, progreso intacto). Si cierra sesión sin guardar, el progreso se pierde. Tras guardar, puede **cambiar su username una sola vez** (`PATCH /api/users`, trigger en `users.username_changed_at`); el prefijo `invitado_` está reservado para los auto-generados.
 _Avoid_: "modo lectura" o usuario sin fila en `users` (el invitado tiene perfil completo); políticas RLS especiales para invitados (no existen — es un usuario authenticated normal).
 
 **Ranking** (sección pública):
