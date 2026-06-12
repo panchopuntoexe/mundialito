@@ -34,6 +34,9 @@ const PUBLIC_PATHS = [
   // visitante queda a un tap de "Jugar sin cuenta".
   "/ranking",
   "/u",
+  // Deep link de invitación a liga (?code=XYZ): el invitado entra sin cuenta
+  // y se une solo. /leagues (sin /join) sigue protegida.
+  "/leagues/join",
 ];
 
 function isPublic(pathname: string): boolean {

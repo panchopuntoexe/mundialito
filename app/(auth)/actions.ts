@@ -93,8 +93,14 @@ export async function signInWithEmail(
  * Requiere `enable_anonymous_sign_ins` (config.toml / dashboard). Rate limit
  * por IP: `x-forwarded-for` es confiable detrás de Vercel; cada invitado real
  * cuenta como MAU, así que solo se crea con el tap del botón (nunca al visitar).
+ *
+ * `nextPath` (opcional, vía `.bind`) permite volver a una ruta interna tras
+ * entrar — lo usa el deep link de liga (/leagues/join?code=…). Cuando la action
+ * se usa directo como `<form action>`, el primer argumento es el FormData del
+ * form: el chequeo de tipo lo descarta y se vuelve a "/". Solo rutas relativas
+ * (anti open-redirect).
  */
-export async function signInAsGuest() {
+export async function signInAsGuest(nextPath?: unknown) {
   const h = await headers();
   const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
@@ -124,7 +130,9 @@ export async function signInAsGuest() {
     data.user.id,
   );
 
-  redirect("/");
+  const next =
+    typeof nextPath === "string" && nextPath.startsWith("/") ? nextPath : "/";
+  redirect(next);
 }
 
 /** Cierra la sesión y vuelve al login. */

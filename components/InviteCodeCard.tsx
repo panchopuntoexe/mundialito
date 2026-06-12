@@ -3,10 +3,11 @@
 import { useState } from "react";
 
 /**
- * Tarjeta con el código de invitación de una liga (tarea 6.6). Muestra el código
- * y permite compartirlo: usa la Web Share API si está disponible (móvil), con
- * fallback a copiar al portapapeles. Es el motor viral de la liga: compartir el
- * código es cómo entran los amigos.
+ * Tarjeta con el código de invitación de una liga (tarea 6.6 + deep link).
+ * Comparte el LINK de auto-unión (/leagues/join?code=…): quien lo toca queda
+ * dentro de la liga en un toque, sin tipear el código. Web Share API si está
+ * disponible (móvil), fallback a copiar el link al portapapeles. Es el motor
+ * viral de la liga.
  */
 export function InviteCodeCard({
   leagueName,
@@ -17,19 +18,24 @@ export function InviteCodeCard({
 }) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `Unite a mi liga "${leagueName}" en Mundialito con el código ${inviteCode}`;
+  const shareText = `Unite a mi liga "${leagueName}" en Mundialito 2026 ⚽`;
+
+  function joinUrl(): string {
+    return `${window.location.origin}/leagues/join?code=${encodeURIComponent(inviteCode)}`;
+  }
 
   async function handleShare() {
+    const url = joinUrl();
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Mundialito", text: shareText });
+        await navigator.share({ title: "Mundialito", text: shareText, url });
         return;
       } catch {
         // Cancelado o no soportado: caemos a copiar.
       }
     }
     try {
-      await navigator.clipboard.writeText(inviteCode);
+      await navigator.clipboard.writeText(`${shareText} ${url}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -52,7 +58,7 @@ export function InviteCodeCard({
         onClick={handleShare}
         className="shrink-0 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-background transition hover:bg-brand-strong"
       >
-        {copied ? "¡Copiado!" : "Compartir"}
+        {copied ? "¡Link copiado!" : "Compartir link"}
       </button>
     </div>
   );
