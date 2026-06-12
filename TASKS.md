@@ -493,10 +493,52 @@ Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Tr
 
 ---
 
+## FASE 12 — Rediseño de usabilidad (fácil de usar + viral)
+
+> Plan completo en el audit UX de junio 2026: menos fricción en el loop núcleo,
+> orientación clara, educación del juego y loops virales sin tipeo.
+
+### [x] 12.1 — Quick wins de accesibilidad y polish
+
+- **Objetivo**: Typo del bonus de goles; touch targets ≥44px (Salir, Editar, filas de ranking); `prefers-reduced-motion` (spinner, Samy, pulso "en vivo", confeti); consenso resalta tu pick; empty state de Estadísticas con fecha concreta; logros con etiqueta visible en móvil.
+- **Archivos**: `components/{PredictionForm,SignOutButton,Leaderboard,Consensus,MatchCard,BadgeGrid,DayCompleteCelebration}.tsx`, `app/globals.css`, `app/(main)/estadisticas/page.tsx`.
+- **Aceptación**: Lint/type-check/tests verdes; con "reducir movimiento" del SO no hay animaciones.
+- **Depende de**: —
+
+### [x] 12.2 — Navegación inferior + header compacto
+
+- **Objetivo**: `<BottomNav/>` fija abajo (íconos + etiqueta, estado activo vía `usePathname`, safe area iOS); header compacto con chip de racha 🔥 siempre visible + nivel + username; banner de invitado en una línea; "Salir" se muda a Estadísticas → Cuenta.
+- **Archivos**: `components/BottomNav.tsx`, `app/(main)/layout.tsx`, `app/(main)/estadisticas/page.tsx`.
+- **Aceptación**: La tab activa se distingue; el contenido no queda tapado por la barra.
+- **Depende de**: —
+
+### [x] 12.3 — Pronóstico de un toque + progreso del día
+
+- **Objetivo**: Botones de resultado siempre visibles en partidos abiertos; tocar = guardar (UI optimista, POST debounced 350ms, revert si falla); sin "Hacer pronóstico"/"Confirmar"/"Editar"; bonus de goles guarda al tocar; paleta unificada en brand; caption "no hay empate" en knockout; `<DayProgress/>` ("X de Y partidos") en vivo vía evento `mundialito:prediction-saved`.
+- **Archivos**: `components/PredictionForm.tsx`, `components/DayProgress.tsx`, `app/(main)/page.tsx`.
+- **Aceptación**: Tocar un equipo guarda solo (verificable con refresh); re-tocar cambia; el día completo sigue disparando confeti.
+- **Depende de**: 12.2
+
+### [x] 12.4 — Educación: cómo se juega + stats personales
+
+- **Objetivo**: `<HowToPlay/>` (hoja de 3 pasos: puntos / pleno / racha+niveles+ligas) auto-abierta la primera visita (localStorage) + botón "¿Cómo se juega?" en Hoy; Estadísticas con grid Puntos/Precisión/Racha máx, barra de progreso al siguiente nivel (`nextLevel` de `lib/scoring/levels.ts`) y link al perfil público.
+- **Archivos**: `components/HowToPlay.tsx`, `app/(main)/page.tsx`, `app/(main)/estadisticas/page.tsx`.
+- **Aceptación**: Primera visita (localStorage limpio) abre la hoja; Estadísticas nunca queda vacía.
+- **Depende de**: —
+
+### [x] 12.5 — Viralidad: deep link de liga + QR + guardar cuenta
+
+- **Objetivo**: Ruta pública `/leagues/join?code=…` con auto-unión (sesión → POST al endpoint existente; sin sesión → "Unirme sin cuenta" con `signInAsGuest(nextPath)`); `InviteCodeCard` comparte el link, no el código; QR en la mini-tarjeta de partido (reusa `lib/wrapped/qr`); prompt "Guardar cuenta" para invitados en el modal de día completo.
+- **Archivos**: `app/(main)/leagues/join/page.tsx`, `components/{AutoJoinLeague,InviteCodeCard,DayCompleteCelebration}.tsx`, `proxy.ts`, `app/(auth)/actions.ts`, `lib/wrapped/matchCard.tsx`.
+- **Aceptación**: Link con código válido + "Unirme sin cuenta" → terminás dentro de la liga; `?preview=1` de result-image muestra el QR.
+- **Depende de**: —
+
+---
+
 ## Orden sugerido de ejecución
 
 ```
-FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4 → FASE 5 → FASE 6 → FASE 7 → FASE 8 → FASE 9 → FASE 10 → FASE 11
+FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4 → FASE 5 → FASE 6 → FASE 7 → FASE 8 → FASE 9 → FASE 10 → FASE 11 → FASE 12
 ```
 
 El MVP demo-able llega al terminar **FASE 4** (pronosticar funciona). El producto con gamificación completa llega al terminar **FASE 6**. La viralidad (Wrapped) llega en **FASE 7**. Los bots (**FASE 9**) hacen que la app se sienta viva desde el día 1; las alertas (**FASE 10**) cuidan el torneo; los ads (**FASE 11**) quedan construidos pero apagados hasta decidir encenderlos.
