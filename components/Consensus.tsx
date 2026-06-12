@@ -20,11 +20,14 @@ export function Consensus({
   kickoffAt,
   homeTeam,
   awayTeam,
+  userPick = null,
 }: {
   matchId: number;
   kickoffAt: string;
   homeTeam: string;
   awayTeam: string;
+  /** Pronóstico del usuario para resaltar su fila; null si no pronosticó. */
+  userPick?: ResultPred | null;
 }) {
   const [data, setData] = useState<ConsensusData | null>(null);
   // Evaluado una vez al montar (lazy init): el consenso se pide solo si el
@@ -64,21 +67,35 @@ export function Consensus({
       <ul className="flex flex-col gap-1.5">
         {order
           .filter((key) => data.counts[key] > 0)
-          .map((key) => (
-            <li key={key} className="flex items-center gap-2 text-xs">
-              <span className="w-20 shrink-0 truncate text-foreground-muted">
-                {labels[key]}
-              </span>
-              <span
-                className="h-2 rounded-full bg-brand/70"
-                style={{ width: `${Math.max(data.percentages[key], 2)}%` }}
-                aria-hidden
-              />
-              <span className="ml-auto tabular-nums text-foreground-muted">
-                {data.percentages[key]}%
-              </span>
-            </li>
-          ))}
+          .map((key) => {
+            const isPick = key === userPick;
+            return (
+              <li key={key} className="flex items-center gap-2 text-xs">
+                <span
+                  className={`w-20 shrink-0 truncate ${
+                    isPick
+                      ? "font-semibold text-brand"
+                      : "text-foreground-muted"
+                  }`}
+                >
+                  {labels[key]}
+                  {isPick && <span aria-hidden> ✓</span>}
+                </span>
+                <span
+                  className={`h-2 rounded-full ${isPick ? "bg-brand" : "bg-brand/40"}`}
+                  style={{ width: `${Math.max(data.percentages[key], 2)}%` }}
+                  aria-hidden
+                />
+                <span
+                  className={`ml-auto tabular-nums ${
+                    isPick ? "font-semibold text-brand" : "text-foreground-muted"
+                  }`}
+                >
+                  {data.percentages[key]}%
+                </span>
+              </li>
+            );
+          })}
       </ul>
     </div>
   );

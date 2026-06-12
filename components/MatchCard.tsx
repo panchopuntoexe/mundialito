@@ -141,6 +141,7 @@ export function MatchCard({
         kickoffAt={match.kickoff_at}
         homeTeam={match.home_team}
         awayTeam={match.away_team}
+        userPick={prediction?.result_pred ?? null}
       />
 
       {showResultCard && (

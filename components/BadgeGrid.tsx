@@ -31,7 +31,7 @@ export function BadgeGrid({ earned }: { earned: AchievementType[] }) {
               onKeyDown={(e) => {
                 if (e.key === "Escape") setOpen(null);
               }}
-              className={`peer flex w-full items-start justify-center gap-2.5 rounded-lg border p-3 text-left sm:justify-start ${
+              className={`peer flex w-full flex-col items-center gap-1 rounded-lg border p-2 text-center sm:flex-row sm:items-start sm:gap-2.5 sm:p-3 sm:text-left ${
                 has
                   ? "border-border bg-surface"
                   : "border-border/50 bg-surface/40 opacity-60"
@@ -43,9 +43,11 @@ export function BadgeGrid({ earned }: { earned: AchievementType[] }) {
               >
                 {def.icon}
               </span>
-              <span className="hidden min-w-0 flex-col sm:flex">
-                <span className="text-sm font-semibold">{def.label}</span>
-                <span className="text-xs text-foreground-muted">
+              <span className="flex min-w-0 flex-col items-center sm:items-start">
+                <span className="text-[10px] font-semibold leading-tight sm:text-sm">
+                  {def.label}
+                </span>
+                <span className="hidden text-xs text-foreground-muted sm:block">
                   {def.description}
                 </span>
               </span>
@@ -59,7 +61,7 @@ export function BadgeGrid({ earned }: { earned: AchievementType[] }) {
                   : "opacity-0 peer-hover:opacity-100 peer-focus-visible:opacity-100"
               }`}
             >
-              <span className="font-semibold sm:hidden">{def.label} · </span>
+              <span className="sm:hidden">{def.description} · </span>
               {def.funFact}
             </span>
           </li>

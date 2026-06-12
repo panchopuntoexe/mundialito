@@ -58,8 +58,9 @@ export default async function EstadisticasPage() {
 
       {!cards || cards.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-          Todavía no hay tarjetas. Al cerrar cada fase del torneo generamos tus
-          estadísticas acá. 🎁
+          Tu primera tarjeta llega al cerrar la fase de grupos (27 de junio).
+          Mientras tanto, pronosticá los partidos de cada día para sumar
+          puntos. 🎁
         </p>
       ) : (
         <ul className="flex flex-col gap-6">
