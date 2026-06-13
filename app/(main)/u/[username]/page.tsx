@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { GuestCta } from "@/components/GuestCta";
 import { LevelIcon } from "@/components/icons";
-import { loadPublicProfile } from "@/lib/profiles/load";
+import { ProfilePredictions } from "@/components/ProfilePredictions";
+import { loadProfilePredictions, loadPublicProfile } from "@/lib/profiles/load";
 import { ACHIEVEMENT_DEFS } from "@/lib/scoring/achievements";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { createClient } from "@/lib/supabase/server";
@@ -37,6 +38,7 @@ export default async function PublicProfilePage({
 
   const level = levelForPoints(profile.total_points);
   const isMe = profile.user_id === user?.id;
+  const predictions = await loadProfilePredictions(profile.user_id);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
@@ -88,6 +90,11 @@ export default async function PublicProfilePage({
           </span>
         </h2>
         <BadgeGrid earned={profile.earned} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-bold tracking-tight">Pronósticos</h2>
+        <ProfilePredictions predictions={predictions} />
       </section>
 
       {!user && <GuestCta />}

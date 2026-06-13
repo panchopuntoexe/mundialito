@@ -386,7 +386,7 @@ export function PredictionForm({
           <span>
             {showScore
               ? "Ocultar marcador exacto"
-              : "Marcador exacto (bonus · +15 pts)"}
+              : "Marcador (opcional · +15 pts)"}
           </span>
           <span aria-hidden="true" className="text-foreground-muted">
             {showScore ? "▲" : "▼"}
