@@ -125,9 +125,9 @@ export async function renderLiveStatsImage(
             >
               Mundialito 2026
             </div>
-            <div style={{ fontSize: 52, fontWeight: 800, marginTop: 8 }}>
+            {/* <div style={{ fontSize: 52, fontWeight: 800, marginTop: 8 }}>
               Mis stats
-            </div>
+            </div> */}
             <div style={{ fontSize: 38, color: COLOR.muted, marginTop: 4 }}>
               {`@${data.username}`}
             </div>

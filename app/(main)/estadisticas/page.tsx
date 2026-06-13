@@ -70,9 +70,9 @@ export default async function EstadisticasPage() {
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-bold tracking-tight">Tus estadísticas</h1>
-        <p className="text-sm text-foreground-muted">
+        {/* <p className="text-sm text-foreground-muted">
           Tus tarjetas de cada fase del Mundial. Compártelas y suma amigos.
-        </p>
+        </p> */}
       </header>
 
       {/* Stats propios siempre visibles (rediseño de usabilidad): antes esta
@@ -115,7 +115,7 @@ export default async function EstadisticasPage() {
         {profile && (
           <Link
             href={`/u/${encodeURIComponent(profile.username)}`}
-            className="self-start py-1 text-xs font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
+            className="self-start py-1 text-s font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
           >
             Ver tu perfil público →
           </Link>
@@ -125,10 +125,10 @@ export default async function EstadisticasPage() {
       {/* Tarjeta de stats en vivo: compartible SIEMPRE, sin esperar al cierre
           de fase (las Wrapped de abajo recién llegan con cada macro-ronda). */}
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-bold tracking-tight">Tu tarjeta en vivo</h2>
-        <p className="text-xs text-foreground-muted">
+        <h2 className="text-sm font-bold tracking-tight">Comparte tus stats</h2>
+        {/* <p className="text-xs text-foreground-muted">
           Tus stats al día de hoy, lista para compartir.
-        </p>
+        </p> */}
         <LiveStatsCard
           userId={user.id}
           text={`Llevo ${points} pts y ${accuracyRow?.accuracy ?? 0}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`}
