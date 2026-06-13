@@ -91,17 +91,19 @@ export function MatchCard({
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <Team flag={match.home_flag} name={match.home_team} />
-        {hasScore ? (
+      {/* La cabecera de equipos solo aparece cuando hay marcador (en vivo /
+          terminado): ahí los botones del PredictionForm ya no están. En un
+          partido abierto los botones muestran bandera + nombre, así que repetir
+          los equipos arriba sobra y confunde — quedan solo grupo y hora. */}
+      {hasScore && (
+        <div className="flex items-center justify-between gap-3">
+          <Team flag={match.home_flag} name={match.home_team} />
           <span className="shrink-0 text-xl font-bold tabular-nums">
             {match.score_home} - {match.score_away}
           </span>
-        ) : (
-          <span className="text-xs font-semibold text-foreground-muted">vs</span>
-        )}
-        <Team flag={match.away_flag} name={match.away_team} align="right" />
-      </div>
+          <Team flag={match.away_flag} name={match.away_team} align="right" />
+        </div>
+      )}
 
       {/* En knockout con empate, el marcador no dice quién pasa: lo aclara
           winner_team (definido por penales). */}
