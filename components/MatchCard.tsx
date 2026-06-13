@@ -1,7 +1,7 @@
 import { Consensus } from "@/components/Consensus";
+import { KickoffTime } from "@/components/KickoffTime";
 import { MatchResultCard } from "@/components/MatchResultCard";
 import { PredictionForm } from "@/components/PredictionForm";
-import { TOURNAMENT_TIME_ZONE } from "@/lib/scoring/streaks";
 import type { GoalsRange, MatchStatus, ResultPred } from "@/types/domain";
 
 /**
@@ -52,15 +52,6 @@ export function phaseLabel(phase: string): string {
   return PHASE_LABELS[phase] ?? phase;
 }
 
-function kickoffLabel(kickoffAt: string): string {
-  return new Intl.DateTimeFormat("es", {
-    timeZone: TOURNAMENT_TIME_ZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date(kickoffAt));
-}
-
 export function MatchCard({
   match,
   prediction,
@@ -95,7 +86,7 @@ export function MatchCard({
         ) : match.status === "finished" ? (
           <span className="font-semibold">Final</span>
         ) : (
-          <time dateTime={match.kickoff_at}>{kickoffLabel(match.kickoff_at)}</time>
+          <KickoffTime kickoffAt={match.kickoff_at} />
         )}
       </div>
 

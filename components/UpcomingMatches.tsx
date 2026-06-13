@@ -1,3 +1,4 @@
+import { KickoffTime } from "@/components/KickoffTime";
 import { phaseLabel } from "@/components/MatchCard";
 import { nextDay, tournamentToday } from "@/lib/matches/day";
 import { TOURNAMENT_TIME_ZONE, toTournamentDay } from "@/lib/scoring/streaks";
@@ -30,15 +31,6 @@ function dayLabel(day: string, tomorrow: string): string {
     day: "numeric",
     month: "long",
   }).format(date);
-}
-
-function kickoffLabel(kickoffAt: string): string {
-  return new Intl.DateTimeFormat("es", {
-    timeZone: TOURNAMENT_TIME_ZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date(kickoffAt));
 }
 
 /** Agrupa los partidos (ya ordenados por kickoff) por día del torneo. */
@@ -83,12 +75,10 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
                   aria-hidden
                 />
                 <div className="flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2">
-                  <time
-                    dateTime={match.kickoff_at}
+                  <KickoffTime
+                    kickoffAt={match.kickoff_at}
                     className="shrink-0 text-xs font-semibold tabular-nums text-foreground-muted"
-                  >
-                    {kickoffLabel(match.kickoff_at)}
-                  </time>
+                  />
                   <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
                     <Flag flag={match.home_flag} />
                     <span className="truncate font-medium">
