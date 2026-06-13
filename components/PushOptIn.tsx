@@ -6,7 +6,7 @@ import {
   isPushSupported,
   isValidVapidPublicKey,
   subscribeToPush,
-  type PushSubscribeResult,
+  PUSH_REASON_MESSAGES,
 } from "@/lib/notifications/client";
 
 /**
@@ -18,20 +18,6 @@ import {
  * se gestionan desde la configuración del navegador).
  */
 type Status = "loading" | "unsupported" | "off" | "on" | "denied";
-
-const REASON_MESSAGES: Record<
-  Exclude<PushSubscribeResult, { ok: true }>["reason"],
-  string
-> = {
-  unsupported: "Tu navegador no soporta notificaciones push.",
-  denied: "Permiso denegado. Activa las notificaciones en la configuración del navegador.",
-  invalid_key:
-    "La clave de notificaciones no es válida. Regenérala con npm run gen:vapid y actualiza las variables en Vercel.",
-  service_error:
-    "El navegador no pudo conectar con el servicio de push. Prueba Chrome o Edge, desactiva bloqueadores, o revisa que las notificaciones estén permitidas en Windows.",
-  backend_error: "No se pudo guardar la suscripción. Intenta de nuevo.",
-  sw_unavailable: "Necesitas HTTPS y la app instalada o recargada para activar notificaciones.",
-};
 
 export function PushOptIn() {
   const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
@@ -82,7 +68,7 @@ export function PushOptIn() {
         setStatus("denied");
         return;
       }
-      setMessage(REASON_MESSAGES[result.reason]);
+      setMessage(PUSH_REASON_MESSAGES[result.reason]);
     } finally {
       setBusy(false);
     }

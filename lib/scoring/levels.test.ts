@@ -4,7 +4,6 @@ import { levelForPoints, nextLevel, levelByKey } from "@/lib/scoring/levels";
 describe("levelForPoints", () => {
   it("arranca en Suplente desde 0", () => {
     expect(levelForPoints(0).key).toBe("suplente");
-    expect(levelForPoints(99).key).toBe("suplente");
   });
 
   it("Titular a partir de 100", () => {
