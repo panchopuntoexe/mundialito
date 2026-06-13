@@ -240,7 +240,7 @@ export async function renderMatchResultImage(
           }}
         >
           <Square correct={data.resultCorrect} label="Resultado" />
-          <Square correct={data.goalsCorrect} label="Goles" />
+          <Square correct={data.goalsCorrect} label="Marcador" />
         </div>
 
         {/* Footer: QR + host (igual que la tarjeta Wrapped) */}

@@ -5,7 +5,7 @@ import {
   predictAtFor,
   type BotMatch,
 } from "@/lib/bots/strategy";
-import { GOALS_RANGES } from "@/types/domain";
+import { MAX_GOALS_PER_TEAM } from "@/lib/validations/prediction";
 
 /** Ids sintéticos con forma de UUID-ish: solo importa que sean estables. */
 const botIds = Array.from({ length: 50 }, (_, i) => `bot-${i}-fake-uuid`);
@@ -121,22 +121,45 @@ describe("decidePrediction", () => {
     expect(counts.home).toBeGreaterThan(counts.away);
   });
 
-  it("los cuatro rangos de goles aparecen y 2-3 es el más común", () => {
-    const counts = new Map<string, number>(GOALS_RANGES.map((r) => [r, 0]));
+  it("el marcador es coherente con el resultado y está dentro de rango", () => {
     for (const id of botIds) {
-      for (const match of manyGroupMatches(200)) {
+      for (const match of manyGroupMatches(100)) {
         const pick = decidePrediction(id, match);
-        counts.set(
-          pick.goals_range_pred,
-          (counts.get(pick.goals_range_pred) ?? 0) + 1,
-        );
+        for (const g of [pick.home_goals_pred, pick.away_goals_pred]) {
+          expect(Number.isInteger(g)).toBe(true);
+          expect(g).toBeGreaterThanOrEqual(0);
+          expect(g).toBeLessThanOrEqual(MAX_GOALS_PER_TEAM);
+        }
+        if (pick.result_pred === "home") {
+          expect(pick.home_goals_pred).toBeGreaterThan(pick.away_goals_pred);
+        } else if (pick.result_pred === "away") {
+          expect(pick.away_goals_pred).toBeGreaterThan(pick.home_goals_pred);
+        } else {
+          expect(pick.home_goals_pred).toBe(pick.away_goals_pred);
+        }
       }
     }
-    for (const range of GOALS_RANGES) {
-      expect(counts.get(range)).toBeGreaterThan(0);
+  });
+
+  it("aparecen distintos marcadores y los de pocos goles dominan", () => {
+    const totals = new Map<number, number>();
+    for (const id of botIds) {
+      for (const match of manyGroupMatches(100)) {
+        const pick = decidePrediction(id, match);
+        const total = pick.home_goals_pred + pick.away_goals_pred;
+        totals.set(total, (totals.get(total) ?? 0) + 1);
+      }
     }
-    const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-    expect(sorted[0][0]).toBe("2-3");
+    // Variedad: no todos los partidos terminan con el mismo total de goles.
+    expect(totals.size).toBeGreaterThan(3);
+    // Partidos de muchos goles (≥6) son minoritarios frente a los de pocos (≤3).
+    let few = 0;
+    let many = 0;
+    for (const [total, count] of totals) {
+      if (total <= 3) few += count;
+      if (total >= 6) many += count;
+    }
+    expect(few).toBeGreaterThan(many);
   });
 });
 

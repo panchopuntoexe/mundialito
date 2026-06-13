@@ -30,7 +30,7 @@ export async function GET(
   const { data, error } = await supabase
     .from("predictions")
     .select(
-      "id, match_id, result_pred, goals_range_pred, result_correct, goals_correct, points_earned, created_at",
+      "id, match_id, result_pred, home_goals_pred, away_goals_pred, result_correct, goals_correct, points_earned, created_at",
     )
     .eq("user_id", user.id)
     .eq("match_id", matchId)

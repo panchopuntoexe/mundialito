@@ -1,7 +1,8 @@
 /**
- * Estrategia de pronóstico de bots — lógica pura y determinista (tarea 9.2).
+ * Estrategia de pronóstico de bots — lógica pura y determinista (tarea 9.2,
+ * rediseño 0013).
  *
- * `decidePrediction` elige resultado y rango de goles con pesos que mezclan:
+ * `decidePrediction` elige resultado y MARCADOR EXACTO con pesos que mezclan:
  * tier estático del equipo (sin datos de cuotas), skill de la persona y sus
  * sesgos. Semilla por (userId, matchId): re-correr el job produce EXACTAMENTE
  * los mismos picks. Calibrada para ~30–45 % de acierto de resultado: mediocre
@@ -11,8 +12,9 @@
  * [10 min, 36 h] antes del kickoff, según su `earliness`: 50 bots no
  * pronostican en ráfaga y el cron de 5 min nunca pierde la ventana.
  */
-import { fnv1a, mulberry32, personaFor } from "@/lib/bots/persona";
-import type { GoalsRange, ResultPred } from "@/types/domain";
+import { type BotPersona, fnv1a, mulberry32, personaFor } from "@/lib/bots/persona";
+import { MAX_GOALS_PER_TEAM } from "@/lib/validations/prediction";
+import type { ResultPred } from "@/types/domain";
 
 /** Subconjunto de `matches` que necesita la estrategia. */
 export interface BotMatch {
@@ -25,7 +27,8 @@ export interface BotMatch {
 
 export interface BotPick {
   result_pred: ResultPred;
-  goals_range_pred: GoalsRange;
+  home_goals_pred: number;
+  away_goals_pred: number;
 }
 
 /**
@@ -63,7 +66,7 @@ const MIN_OFFSET_MS = 10 * 60 * 1000; // ≥10 min: el cron de 5 min nunca llega
 const MAX_OFFSET_MS = 36 * 60 * 60 * 1000;
 
 /** Elección ponderada determinista. Los pesos no necesitan sumar 1. */
-function weightedPick<T extends string>(
+function weightedPick<T>(
   rng: () => number,
   weights: ReadonlyArray<readonly [T, number]>,
 ): T {
@@ -97,16 +100,50 @@ export function decidePrediction(userId: string, match: BotMatch): BotPick {
     ["away", 0.34 - 0.1 * favEdge * persona.skill],
   ]);
 
-  // Distribución base realista de goles totales, corrida por el tilt personal.
-  const t = persona.goalsTilt;
-  const goals = weightedPick<GoalsRange>(rng, [
-    ["0-1", 0.3 - t],
-    ["2-3", 0.45],
-    ["4-5", 0.2 + 0.7 * t],
-    ["6+", 0.05 + 0.3 * t],
-  ]);
+  const { home, away } = decideScore(rng, persona, result);
+  return { result_pred: result, home_goals_pred: home, away_goals_pred: away };
+}
 
-  return { result_pred: result, goals_range_pred: goals };
+const clampGoals = (n: number) => Math.min(Math.max(n, 0), MAX_GOALS_PER_TEAM);
+
+/**
+ * Marcador exacto COHERENTE con el resultado ya elegido (rediseño 0013). Empate
+ * → goles iguales; victoria → goles del perdedor + un margen. La distribución
+ * base (pocos goles, mayoría 0-1 por lado) se corre con el `goalsTilt` personal.
+ */
+function decideScore(
+  rng: () => number,
+  persona: BotPersona,
+  result: ResultPred,
+): { home: number; away: number } {
+  const t = persona.goalsTilt;
+
+  if (result === "draw") {
+    const d = weightedPick<number>(rng, [
+      [0, 0.3 - t],
+      [1, 0.4],
+      [2, 0.22 + 0.7 * t],
+      [3, 0.08 + 0.3 * t],
+    ]);
+    return { home: clampGoals(d), away: clampGoals(d) };
+  }
+
+  const loser = weightedPick<number>(rng, [
+    [0, 0.45 - t],
+    [1, 0.35],
+    [2, 0.15 + 0.7 * t],
+    [3, 0.05 + 0.3 * t],
+  ]);
+  const margin = weightedPick<number>(rng, [
+    [1, 0.5],
+    [2, 0.3],
+    [3, 0.15],
+    [4, 0.05],
+  ]);
+  const winner = clampGoals(loser + margin);
+  return result === "home"
+    ? { home: winner, away: clampGoals(loser) }
+    : { home: clampGoals(loser), away: winner };
 }
 
 /**

@@ -86,6 +86,8 @@ create index idx_matches_status on matches(status);
 -- PREDICTIONS
 -- ───────────────────────────────────────────────
 create type result_pred  as enum ('home', 'draw', 'away');
+-- goals_range quedó obsoleto en 0013 (marcador exacto). El enum sobrevive solo
+-- por la columna legacy goals_range_pred de filas históricas.
 create type goals_range   as enum ('0-1', '2-3', '4-5', '6+');
 
 create table predictions (
@@ -93,10 +95,13 @@ create table predictions (
   user_id           uuid not null references users(id),
   match_id          bigint not null references matches(id),
   result_pred       result_pred not null,
-  goals_range_pred  goals_range not null,
+  -- marcador exacto pronosticado por equipo (0013): van ambos o ninguno.
+  home_goals_pred   int,
+  away_goals_pred   int,
+  goals_range_pred  goals_range,    -- legacy (pre-0013), nullable
   -- resultados del cálculo (null hasta que el partido se procesa):
   result_correct    boolean,
-  goals_correct     boolean,
+  goals_correct     boolean,        -- 0013: true = marcador exacto (ambos equipos)
   points_earned     int,
   created_at        timestamptz default now(),
   unique (user_id, match_id)        -- un solo pronóstico por usuario por partido
@@ -192,34 +197,38 @@ create table push_subscriptions (
 | Acierto                                                                              | Puntos |
 | ------------------------------------------------------------------------------------ | ------ |
 | Resultado correcto (Local/Empate/Visitante en grupos; equipo que avanza en knockout) | 10     |
-| Rango de goles correcto (bonus, solo si acertaste el resultado)                      | +15    |
+| Cercanía del marcador, por equipo (\|pronóstico − real\|): 0 → 7, 1 → 3, 2 → 1, ≥3 → 0 | hasta +14 |
+| Marcador exacto en ambos equipos (extra)                                             | +1     |
 
-Los puntos son **solo precisión**. NO hay multiplicador por racha — la racha está
-desacoplada de los puntos (ver ADR 0001). El resultado en knockout es el equipo que
-avanza (no hay empate); el rango de goles cuenta reglamentario + alargue, **sin** la
-tanda de penales.
+Los puntos son **solo precisión** (tope total 25). NO hay multiplicador por racha — la
+racha está desacoplada de los puntos (ver ADR 0001). El resultado en knockout es el
+equipo que avanza (no hay empate); la cercanía del marcador cuenta reglamentario +
+alargue, **sin** la tanda de penales, y se puntúa **independiente** del resultado
+(rediseño 0013; reemplazó al bonus de rango de goles).
 
 ### Algoritmo (pseudocódigo)
 
 ```
 function calculatePoints(prediction, match):
-    points = 0
     // Knockout: el resultado lo decide quién avanza (el marcador puede estar empatado).
-    // Grupos: se deriva del marcador a 90'.
+    // Grupos: se deriva del marcador a 90'/alargue.
     actualResult = match.winner_team ?? deriveResult(match.score_home, match.score_away)
-    // total_goals = reglamentario + alargue, SIN tanda de penales.
-    actualGoalsRange = deriveGoalsRange(match.total_goals)
-
     resultCorrect = (prediction.result_pred == actualResult)
-    goalsCorrect  = (prediction.goals_range_pred == actualGoalsRange)
 
-    if resultCorrect:
-        points += 10
-        if goalsCorrect:
-            points += 15
+    // Bonus de marcador (opcional: home_goals_pred/away_goals_pred van juntos o null).
+    // P(d) = [7, 3, 1][d] ?? 0  — caída exponencial por equipo. Sin penales.
+    scoreBonus = 0
+    exactScore = false
+    if prediction.home_goals_pred != null:
+        dHome = |prediction.home_goals_pred - match.score_home|
+        dAway = |prediction.away_goals_pred - match.score_away|
+        exactScore = (dHome == 0 and dAway == 0)
+        scoreBonus = P(dHome) + P(dAway) + (exactScore ? 1 : 0)
 
-    // Sin multiplicador de racha (ADR 0001).
-    return { points, resultCorrect, goalsCorrect }
+    points = (resultCorrect ? 10 : 0) + scoreBonus
+
+    // Sin multiplicador de racha (ADR 0001). goalsCorrect = marcador exacto.
+    return { points, resultCorrect, goalsCorrect: exactScore }
 ```
 
 **Idempotencia:** el calculador solo procesa `matches` con `status = 'finished'` y `processed = false`. Al terminar, marca `processed = true` en una transacción. Si corre dos veces, la segunda no encuentra partidos sin procesar.
@@ -233,7 +242,7 @@ function calculatePoints(prediction, match):
 ```
 POST /api/predictions
   1. Auth middleware verifica sesión
-  2. Zod valida body { match_id, result_pred, goals_range_pred }
+  2. Zod valida body { match_id, result_pred, home_goals_pred?, away_goals_pred? }
   3. Lee el match de caché/DB → verifica kickoff_at > now()
      └─ si ya empezó → 409 Conflict
      └─ si es knockout y result_pred = 'draw' → 422 (no hay empate en knockout)

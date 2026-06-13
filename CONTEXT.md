@@ -9,16 +9,16 @@ El conjunto de _todos_ los partidos cuyo kickoff cae en el día actual. Los part
 _Avoid_: "el partido del día" en singular (el producto no curaba un único partido — se predicen todos los del día).
 
 **Pronóstico** (Prediction):
-La apuesta de un usuario sobre un partido: un `result_pred` (local/empate/visitante) y un `goals_range_pred` (rango de goles totales). Uno solo por usuario por partido, inmutable tras el kickoff.
-_Avoid_: apuesta (no hay dinero), bet.
+La predicción de un usuario sobre un partido: un `result_pred` (local/empate/visitante) y, opcionalmente, el **marcador exacto** (`home_goals_pred`/`away_goals_pred`, goles de cada equipo). Uno solo por usuario por partido, inmutable tras el kickoff. (`goals_range_pred` quedó obsoleto en la migración 0013 — solo sobrevive en filas históricas.)
+_Avoid_: apuesta (no hay dinero), bet; rango de goles (concepto retirado en 0013).
 
 **Racha** (Streak):
 Cadena de **participación** consecutiva. Un día cuenta como participado solo si el usuario pronosticó **todos los partidos del día que aún estaban abiertos** (kickoff en el futuro) al momento de su primer pronóstico de ese día — así la racha siempre es alcanzable para quien se presenta, sin caer en la trampa de partidos ya cerrados antes de abrir la app. NO mide aciertos: no se rompe por fallar, solo por dejar abierto un partido sin pronosticar. El límite de "día" usa una **zona horaria fija del torneo** (no la local del usuario). Se actualiza al **enviar el pronóstico** (no en el cron de resultados). Es una métrica **puramente de engagement** (badge 🔥, freeze, Wrapped, achievements) y **NO** afecta los puntos.
 _Avoid_: "racha de aciertos" (term obsoleto de ARCHITECTURE.md §3 — la racha es de participación, no de precisión).
 
 **Puntos** (Points):
-Recompensa por **precisión** únicamente: 10 por acertar el `result_pred`, +15 de bonus si además se acierta el `goals_range_pred` (el bonus exige resultado correcto). NO hay multiplicador por racha. El leaderboard es un ranking de habilidad pura.
-_Avoid_: multiplicador de racha (la tabla ×1.2/×1.5/×2.0 de ARCHITECTURE.md §3 queda ELIMINADA).
+Recompensa por **precisión** únicamente: 10 por acertar el `result_pred`, más un bonus de **cercanía del marcador** (hasta +15) que crece mientras más cerca esté el pronóstico de los goles reales de cada equipo, con caída **exponencial** (por equipo: 0 de diferencia → 7, por 1 → 3, por 2 → 1, ≥3 → 0; +1 extra si el marcador es exacto). El bonus se cuenta **independiente** del resultado. Tope total 25 (marcador exacto + resultado). La cercanía cuenta reg + alargue, **sin penales**. NO hay multiplicador por racha. El leaderboard es un ranking de habilidad pura.
+_Avoid_: multiplicador de racha (la tabla ×1.2/×1.5/×2.0 de ARCHITECTURE.md §3 queda ELIMINADA); bonus de rango de goles (retirado en 0013).
 
 **Nivel** (Level):
 Capa de status **derivada** de `users.total_points` — no se persiste ni afecta el ranking. Cuatro tramos tipo "rol de jugador": **Suplente (0) → Titular (100) → Crack (300) → Leyenda (700+)**. Se calcula al vuelo donde se muestra: el header (junto al `@username`), las filas de leaderboard y la tarjeta Wrapped (snapshot `levelKey`). Umbrales y nombres centralizados en `lib/scoring/levels.ts`.

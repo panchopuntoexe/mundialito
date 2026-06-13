@@ -2,7 +2,7 @@ import { Consensus } from "@/components/Consensus";
 import { KickoffTime } from "@/components/KickoffTime";
 import { MatchResultCard } from "@/components/MatchResultCard";
 import { PredictionForm } from "@/components/PredictionForm";
-import type { GoalsRange, MatchStatus, ResultPred } from "@/types/domain";
+import type { MatchStatus, ResultPred } from "@/types/domain";
 
 /**
  * Tarjeta de un partido del día (tarea 4.4). Presentacional (server-component):
@@ -30,7 +30,8 @@ export interface MatchCardData {
 
 export interface MatchCardPrediction {
   result_pred: ResultPred;
-  goals_range_pred: GoalsRange | null;
+  home_goals_pred: number | null;
+  away_goals_pred: number | null;
   result_correct: boolean | null;
   goals_correct: boolean | null;
   points_earned: number | null;

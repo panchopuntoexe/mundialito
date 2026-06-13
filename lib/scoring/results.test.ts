@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GOALS_BONUS_POINTS, RESULT_POINTS } from "@/lib/scoring/calculate";
+import { MAX_SCORE_BONUS, RESULT_POINTS } from "@/lib/scoring/calculate";
 import {
   aggregateAchievementStats,
   buildMatchResults,
@@ -10,19 +10,19 @@ describe("buildMatchResults", () => {
   it("puntúa cada pronóstico y conserva su identidad (claves para la RPC)", () => {
     const match = { score_home: 2, score_away: 1, winner_team: null };
     const predictions: PredictionToScore[] = [
-      // Pleno: home + '2-3' (3 goles).
-      { id: "p1", user_id: "u1", result_pred: "home", goals_range_pred: "2-3" },
-      // Solo resultado: home + rango errado.
-      { id: "p2", user_id: "u2", result_pred: "home", goals_range_pred: "6+" },
-      // Fallo total.
-      { id: "p3", user_id: "u3", result_pred: "away", goals_range_pred: "0-1" },
+      // Pleno: home + marcador exacto 2-1.
+      { id: "p1", user_id: "u1", result_pred: "home", home_goals_pred: 2, away_goals_pred: 1 },
+      // Solo resultado: home, sin marcador.
+      { id: "p2", user_id: "u2", result_pred: "home", home_goals_pred: null, away_goals_pred: null },
+      // Fallo total: resultado errado y sin marcador.
+      { id: "p3", user_id: "u3", result_pred: "away", home_goals_pred: null, away_goals_pred: null },
     ];
 
     expect(buildMatchResults(predictions, match)).toEqual([
       {
         prediction_id: "p1",
         user_id: "u1",
-        points: RESULT_POINTS + GOALS_BONUS_POINTS,
+        points: RESULT_POINTS + MAX_SCORE_BONUS,
         result_correct: true,
         goals_correct: true,
       },

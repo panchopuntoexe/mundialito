@@ -114,8 +114,13 @@ export interface Database {
           user_id: string;
           match_id: number;
           result_pred: Database["public"]["Enums"]["result_pred"];
+          /** Legacy (pre-0013): rango de goles. Solo en filas históricas. */
           goals_range_pred: Database["public"]["Enums"]["goals_range"] | null;
+          /** Marcador exacto pronosticado por equipo (0013). Van juntas o ninguna. */
+          home_goals_pred: number | null;
+          away_goals_pred: number | null;
           result_correct: boolean | null;
+          /** Reinterpretada en 0013: true = marcador exacto (ambos equipos). */
           goals_correct: boolean | null;
           points_earned: number | null;
           created_at: string;
@@ -126,6 +131,8 @@ export interface Database {
           match_id: number;
           result_pred: Database["public"]["Enums"]["result_pred"];
           goals_range_pred?: Database["public"]["Enums"]["goals_range"] | null;
+          home_goals_pred?: number | null;
+          away_goals_pred?: number | null;
           result_correct?: boolean | null;
           goals_correct?: boolean | null;
           points_earned?: number | null;
@@ -134,6 +141,8 @@ export interface Database {
         Update: {
           result_pred?: Database["public"]["Enums"]["result_pred"];
           goals_range_pred?: Database["public"]["Enums"]["goals_range"] | null;
+          home_goals_pred?: number | null;
+          away_goals_pred?: number | null;
           result_correct?: boolean | null;
           goals_correct?: boolean | null;
           points_earned?: number | null;

@@ -68,7 +68,7 @@ export async function runProcessResults(): Promise<ProcessResultsSummary> {
 
     const { data: preds, error: predErr } = await admin
       .from("predictions")
-      .select("id, user_id, result_pred, goals_range_pred")
+      .select("id, user_id, result_pred, home_goals_pred, away_goals_pred")
       .eq("match_id", match.id);
     if (predErr) {
       console.error(`[processResults] error leyendo predicciones de ${match.id}:`, predErr);

@@ -84,7 +84,7 @@ export default async function Home() {
     const { data: preds } = await supabase
       .from("predictions")
       .select(
-        "match_id, result_pred, goals_range_pred, result_correct, goals_correct, points_earned",
+        "match_id, result_pred, home_goals_pred, away_goals_pred, result_correct, goals_correct, points_earned",
       )
       .eq("user_id", user.id)
       .in(
@@ -94,7 +94,8 @@ export default async function Home() {
     for (const p of preds ?? []) {
       predByMatch.set(p.match_id, {
         result_pred: p.result_pred,
-        goals_range_pred: p.goals_range_pred,
+        home_goals_pred: p.home_goals_pred,
+        away_goals_pred: p.away_goals_pred,
         result_correct: p.result_correct,
         goals_correct: p.goals_correct,
         points_earned: p.points_earned,

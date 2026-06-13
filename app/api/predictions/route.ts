@@ -10,7 +10,7 @@ import type { MacroRound } from "@/types/domain";
  *
  * Flujo (ARCHITECTURE §4.1):
  *  1. Auth + perfil (FK predictions.user_id → users.id).
- *  2. Zod valida el body { match_id, result_pred, goals_range_pred }.
+ *  2. Zod valida el body { match_id, result_pred, home_goals_pred, away_goals_pred }.
  *  3. Lee el match y RE-VALIDA la ventana SERVER-SIDE (regla de arquitectura 3):
  *     kickoff_at > now() → si ya empezó, 409. La RLS lo reafirma en profundidad.
  *  4. Knockout + result_pred='draw' → 422 (no hay empate en eliminación directa).
@@ -106,11 +106,14 @@ export async function POST(request: Request) {
         user_id: user.id,
         match_id: input.match_id,
         result_pred: input.result_pred,
-        goals_range_pred: input.goals_range_pred ?? null,
+        home_goals_pred: input.home_goals_pred ?? null,
+        away_goals_pred: input.away_goals_pred ?? null,
+        // El marcador reemplaza al rango (legacy): se limpia en cada upsert.
+        goals_range_pred: null,
       },
       { onConflict: "user_id,match_id" },
     )
-    .select("id, match_id, result_pred, goals_range_pred")
+    .select("id, match_id, result_pred, home_goals_pred, away_goals_pred")
     .single();
   if (upsertErr) {
     console.error("[api/predictions] error guardando pronóstico:", upsertErr);
