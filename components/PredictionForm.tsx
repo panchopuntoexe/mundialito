@@ -52,6 +52,10 @@ const SCORE_EXPLANATION =
  *  solo viaja la última (no quemamos el rate limit de 20/min). */
 const SAVE_DEBOUNCE_MS = 350;
 
+/** Cuánto se mantiene visible el "✓ Guardado" tras confirmar el server.
+ *  Al menos 1 minuto para que el usuario alcance a verlo con tranquilidad. */
+const SAVED_VISIBLE_MS = 60_000;
+
 type SaveStatus = "idle" | "saving" | "saved";
 
 /** Resultado implícito en un marcador. Empate en knockout → null (lo elige el usuario). */
@@ -177,7 +181,7 @@ export function PredictionForm({
         setSaved(confirmed);
         setStatus("saved");
         if (statusTimer.current) clearTimeout(statusTimer.current);
-        statusTimer.current = setTimeout(() => setStatus("idle"), 1500);
+        statusTimer.current = setTimeout(() => setStatus("idle"), SAVED_VISIBLE_MS);
         window.dispatchEvent(
           new CustomEvent("mundialito:prediction-saved", {
             detail: { matchId },
