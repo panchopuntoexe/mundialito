@@ -58,10 +58,6 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-sm font-bold tracking-tight text-foreground-muted">
-        Lo que se viene
-      </h2>
-
       {groups.map((group) => (
         <div key={group.day} className="flex flex-col gap-2">
           <h3 className="text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
@@ -93,9 +89,6 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
                     </span>
                   </div>
                 </div>
-                <span className="mt-0.5 block pl-0 text-[11px] uppercase tracking-wide text-foreground-muted">
-                  {phaseLabel(match.phase)}
-                </span>
               </li>
             ))}
           </ul>

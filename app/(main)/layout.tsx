@@ -68,8 +68,9 @@ export default async function MainLayout({
               <FaFire aria-hidden />
               {currentStreak}
             </span>
+            {/* Oculta temporalmente (no eliminar): reemplazar `hidden` por `inline-flex` para volver a mostrarla. */}
             <span
-              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
+              className="hidden shrink-0 items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-medium"
               style={{ color: level.color }}
               title={`Nivel: ${level.name} · ${profile.total_points} pts`}
             >

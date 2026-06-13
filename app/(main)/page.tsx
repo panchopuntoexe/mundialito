@@ -105,7 +105,7 @@ export default async function Home() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 p-4">
       <div className="flex items-baseline justify-between gap-2">
-        <h1 className="text-lg font-bold tracking-tight">Partidos de hoy</h1>
+        <h1 className="text-lg font-bold tracking-tight">Hoy:</h1>
         <span className="text-xs capitalize text-foreground-muted">
           {dayLabel(today)}
         </span>

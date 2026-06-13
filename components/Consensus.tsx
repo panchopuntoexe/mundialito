@@ -62,7 +62,7 @@ export function Consensus({
   return (
     <div className="mt-3 border-t border-border pt-3">
       <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
-        Consenso · {data.total} {data.total === 1 ? "pronóstico" : "pronósticos"}
+        Consenso:
       </p>
       <ul className="flex flex-col gap-1.5">
         {order
