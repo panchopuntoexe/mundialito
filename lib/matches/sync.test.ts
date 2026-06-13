@@ -3,8 +3,11 @@ import type { LiveScore } from "@/lib/external/apiFootball";
 import {
   buildSyncUpdates,
   isInSyncWindow,
+  MATCH_LIKELY_OVER_MS,
+  selectStaleCandidates,
   SYNC_LOOKAHEAD_MS,
   SYNC_LOOKBEHIND_MS,
+  type SyncCandidate,
 } from "@/lib/matches/sync";
 
 const NOW = new Date("2026-06-11T20:00:00.000Z");
@@ -85,5 +88,51 @@ describe("buildSyncUpdates", () => {
   it("omite filas sin live score correspondiente (no pisa con datos vacíos)", () => {
     const rows = [{ id: 40, api_football_id: 123 }];
     expect(buildSyncUpdates(rows, [])).toEqual([]);
+  });
+});
+
+describe("selectStaleCandidates", () => {
+  const cand = (over: Partial<SyncCandidate> & { id: number }): SyncCandidate => ({
+    api_football_id: over.id,
+    kickoff_at: NOW.toISOString(),
+    status: "live",
+    ...over,
+  });
+  const live = (apiId: number): LiveScore => ({
+    api_football_id: apiId,
+    status: "live",
+    score_home: 0,
+    score_away: 0,
+    winner_team: null,
+    kickoff_at: NOW.toISOString(),
+    home_name: "H",
+    away_name: "A",
+  });
+
+  it("marca un 'live' que ya no aparece en el feed (terminó y cayó de live=all)", () => {
+    const candidates = [cand({ id: 1, api_football_id: 100, status: "live" })];
+    expect(selectStaleCandidates(candidates, [], NOW).map((c) => c.id)).toEqual([1]);
+  });
+
+  it("NO marca un 'live' que sigue en el feed (todavía en juego)", () => {
+    const candidates = [cand({ id: 2, api_football_id: 200, status: "live" })];
+    expect(selectStaleCandidates(candidates, [live(200)], NOW)).toEqual([]);
+  });
+
+  it("marca un 'scheduled' viejo ausente del feed (terminó sin vernos en vivo)", () => {
+    const old = new Date(NOW.getTime() - MATCH_LIKELY_OVER_MS - 60_000).toISOString();
+    const candidates = [cand({ id: 3, api_football_id: 300, status: "scheduled", kickoff_at: old })];
+    expect(selectStaleCandidates(candidates, [], NOW).map((c) => c.id)).toEqual([3]);
+  });
+
+  it("NO marca un 'scheduled' reciente ausente del feed (aún no arranca)", () => {
+    const soon = new Date(NOW.getTime() - 10 * 60_000).toISOString();
+    const candidates = [cand({ id: 4, api_football_id: 400, status: "scheduled", kickoff_at: soon })];
+    expect(selectStaleCandidates(candidates, [], NOW)).toEqual([]);
+  });
+
+  it("omite candidatos sin api_football_id (no se pueden pedir por id)", () => {
+    const candidates = [cand({ id: 5, api_football_id: null, status: "live" })];
+    expect(selectStaleCandidates(candidates, [], NOW)).toEqual([]);
   });
 });

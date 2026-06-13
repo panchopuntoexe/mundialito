@@ -248,9 +248,17 @@ POST /api/predictions
 Cada 60s (solo si hay partidos 'live'):
   1. Verifica si hay matches con status='live' o kickoff dentro de 5 min
   2. Si los hay → llama API-Football /fixtures?live=all
-  3. Actualiza score y status en DB
-  4. Escribe scores en Redis (TTL 60s)
-  5. Si un match pasó a 'finished' → encola para Results Checker
+  3. Resuelve los que terminaron: live=all NO devuelve partidos finalizados, así
+     que un candidato 'live' (o 'scheduled' con kickoff hace +2.5h) que NO aparece
+     en el feed ya terminó → se pide su estado FINAL por id (/fixtures?ids=…).
+     Sin este paso, el match quedaba atascado en 'live' y Score Calc nunca lo
+     puntuaba (solo lo rescataba el backfill manual).
+  4. Actualiza score y status en DB
+  5. Escribe scores en Redis (TTL 60s)
+  6. Si un match pasó a 'finished' → lo levanta Results Checker (poletea finished+unprocessed)
+
+  Recuperación: si el cron estuvo caído > ventana de candidatos (~4h tras el
+  kickoff), el match queda fuera del sync y se recupera con `npm run db:backfill`.
 ```
 
 ### 4.3 Cálculo de puntos (Cron — Results Checker + Score Calc)

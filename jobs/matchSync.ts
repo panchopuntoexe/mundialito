@@ -12,11 +12,16 @@
  * La lógica de decisión y el join viven puras en `lib/matches/sync.ts` (testeadas);
  * acá solo el cableado con env, Supabase y Redis.
  */
-import { fetchLiveFixtures } from "@/lib/external/apiFootball";
+import {
+  fetchFixturesByIds,
+  fetchLiveFixtures,
+  type LiveScore,
+} from "@/lib/external/apiFootball";
 import {
   buildSyncUpdates,
   isInSyncWindow,
   LIVE_SCORE_TTL_SECONDS,
+  selectStaleCandidates,
   type SyncCandidate,
 } from "@/lib/matches/sync";
 import { serverEnv } from "@/lib/env";
@@ -65,8 +70,26 @@ export async function runMatchSync(now: Date = new Date()): Promise<MatchSyncSum
     return { skipped: true, candidates: 0, updated: 0 };
   }
 
-  const liveScores = await fetchLiveFixtures({ apiKey: serverEnv.API_FOOTBALL_KEY });
-  const updates = buildSyncUpdates(candidates, liveScores);
+  const apiKey = serverEnv.API_FOOTBALL_KEY;
+  const liveScores = await fetchLiveFixtures({ apiKey });
+
+  // `live=all` no devuelve partidos ya terminados: un candidato 'live' (o
+  // 'scheduled' viejo) que NO aparece en el feed ya terminó. Resolvemos su estado
+  // FINAL por id para que pase a 'finished' y Process Results (5.5) lo puntúe.
+  // Sin esto quedaba atascado en 'live' hasta correr el backfill a mano.
+  const stale = selectStaleCandidates(candidates, liveScores, now);
+  let resolvedScores: LiveScore[] = [];
+  if (stale.length > 0) {
+    const staleIds = stale.map((c) => c.api_football_id as number);
+    resolvedScores = await fetchFixturesByIds({ apiKey }, staleIds);
+    console.info(
+      `[matchSync] ${stale.length} partido(s) fuera del feed live; resueltos por id.`,
+    );
+  }
+
+  // Los resueltos van después de los live: si un id estuviera en ambos (no debería),
+  // gana el estado final. buildSyncUpdates dedup por api_football_id.
+  const updates = buildSyncUpdates(candidates, [...liveScores, ...resolvedScores]);
   const candidateById = new Map(candidates.map((c) => [c.id, c]));
 
   let updated = 0;

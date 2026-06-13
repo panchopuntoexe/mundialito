@@ -38,6 +38,14 @@ export interface SyncCandidate {
 }
 
 /**
+ * Tras cuánto del kickoff un partido "ya debería haber terminado": si para
+ * entonces NO aparece en `live=all`, terminó (o se suspendió) y hay que resolver
+ * su estado final por id. 2.5h cubre 90' + entretiempo + descuento + alargue +
+ * tanda con holgura.
+ */
+export const MATCH_LIKELY_OVER_MS = 2.5 * 60 * 60_000;
+
+/**
  * ¿El partido está en la ventana activa de sync? 'live' siempre; 'scheduled' solo
  * si su kickoff cae en `[now - LOOKBEHIND, now + LOOKAHEAD]`. 'finished'/'cancelled'
  * nunca (ya no cambian). Define si vale la pena pegarle a la API.
@@ -52,6 +60,29 @@ export function isInSyncWindow(
   const kickoff = new Date(match.kickoff_at).getTime();
   const t = now.getTime();
   return kickoff <= t + SYNC_LOOKAHEAD_MS && kickoff >= t - SYNC_LOOKBEHIND_MS;
+}
+
+/**
+ * Candidatos cuyo estado FINAL hay que resolver por id porque `live=all` ya no los
+ * devuelve. Dos casos: (a) estaban 'live' en la DB → terminaron y cayeron del feed;
+ * (b) eran 'scheduled' con kickoff hace más de `MATCH_LIKELY_OVER_MS` → terminaron
+ * sin que el sync llegara a verlos en vivo (p. ej. tras una caída). Sin esto el
+ * partido queda atascado en 'live'/'scheduled' y Process Results (5.5) nunca lo
+ * puntúa. Los que siguen en el feed (en vivo) y los sin `api_football_id` se omiten.
+ */
+export function selectStaleCandidates(
+  candidates: readonly SyncCandidate[],
+  liveScores: readonly LiveScore[],
+  now: Date,
+): SyncCandidate[] {
+  const liveApiIds = new Set(liveScores.map((ls) => ls.api_football_id));
+  const t = now.getTime();
+  return candidates.filter((c) => {
+    if (c.api_football_id === null) return false;
+    if (liveApiIds.has(c.api_football_id)) return false; // sigue en vivo
+    if (c.status === "live") return true;
+    return new Date(c.kickoff_at).getTime() <= t - MATCH_LIKELY_OVER_MS;
+  });
 }
 
 /** Cambios a aplicar a una fila de `matches` desde su live score. */

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  fetchFixturesByIds,
   fetchSeasonFixtures,
   mapFixture,
   mapStatus,
@@ -133,5 +134,49 @@ describe("fetchSeasonFixtures", () => {
     await expect(
       fetchSeasonFixtures({ apiKey: "k", baseUrl: "https://api.test", fetchImpl }),
     ).rejects.toThrow(/429/);
+  });
+});
+
+describe("fetchFixturesByIds", () => {
+  it("pega a /fixtures con ids separados por guión (cualquier estado)", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        errors: [],
+        response: [
+          {
+            fixture: { id: 100, date: "2026-06-11T20:00:00+00:00", status: { short: "FT" } },
+            teams: { home: { name: "A", winner: true }, away: { name: "B", winner: false } },
+            goals: { home: 2, away: 1 },
+          },
+        ],
+      }),
+    } as Response);
+
+    const out = await fetchFixturesByIds(
+      { apiKey: "k", baseUrl: "https://api.test", fetchImpl },
+      [100, 200],
+    );
+
+    const url = new URL(fetchImpl.mock.calls[0][0] as string);
+    expect(url.pathname).toBe("/fixtures");
+    expect(url.searchParams.get("ids")).toBe("100-200");
+    expect(url.searchParams.has("live")).toBe(false);
+    expect(out[0].status).toBe("finished");
+  });
+
+  it("trocea en lotes de 20 y no pega a la API con lista vacía", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ errors: [], response: [] }),
+    } as Response);
+    const cfg = { apiKey: "k", baseUrl: "https://api.test", fetchImpl };
+
+    expect(await fetchFixturesByIds(cfg, [])).toEqual([]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+
+    const ids = Array.from({ length: 45 }, (_, i) => i + 1);
+    await fetchFixturesByIds(cfg, ids);
+    expect(fetchImpl).toHaveBeenCalledTimes(3); // 20 + 20 + 5
   });
 });

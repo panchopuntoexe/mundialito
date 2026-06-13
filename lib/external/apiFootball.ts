@@ -204,3 +204,29 @@ export function fetchLiveFixtures(
     live: "all",
   });
 }
+
+/** Tope de ids por request de `/fixtures?ids=` (límite de API-Football v3). */
+export const MAX_FIXTURE_IDS_PER_REQUEST = 20;
+
+/**
+ * Fixtures puntuales por id, en CUALQUIER estado (incluido FT/finished).
+ * `GET /fixtures?ids=1-2-3`.
+ *
+ * Resuelve el hueco de `fetchLiveFixtures`: `live=all` deja de devolver un
+ * partido apenas termina, así que el sync (5.4) nunca veía la transición
+ * live→finished y el partido quedaba atascado en 'live' (sólo el backfill manual
+ * lo rescataba). Acá pedimos el estado FINAL de esos ids concretos. Trocea en
+ * lotes de 20 (límite de la API) y concatena.
+ */
+export async function fetchFixturesByIds(
+  config: ApiFootballConfig,
+  ids: readonly number[],
+): Promise<LiveScore[]> {
+  const unique = [...new Set(ids)].filter((id) => Number.isInteger(id));
+  const out: LiveScore[] = [];
+  for (let i = 0; i < unique.length; i += MAX_FIXTURE_IDS_PER_REQUEST) {
+    const chunk = unique.slice(i, i + MAX_FIXTURE_IDS_PER_REQUEST);
+    out.push(...(await getFixtures(config, { ids: chunk.join("-") })));
+  }
+  return out;
+}
