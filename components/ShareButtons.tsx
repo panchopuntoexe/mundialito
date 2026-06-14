@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { APP_URL } from "@/lib/appUrl";
 
 /**
  * Botonera de compartir reutilizable (tareas 7.4 y 7.5).
@@ -33,13 +34,12 @@ export function ShareButtons({
 
   const src = imageUrl ?? fallbackPath;
 
-  /** URL absoluta y pública de la imagen (sirve dentro y fuera de la app). */
+  /**
+   * URL que se incluye en el mensaje al compartir: el link a la app (no la imagen).
+   * Ya no se embebe un QR en la tarjeta, así que el destino vive en el texto.
+   */
   function shareUrl(): string {
-    if (imageUrl) return imageUrl;
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}${fallbackPath}`;
-    }
-    return src;
+    return APP_URL;
   }
 
   /** Baja la imagen (`src`) como File para compartirla/descargarla. null si falla. */
@@ -81,7 +81,13 @@ export function ShareButtons({
       const file = await fetchImageFile();
       if (file && navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title: "Mundialito 2026", text });
+          await navigator.share({
+            files: [file],
+            title: "Mundialito 2026",
+            // Al compartir la imagen como archivo no hay campo `url`: el link
+            // a la app va dentro del texto.
+            text: `${text} ${shareUrl()}`,
+          });
         } catch (err) {
           // AbortError = el usuario canceló (no es error); otro fallo → caer al link.
           if ((err as Error)?.name !== "AbortError") {

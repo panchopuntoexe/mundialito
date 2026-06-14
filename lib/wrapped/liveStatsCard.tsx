@@ -12,9 +12,8 @@
  * producción.
  */
 import { ImageResponse } from "next/og";
-import { APP_HOST, APP_URL } from "@/lib/appUrl";
-import { levelByKey, type LevelKey } from "@/lib/scoring/levels";
-import { qrDataUrl } from "@/lib/wrapped/qr";
+import { APP_HOST } from "@/lib/appUrl";
+import { type LevelKey } from "@/lib/scoring/levels";
 
 /** Cuadrada 1:1, igual que la mini-tarjeta de resultado (feed/chat previews). */
 export const LIVE_STATS_CARD_SIZE = 1080;
@@ -85,11 +84,6 @@ function StatBlock({
 export async function renderLiveStatsImage(
   data: LiveStatsCardData,
 ): Promise<ImageResponse> {
-  const level = levelByKey(data.levelKey);
-  // QR a la app (mismo de las otras tarjetas): quien ve la imagen compartida
-  // queda a un escaneo de jugar.
-  const qr = await qrDataUrl(APP_URL);
-
   return new ImageResponse(
     (
       <div
@@ -114,20 +108,7 @@ export async function renderLiveStatsImage(
           }}
         >
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div
-              style={{
-                fontSize: 30,
-                color: COLOR.brand,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: 4,
-              }}
-            >
-              Mundialito 2026
-            </div>
-            {/* <div style={{ fontSize: 52, fontWeight: 800, marginTop: 8 }}>
-              Mis stats
-            </div> */}
+            <div style={{ fontSize: 52, fontWeight: 800 }}>Mis stats</div>
             <div style={{ fontSize: 38, color: COLOR.muted, marginTop: 4 }}>
               {`@${data.username}`}
             </div>
@@ -206,54 +187,29 @@ export async function renderLiveStatsImage(
           />
         </div>
 
-        {/* Footer: nivel (izq) · QR + nombre de la app (der) */}
+        {/* Footer: branding + URL de la app */}
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
-            alignItems: "flex-end",
-            justifyContent: "space-between",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 6,
             marginTop: "auto",
             paddingTop: 24,
           }}
         >
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              alignSelf: "flex-end",
-              backgroundColor: COLOR.surface,
-              border: `2px solid ${level.color}`,
-              borderRadius: 9999,
-              padding: "10px 22px",
-              fontSize: 34,
+              fontSize: 32,
+              color: COLOR.brand,
               fontWeight: 700,
-              color: level.color,
               textTransform: "uppercase",
-              letterSpacing: 2,
+              letterSpacing: 4,
             }}
           >
-            {level.name}
+            Mundialito 2026
           </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={qr}
-              width={110}
-              height={110}
-              alt=""
-              style={{ borderRadius: 14, backgroundColor: "#ffffff" }}
-            />
-            <div style={{ fontSize: 26, color: COLOR.muted }}>{APP_HOST}</div>
-          </div>
+          <div style={{ fontSize: 28, color: COLOR.muted }}>{APP_HOST}</div>
         </div>
       </div>
     ),
