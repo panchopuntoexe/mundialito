@@ -17,6 +17,7 @@ import {
   FaShirt,
   FaStar,
   FaTrophy,
+  FaUserPlus,
   FaUserShield,
   FaWandMagicSparkles,
 } from "react-icons/fa6";
@@ -54,6 +55,7 @@ const BADGE_ICONS: Record<AchievementType, IconType> = {
   streak_3: FaCalendarDays,
   streak_legend: FaBolt,
   centurion: FaMedal,
+  ambassador: FaUserPlus,
 };
 
 export function LevelIcon({

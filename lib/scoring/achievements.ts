@@ -18,7 +18,8 @@ export type AchievementType =
   | "streak_legend" // racha de participación de 10
   | "centurion" // 100+ puntos
   | "tournament_opener" // pronosticó el primer partido del torneo
-  | "hot_streak"; // más de 3 partidos seguidos acertados
+  | "hot_streak" // más de 3 partidos seguidos acertados
+  | "ambassador"; // un invitado tuyo se registró (Bet 1)
 
 export interface AchievementStats {
   totalPredictions: number;
@@ -94,6 +95,15 @@ export const ACHIEVEMENT_DEFS: readonly AchievementDef[] = [
     label: "Centurión",    description: "Llegaste a 100 puntos.",
     funFact: "100 puntos. ¿HUH?",
     earned: (s) => s.totalPoints >= 100,
+  },
+  {
+    type: "ambassador",
+    label: "Embajador",    description: "Un amigo se unió con tu invitación.",
+    funFact: "Trajiste sangre nueva. La cancha te lo agradece.",
+    // Se otorga por EVENTO de referral (al registrarse un invitado tuyo), no por
+    // stats de partidos: el evaluador basado en stats nunca lo concede. Ver
+    // lib/referrals/referrals.ts (attachReferral) y app/api/users/route.ts.
+    earned: () => false,
   },
 ] as const;
 

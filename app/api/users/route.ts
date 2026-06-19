@@ -1,4 +1,6 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { attachReferral } from "@/lib/referrals/referrals";
 import { getServerUser } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import {
@@ -6,6 +8,9 @@ import {
   createUserSchema,
   updateUsernameSchema,
 } from "@/lib/validations/user";
+
+/** Cookie de atribución de referral (la setea el proxy desde ?ref=<username>). */
+const REF_COOKIE = "mundialito_ref";
 
 /**
  * Endpoint de perfil de usuario (tarea 2.3 — onboarding).
@@ -137,6 +142,21 @@ export async function POST(request: Request) {
       { error: "No se pudo crear el perfil." },
       { status: 500 },
     );
+  }
+
+  // Atribución de referral (Bet 1): best-effort, nunca rompe el alta. La cookie
+  // la dejó el proxy (?ref=<username>). Recompensa al que invitó con "Embajador".
+  const cookieStore = await cookies();
+  const refUsername = cookieStore.get(REF_COOKIE)?.value ?? null;
+  if (refUsername) {
+    await attachReferral({
+      admin,
+      newUserId: user.id,
+      newUsername: username,
+      refUsername,
+    });
+    // Consumida: limpiar para no re-atribuir un alta futura en este navegador.
+    cookieStore.set(REF_COOKIE, "", { maxAge: 0, path: "/" });
   }
 
   return NextResponse.json({ user: created }, { status: 201 });

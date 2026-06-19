@@ -3,10 +3,12 @@ import { redirect } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { LevelIcon } from "@/components/icons";
 import { ChangeUsernameForm } from "@/components/ChangeUsernameForm";
+import { InviteFriendsCard } from "@/components/InviteFriendsCard";
 import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SignOutButton } from "@/components/SignOutButton";
 import { WrappedCard } from "@/components/WrappedCard";
 import { loadUserRank } from "@/lib/leaderboards/loadRank";
+import { loadReferralCount } from "@/lib/referrals/referrals";
 import {
   ACHIEVEMENT_DEFS,
   type AchievementType,
@@ -70,6 +72,7 @@ export default async function EstadisticasPage() {
   // Posición en el ranking para el TEXTO de compartir (la imagen ya la lleva).
   // Solo con puntos > 0: un "#N de N" para 0 pts no aporta. (A4)
   const accuracyPct = accuracyRow?.accuracy ?? 0;
+  const referralCount = profile ? await loadReferralCount(user.id) : 0;
   const liveRankData = points > 0 ? await loadUserRank(points) : null;
   const statsShareText = liveRankData
     ? `Voy #${liveRankData.rank} de ${liveRankData.total} con ${points} pts y ${accuracyPct}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`
@@ -144,6 +147,13 @@ export default async function EstadisticasPage() {
           refUsername={profile?.username ?? null}
         />
       </section>
+
+      {profile && (
+        <InviteFriendsCard
+          username={profile.username}
+          referralCount={referralCount}
+        />
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-bold tracking-tight">
