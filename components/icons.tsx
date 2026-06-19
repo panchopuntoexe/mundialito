@@ -7,12 +7,18 @@ import {
   FaClapperboard,
   FaCrown,
   FaFire,
+  FaFutbol,
   FaGem,
+  FaHeart,
   FaMedal,
   FaPencil,
+  FaRankingStar,
+  FaSeedling,
   FaShirt,
   FaStar,
   FaTrophy,
+  FaUserShield,
+  FaWandMagicSparkles,
 } from "react-icons/fa6";
 import type { AchievementType } from "@/lib/scoring/achievements";
 import type { LevelKey } from "@/lib/scoring/levels";
@@ -26,11 +32,17 @@ import type { LevelKey } from "@/lib/scoring/levels";
 
 const LEVEL_ICONS: Record<LevelKey, IconType> = {
   suplente: FaChair,
+  promesa: FaSeedling,
   titular: FaShirt,
+  goleador: FaFutbol,
   crack: FaStar,
+  figura: FaWandMagicSparkles,
   leyenda: FaCrown,
+  capitan: FaUserShield,
   campeon: FaMedal,
+  idolo: FaHeart,
   cesped: FaTrophy,
+  inmortal: FaRankingStar,
 };
 
 const BADGE_ICONS: Record<AchievementType, IconType> = {
