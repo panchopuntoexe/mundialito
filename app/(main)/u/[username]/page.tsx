@@ -1,12 +1,58 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { GuestCta } from "@/components/GuestCta";
 import { LevelIcon } from "@/components/icons";
 import { ProfilePredictions } from "@/components/ProfilePredictions";
+import { APP_URL } from "@/lib/appUrl";
 import { loadProfilePredictions, loadPublicProfile } from "@/lib/profiles/load";
 import { ACHIEVEMENT_DEFS } from "@/lib/scoring/achievements";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { createClient } from "@/lib/supabase/server";
+
+/**
+ * OG dinámico (Bet 3): un link de perfil compartido en WhatsApp/X muestra una
+ * tarjeta rica (username + nivel + puntos + precisión) en vez de un preview
+ * pobre. La `og:image` reusa la imagen Satori de stats en vivo (pública). Sube el
+ * click-through de cada share — el motor de la viralidad.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
+  const profile = await loadPublicProfile(
+    decodeURIComponent(username).toLowerCase(),
+  );
+  if (!profile) {
+    return { title: "Perfil no encontrado · Mundialito 2026" };
+  }
+
+  const level = levelForPoints(profile.total_points);
+  const title = `@${profile.username} · ${level.name} · Mundialito 2026`;
+  const description = `${profile.total_points} pts y ${profile.accuracy}% de aciertos en el Mundial 2026. ¿Le ganas?`;
+  const image = `${APP_URL}/api/wrapped/live-image?user=${profile.user_id}`;
+  const url = `${APP_URL}/u/${encodeURIComponent(profile.username)}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "profile",
+      images: [{ url: image, width: 1080, height: 1080, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
 
 /**
  * Perfil público de un usuario: la tarjeta de estadísticas detrás de cada fila

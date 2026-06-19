@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
   ACHIEVEMENT_BY_TYPE,
   type AchievementType,
@@ -28,8 +29,12 @@ export interface PublicProfile {
   earned: AchievementType[];
 }
 
-/** El perfil público de `username`, o null si no existe. */
-export async function loadPublicProfile(
+/**
+ * El perfil público de `username`, o null si no existe. Envuelto en `cache` de
+ * React: `generateMetadata` (OG) y el render de la página comparten una sola
+ * lectura por request en lugar de pegarle dos veces a la DB (Bet 3).
+ */
+export const loadPublicProfile = cache(async function loadPublicProfile(
   username: string,
 ): Promise<PublicProfile | null> {
   const admin = createAdminClient();
@@ -81,7 +86,7 @@ export async function loadPublicProfile(
     max_streak: streakRes.data?.max_streak ?? 0,
     earned,
   };
-}
+});
 
 /** Un pronóstico del usuario junto al resultado real de su partido. */
 export interface ProfilePrediction {
