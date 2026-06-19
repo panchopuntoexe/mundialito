@@ -5,6 +5,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { LevelIcon } from "@/components/icons";
 import { SaveAccountButton } from "@/components/SaveAccountButton";
 import { Samy } from "@/components/Samy";
+import { ToastProvider } from "@/components/Toaster";
 import { levelForPoints } from "@/lib/scoring/levels";
 import { getServerProfile, getServerUser } from "@/lib/supabase/auth";
 import { GUEST_PREFIX } from "@/lib/users/guest";
@@ -49,7 +50,7 @@ export default async function MainLayout({
   }
 
   return (
-    <>
+    <ToastProvider>
       <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <span className="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
           <Samy />
@@ -121,6 +122,6 @@ export default async function MainLayout({
         {children}
       </div>
       <BottomNav />
-    </>
+    </ToastProvider>
   );
 }

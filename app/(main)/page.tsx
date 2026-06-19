@@ -2,6 +2,7 @@ import { FaRegCalendarCheck } from "react-icons/fa6";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { DayCompleteCelebration } from "@/components/DayCompleteCelebration";
 import { DayProgress } from "@/components/DayProgress";
+import { LiveFeedToasts } from "@/components/LiveFeedToasts";
 import {
   MatchCard,
   type MatchCardData,
@@ -71,6 +72,12 @@ export default async function Home() {
     .order("kickoff_at", { ascending: true });
 
   const matches: MatchCardData[] = matchesData ?? [];
+
+  // Mapa id→"Local vs Visitante" para nombrar el toast de puntos en vivo (Bet 2).
+  const matchNames: Record<number, string> = {};
+  for (const m of matches) {
+    matchNames[m.id] = `${m.home_team} vs ${m.away_team}`;
+  }
 
   // "Lo que se viene": partidos de mañana y pasado mañana (preview read-only).
   // Todos con kickoff futuro → ninguno bloqueado; no llevan formulario.
@@ -183,6 +190,7 @@ export default async function Home() {
         userId={user?.id ?? null}
         refUsername={username}
       />
+      {user && <LiveFeedToasts userId={user.id} matchNames={matchNames} />}
     </main>
   );
 }
