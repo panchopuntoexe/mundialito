@@ -21,7 +21,7 @@ describe("toLiveStatsCardData", () => {
     expect(toLiveStatsCardData(rows())).toEqual({
       username: "franchu",
       totalPoints: 145,
-      levelKey: "leyenda", // 145 pts: Crack (50) sin llegar a Campeón (150).
+      levelKey: "capitan", // 145 pts: Capitán (125) sin llegar a Campeón (150).
       accuracy: 67,
       correctPredictions: 8,
       totalPredictions: 12,

@@ -9,7 +9,19 @@
  * por `key`): acá solo datos serializables. Sin imports de env/red/DB: testeable.
  */
 
-export type LevelKey = "suplente" | "titular" | "crack" | "leyenda" | "campeon" | "cesped";
+export type LevelKey =
+  | "suplente"
+  | "promesa"
+  | "titular"
+  | "goleador"
+  | "crack"
+  | "figura"
+  | "leyenda"
+  | "capitan"
+  | "campeon"
+  | "idolo"
+  | "cesped"
+  | "inmortal";
 
 export interface Level {
   key: LevelKey;
@@ -24,13 +36,19 @@ export interface Level {
 /** Niveles ordenados por `minPoints` ascendente. El primero arranca en 0. */
 export const LEVELS: readonly Level[] = [
   { key: "suplente", name: "Suplente", color: "#a1a1aa", minPoints: 0 },
+  { key: "promesa", name: "Promesa", color: "#2dd4bf", minPoints: 12 },
   { key: "titular", name: "Titular", color: "#22c55e", minPoints: 25 },
+  { key: "goleador", name: "Goleador", color: "#84cc16", minPoints: 37 },
   { key: "crack", name: "Crack", color: "#f59e0b", minPoints: 50 },
+  { key: "figura", name: "Figura", color: "#fb923c", minPoints: 75 },
   { key: "leyenda", name: "Leyenda", color: "#eab308", minPoints: 100 },
+  { key: "capitan", name: "Capitán", color: "#8b5cf6", minPoints: 125 },
   { key: "campeon", name: "Campeón", color: "#0ea5e9", minPoints: 150 },
+  { key: "idolo", name: "Ídolo", color: "#ec4899", minPoints: 175 },
   // `key` se mantiene ("cesped") por compatibilidad con snapshots; solo cambia
   // el nombre visible y el color (antes "Stop" en rojo `danger`, sin sentido).
   { key: "cesped", name: "Balón de Oro", color: "#fbbf24", minPoints: 200 },
+  { key: "inmortal", name: "Inmortal", color: "#ef4444", minPoints: 300 },
 ] as const;
 
 /** El nivel correspondiente a una cantidad de puntos (el mayor `minPoints` ≤ points). */
