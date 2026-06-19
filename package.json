@@ -14,9 +14,6 @@
     "test:watch": "vitest",
     "db:seed": "node --env-file=.env.local --import tsx scripts/seed-fixtures.ts",
     "db:backfill": "node --env-file=.env.local --import tsx scripts/backfill-api-football.ts",
-    "bots:seed": "node --env-file=.env.local --import tsx scripts/seed-bots.ts",
-    "bots:list": "node --env-file=.env.local --import tsx scripts/delete-bots.ts list",
-    "bots:delete": "node --env-file=.env.local --import tsx scripts/delete-bots.ts delete",
     "notify:broadcast": "node --env-file=.env.local --import tsx scripts/broadcast-announcement.ts",
     "gen:icons": "node scripts/generate-icons.mjs",
     "gen:vapid": "node scripts/generate-vapid.mjs"

@@ -6,7 +6,15 @@
  * de hashear, así "error en match 123" y "error en match 456" comparten
  * huella y el dedupe en Redis (send.ts) frena la tormenta de emails.
  */
-import { fnv1a } from "@/lib/bots/persona";
+/** Hash FNV-1a de 32 bits. Estable entre runtimes (solo aritmética entera). */
+function fnv1a(input: string): number {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
+}
 
 const UUID_RE =
   /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;

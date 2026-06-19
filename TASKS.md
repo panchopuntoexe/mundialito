@@ -411,52 +411,6 @@ Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Tr
 
 ---
 
-## FASE 9 — Bots (la app se siente viva desde el día 1)
-
-### [x] 9.1 — Migración: flag `is_bot` en users
-
-- **Objetivo**: Columna `is_bot boolean not null default false` + índice parcial; tipos a mano en sync. Sin cambios de RLS (los bots se escriben solo vía service role).
-- **Archivos**: `supabase/migrations/0011_bots.sql`, `types/database.ts`.
-- **Aceptación**: `npx supabase db push` aplica. `npm run type-check` pasa. RLS intacta (8.5 sigue verde).
-- **Depende de**: —
-
-### [x] 9.2 — Lógica pura de bots: persona, estrategia y timing
-
-- **Objetivo**: `personaFor(userId)` (FNV-1a + mulberry32, skill sesgado mediocre), `decidePrediction` (tiers estáticos de equipos, sin empate en knockout, distribución de goles realista) y `predictAtFor` (offset determinista en [10 min, 36 h] antes del kickoff). Determinista: misma entrada → mismo pick, siempre.
-- **Archivos**: `lib/bots/persona.ts`, `lib/bots/strategy.ts`, `lib/bots/strategy.test.ts`.
-- **Aceptación**: Tests: determinismo, 0 % de empates en knockout, distribuciones dentro de rangos sobre miles de muestras, predictAt siempre ≥10 min antes del kickoff.
-- **Depende de**: 9.1
-
-### [x] 9.3 — Seed de ~50 bots
-
-- **Objetivo**: Crear bots vía `auth.admin.createUser` (email plus-addressing del admin, `email_confirm`, password aleatorio descartado, ban de 10 años: no pueden loguearse) + perfil con `is_bot=true`. Roster español creíble. Idempotente por username, con reparación de perfiles a medio crear.
-- **Archivos**: `lib/bots/roster.ts`, `scripts/seed-bots.ts`, `package.json` (`bots:seed`).
-- **Aceptación**: `npm run bots:seed` crea ~50 filas `is_bot=true`; re-correrlo no duplica.
-- **Depende de**: 9.1
-
-### [x] 9.4 — Extraer la actualización de racha a lib compartida
-
-- **Objetivo**: Mover `updateParticipationStreak` del endpoint de pronósticos a una lib compartida, sin cambiar conducta, para reutilizarla desde el job de bots.
-- **Archivos**: `lib/predictions/updateStreak.ts`, `app/api/predictions/route.ts`.
-- **Aceptación**: Refactor puro: tests verdes, el endpoint responde igual.
-- **Depende de**: —
-
-### [x] 9.5 — Job de predicciones de bots (piggyback en process-results)
-
-- **Objetivo**: `runBotPredictions()`: pares (bot, partido) vencidos según `predictAtFor`, re-validando `kickoff_at > now()` server-side; bulk upsert `ignoreDuplicates`; racha por bot con predicción nueva. Invocado desde la ruta de process-results (cada 5 min, sin cron nuevo — límite de crons de Vercel) con try/catch independiente.
-- **Archivos**: `jobs/botPredictions.ts`, `app/api/cron/process-results/route.ts`.
-- **Aceptación**: El cron inserta predicciones de bots para partidos próximos; re-corrida → 0 inserciones nuevas y mismos picks; sin partidos próximos → skip.
-- **Depende de**: 9.2, 9.3, 9.4
-
-### [x] 9.6 — Scripts de listado y borrado de bots
-
-- **Objetivo**: `bots:list` (tabla read-only) y `bots:delete` (captura ligas afectadas, `auth.admin.deleteUser` por bot → cascade total, invalida los leaderboards en Redis al instante).
-- **Archivos**: `scripts/delete-bots.ts`, `package.json` (`bots:list`, `bots:delete`).
-- **Aceptación**: Tras `bots:delete`: 0 filas `is_bot=true`, 0 predicciones huérfanas, ranking bot-free sin esperar TTL. Ciclo delete → reseed → re-predicción verificado.
-- **Depende de**: 9.3
-
----
-
 ## FASE 10 — Alertas por email (Resend)
 
 ### [x] 10.1 — Módulo de alertas con dedupe
@@ -468,10 +422,10 @@ Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Tr
 
 ### [x] 10.2 — Cablear alertas en crons y errores silenciosos
 
-- **Objetivo**: `sendAlert` en los catch de las 3 rutas cron, en los errores con `continue` de `jobs/processResults.ts` (nunca llegan al catch de la ruta) y en el catch del job de bots.
+- **Objetivo**: `sendAlert` en los catch de las 3 rutas cron y en los errores con `continue` de `jobs/processResults.ts` (nunca llegan al catch de la ruta).
 - **Archivos**: `app/api/cron/*/route.ts`, `jobs/processResults.ts`.
 - **Aceptación**: Un fallo forzado manda 1 email; repetir dentro de los 15 min no manda segundo; el job sigue retornando 500. (Pendiente de probar con `RESEND_API_KEY` real.)
-- **Depende de**: 10.1, 9.5
+- **Depende de**: 10.1
 
 ### [x] 10.3 — Endpoint /api/health
 
@@ -559,7 +513,7 @@ Backlog granular para **Mundialito**. Cada tarea es del tamaño de un commit. Tr
 ## Orden sugerido de ejecución
 
 ```
-FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4 → FASE 5 → FASE 6 → FASE 7 → FASE 8 → FASE 9 → FASE 10 → FASE 11 → FASE 12
+FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4 → FASE 5 → FASE 6 → FASE 7 → FASE 8 → FASE 10 → FASE 11 → FASE 12
 ```
 
-El MVP demo-able llega al terminar **FASE 4** (pronosticar funciona). El producto con gamificación completa llega al terminar **FASE 6**. La viralidad (Wrapped) llega en **FASE 7**. Los bots (**FASE 9**) hacen que la app se sienta viva desde el día 1; las alertas (**FASE 10**) cuidan el torneo; los ads (**FASE 11**) quedan construidos pero apagados hasta decidir encenderlos.
+El MVP demo-able llega al terminar **FASE 4** (pronosticar funciona). El producto con gamificación completa llega al terminar **FASE 6**. La viralidad (Wrapped) llega en **FASE 7**. Las alertas (**FASE 10**) cuidan el torneo; los ads (**FASE 11**) quedan construidos pero apagados hasta decidir encenderlos.

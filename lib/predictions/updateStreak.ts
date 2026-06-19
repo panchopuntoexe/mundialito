@@ -1,10 +1,9 @@
 /**
- * Racha de participación — actualización compartida (tarea 9.4).
+ * Racha de participación — actualización compartida.
  *
- * Extraída tal cual del endpoint de pronósticos (4.2/5.2) para que humanos y
- * bots (9.5) avancen la racha por EL MISMO código. La racha vive acá y no en
- * el cron de resultados (ADR 0001): avanza al completar los partidos abiertos
- * del día, no al puntuar.
+ * Extraída del endpoint de pronósticos (4.2/5.2) a una lib compartida. La racha
+ * vive acá y no en el cron de resultados (ADR 0001): avanza al completar los
+ * partidos abiertos del día, no al puntuar.
  *
  * Usa el cliente admin: la RLS de `streaks` solo permite lectura propia; la
  * escritura va por service role para que el cliente no pueda manipular su racha

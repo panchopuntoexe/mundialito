@@ -25,7 +25,6 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           total_points: number;
-          is_bot: boolean;
           username_changed_at: string | null;
           created_at: string;
         };
@@ -35,7 +34,6 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           total_points?: number;
-          is_bot?: boolean;
           username_changed_at?: string | null;
           created_at?: string;
         };
@@ -45,7 +43,6 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           total_points?: number;
-          is_bot?: boolean;
           username_changed_at?: string | null;
           created_at?: string;
         };
