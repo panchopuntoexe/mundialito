@@ -91,11 +91,19 @@ export default async function EstadisticasPage() {
           pantalla quedaba vacía hasta la primera tarjeta Wrapped y los números
           del usuario no se veían en ningún lado. */}
       <section className="flex flex-col gap-2">
-        <div className="grid grid-cols-3 gap-2">
+        {/* <div className="grid grid-cols-3 gap-2">
           <Stat value={`${points}`} label="Puntos" />
           <Stat value={`${accuracyRow?.accuracy ?? 0}%`} label="Precisión" />
           <Stat value={`${streakRow?.max_streak ?? 0}`} label="Racha máx." />
-        </div>
+        </div> */}
+        {profile && (
+          <Link
+            href={`/u/${encodeURIComponent(profile.username)}`}
+            className="self-start py-1 text-s font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
+          >
+            Ver tu perfil público →
+          </Link>
+        )}
         <div className="rounded-xl border border-border bg-surface px-4 py-3">
           <div className="flex items-center justify-between gap-2 text-xs">
             <span
@@ -124,20 +132,13 @@ export default async function EstadisticasPage() {
             />
           </div>
         </div>
-        {profile && (
-          <Link
-            href={`/u/${encodeURIComponent(profile.username)}`}
-            className="self-start py-1 text-s font-medium text-foreground-muted underline-offset-2 transition hover:text-foreground hover:underline"
-          >
-            Ver tu perfil público →
-          </Link>
-        )}
+        
       </section>
 
       {/* Tarjeta de stats en vivo: compartible SIEMPRE, sin esperar al cierre
           de fase (las Wrapped de abajo recién llegan con cada macro-ronda). */}
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-bold tracking-tight">Comparte tus stats</h2>
+        {/* <h2 className="text-sm font-bold tracking-tight">Comparte tus stats</h2> */}
         {/* <p className="text-xs text-foreground-muted">
           Tus stats al día de hoy, lista para compartir.
         </p> */}
