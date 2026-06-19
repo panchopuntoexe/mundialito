@@ -3,6 +3,7 @@ import { CountdownToKickoff } from "@/components/CountdownToKickoff";
 import { KickoffTime } from "@/components/KickoffTime";
 import { MatchResultCard } from "@/components/MatchResultCard";
 import { PredictionForm } from "@/components/PredictionForm";
+import { RefreshMatchButton } from "@/components/RefreshMatchButton";
 import type { MatchStatus, ResultPred } from "@/types/domain";
 
 /**
@@ -83,16 +84,19 @@ export function MatchCard({
     <article className="rounded-xl border border-border bg-surface p-4">
       <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-wide text-foreground-muted">
         <span>{phaseLabel(match.phase)}</span>
-        {match.status === "live" ? (
-          <span className="flex items-center gap-1.5 font-semibold text-brand">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand" aria-hidden />
-            En vivo
-          </span>
-        ) : match.status === "finished" ? (
-          <span className="font-semibold">Final</span>
-        ) : (
-          <KickoffTime kickoffAt={match.kickoff_at} />
-        )}
+        <div className="flex items-center gap-2">
+          {match.status === "live" ? (
+            <span className="flex items-center gap-1.5 font-semibold text-brand">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand" aria-hidden />
+              En vivo
+            </span>
+          ) : match.status === "finished" ? (
+            <span className="font-semibold">Final</span>
+          ) : (
+            <KickoffTime kickoffAt={match.kickoff_at} />
+          )}
+          <RefreshMatchButton />
+        </div>
       </div>
 
       {/* Urgencia: cuando un partido abierto está por empezar (<2h), un chip que
