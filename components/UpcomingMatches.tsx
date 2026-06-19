@@ -1,5 +1,5 @@
+import { CountdownToKickoff } from "@/components/CountdownToKickoff";
 import { KickoffTime } from "@/components/KickoffTime";
-import { phaseLabel } from "@/components/MatchCard";
 import { nextDay, tournamentToday } from "@/lib/matches/day";
 import { TOURNAMENT_TIME_ZONE, toTournamentDay } from "@/lib/scoring/streaks";
 
@@ -55,6 +55,12 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
 
   const tomorrow = nextDay(tournamentToday());
   const groups = groupByDay(matches);
+  // El partido más próximo (ya vienen ordenados por kickoff): lleva un countdown
+  // que crea urgencia incluso cuando no hay partidos hoy (A6).
+  const nearestId = groups[0]?.matches[0]?.id ?? null;
+  // Ventana amplia para que el countdown del más próximo se muestre aunque falten
+  // días (el resto de cards no lo lleva, para no hacer ruido).
+  const NEAREST_WINDOW_MS = 1000 * 60 * 60 * 24 * 30;
 
   return (
     <section className="flex flex-col gap-3">
@@ -89,6 +95,13 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
                     </span>
                   </div>
                 </div>
+                {match.id === nearestId && (
+                  <CountdownToKickoff
+                    kickoffAt={match.kickoff_at}
+                    withinMs={NEAREST_WINDOW_MS}
+                    className="mt-1 ml-4 inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold text-accent"
+                  />
+                )}
               </li>
             ))}
           </ul>

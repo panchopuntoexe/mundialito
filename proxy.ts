@@ -46,6 +46,24 @@ function isPublic(pathname: string): boolean {
   );
 }
 
+// Atribución de referral (A5): un link compartido trae `?ref=<username>`. Se
+// captura en una cookie de primer toque (el primer referrer gana) que la Bet 1
+// consumirá al crear perfil / unirse a liga. httpOnly: solo la lee el server.
+const REF_COOKIE = "mundialito_ref";
+const REF_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 días
+
+/** Si la URL trae `?ref=` y aún no hay cookie, la setea en la response. */
+function captureReferral(request: NextRequest, response: NextResponse): void {
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (!ref || request.cookies.has(REF_COOKIE)) return;
+  response.cookies.set(REF_COOKIE, ref.slice(0, 64), {
+    maxAge: REF_COOKIE_MAX_AGE,
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+  });
+}
+
 /** Copia las cookies refrescadas de la sesión a otra response (redirect/401). */
 function withSessionCookies(
   target: NextResponse,
@@ -58,6 +76,11 @@ function withSessionCookies(
 export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
+
+  // Atribución de referral: se setea en `response`, que es la fuente de cookies
+  // que copian los returns de redirect/401 (withSessionCookies) — así el `ref`
+  // sobrevive incluso si el visitante sin sesión es redirigido a /login.
+  captureReferral(request, response);
 
   // Los crons se autorizan con CRON_SECRET dentro de cada route handler.
   if (pathname.startsWith("/api/cron")) {

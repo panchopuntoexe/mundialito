@@ -28,8 +28,9 @@ export const LEVELS: readonly Level[] = [
   { key: "crack", name: "Crack", color: "#f59e0b", minPoints: 50 },
   { key: "leyenda", name: "Leyenda", color: "#eab308", minPoints: 100 },
   { key: "campeon", name: "Campeón", color: "#0ea5e9", minPoints: 150 },
-  { key: "cesped", name: "Stop", color: "#ef4444", minPoints: 200 },
-
+  // `key` se mantiene ("cesped") por compatibilidad con snapshots; solo cambia
+  // el nombre visible y el color (antes "Stop" en rojo `danger`, sin sentido).
+  { key: "cesped", name: "Balón de Oro", color: "#fbbf24", minPoints: 200 },
 ] as const;
 
 /** El nivel correspondiente a una cantidad de puntos (el mayor `minPoints` ≤ points). */

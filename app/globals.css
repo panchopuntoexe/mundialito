@@ -119,14 +119,82 @@ body {
   }
 }
 
+/*
+ * Capa de movimiento reutilizable (A1). CSS puro, sin framer-motion.
+ *  - fade-in-up: entrada sutil de cards (home). Escalonable con animation-delay.
+ *  - scale-in: aparición de badges/confirmaciones ("Guardado").
+ *  - slide-up-sheet: la hoja de DayCompleteCelebration sube desde abajo.
+ *  - pop: un número "aterriza" con energía (la racha del día completo).
+ * Todas se apagan solas bajo prefers-reduced-motion (abajo).
+ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slide-up-sheet {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+  }
+  55% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.32s ease-out both;
+}
+.animate-scale-in {
+  animation: scale-in 0.18s ease-out both;
+}
+.animate-slide-up-sheet {
+  animation: slide-up-sheet 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-pop {
+  animation: pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Accesibilidad: si el usuario pide menos movimiento, apagamos las
-   animaciones decorativas (spinner, parpadeo de Samy, pulso "en vivo").
-   El confeti se saltea en JS con la misma media query. */
+   animaciones decorativas (spinner, parpadeo de Samy, pulso "en vivo",
+   y la capa de movimiento A1). El confeti se saltea en JS con la misma
+   media query. */
 @media (prefers-reduced-motion: reduce) {
   .loader:before,
   .loader:after,
   .samy-eye,
-  .animate-pulse {
+  .animate-pulse,
+  .animate-fade-in-up,
+  .animate-scale-in,
+  .animate-slide-up-sheet,
+  .animate-pop {
     animation: none;
   }
 }

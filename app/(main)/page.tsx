@@ -1,3 +1,4 @@
+import { FaRegCalendarCheck } from "react-icons/fa6";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { DayCompleteCelebration } from "@/components/DayCompleteCelebration";
 import { DayProgress } from "@/components/DayProgress";
@@ -50,6 +51,17 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Username propio para atribuir el referral al compartir (A5). RLS: fila propia.
+  let username: string | null = null;
+  if (user) {
+    const { data: profileRow } = await supabase
+      .from("users")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+    username = profileRow?.username ?? null;
+  }
 
   const { data: matchesData } = await supabase
     .from("matches")
@@ -124,17 +136,34 @@ export default async function Home() {
       )}
 
       {matches.length === 0 ? (
-        <p className="rounded-xl border border-border bg-surface p-6 text-center text-sm text-foreground-muted">
-          No hay partidos hoy. Vuelve mañana para sostener tu racha.
-        </p>
+        <div className="animate-fade-in-up flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-6 text-center">
+          <span className="text-2xl text-foreground-muted" aria-hidden>
+            <FaRegCalendarCheck />
+          </span>
+          <p className="text-sm font-semibold text-foreground">
+            No hay partidos hoy
+          </p>
+          <p className="text-sm text-foreground-muted">
+            {upcoming.length > 0
+              ? "Aprovecha para descansar. Vuelve para el próximo partido y mantén tu racha viva — abajo está lo que se viene."
+              : "Aprovecha para descansar. Vuelve para el próximo partido y mantén tu racha viva."}
+          </p>
+        </div>
       ) : (
         <ul className="flex flex-col gap-3">
           {matches.map((match, idx) => (
-            <li key={match.id}>
+            <li
+              key={match.id}
+              className="animate-fade-in-up"
+              // Stagger sutil, capado a las primeras cards: el resto entra junto
+              // para no hacer lenta la pantalla más visitada (se ve a diario).
+              style={{ animationDelay: `${Math.min(idx, 5) * 40}ms` }}
+            >
               <MatchCard
                 match={match}
                 prediction={predByMatch.get(match.id) ?? null}
                 userId={user?.id ?? null}
+                refUsername={username}
               />
               {/* Un solo ad por día, tras la 2ª card y solo si hay ≥3 (11.3).
                   Con el flag apagado AdSlot es null: DOM idéntico a hoy. */}
@@ -152,6 +181,7 @@ export default async function Home() {
       <DayCompleteCelebration
         isAnonymous={user?.is_anonymous ?? false}
         userId={user?.id ?? null}
+        refUsername={username}
       />
     </main>
   );

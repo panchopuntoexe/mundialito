@@ -15,9 +15,11 @@ interface LiveStatsCardProps {
   userId: string;
   /** Texto del mensaje a compartir. */
   text: string;
+  /** Username del dueño para atribuir el referral en el link (A5). */
+  refUsername?: string | null;
 }
 
-export function LiveStatsCard({ userId, text }: LiveStatsCardProps) {
+export function LiveStatsCard({ userId, text, refUsername = null }: LiveStatsCardProps) {
   const fallbackPath = `/api/wrapped/live-image?user=${userId}`;
 
   return (
@@ -34,6 +36,7 @@ export function LiveStatsCard({ userId, text }: LiveStatsCardProps) {
         fallbackPath={fallbackPath}
         text={text}
         downloadName="mis-stats-mundialito"
+        refUsername={refUsername}
       />
     </div>
   );

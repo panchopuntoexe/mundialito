@@ -14,6 +14,8 @@ interface WrappedCardProps {
   phaseLabel: string;
   accuracy: number;
   imageUrl: string | null;
+  /** Username del dueño para atribuir el referral en el link (A5). */
+  refUsername?: string | null;
 }
 
 export function WrappedCard({
@@ -21,6 +23,7 @@ export function WrappedCard({
   phaseLabel,
   accuracy,
   imageUrl,
+  refUsername = null,
 }: WrappedCardProps) {
   const fallbackPath = `/api/wrapped/image?card=${cardId}`;
   const src = imageUrl ?? fallbackPath;
@@ -41,6 +44,7 @@ export function WrappedCard({
         fallbackPath={fallbackPath}
         text={text}
         downloadName={downloadName}
+        refUsername={refUsername}
       />
     </div>
   );

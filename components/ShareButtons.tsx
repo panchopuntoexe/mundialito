@@ -22,6 +22,13 @@ interface ShareButtonsProps {
   text: string;
   /** Nombre del archivo (sin extensión) al descargar para Instagram. */
   downloadName: string;
+  /**
+   * Username de quien comparte. Si viene, el link apunta a su perfil público con
+   * `?ref=` para atribuir el referral (base de la Bet 1). Sin él, link plano a la
+   * app. El perfil público (`/u/...`) NO pasa por el muro de login, así que el
+   * invitado aterriza directo (a diferencia de la raíz). (A5)
+   */
+  refUsername?: string | null;
 }
 
 export function ShareButtons({
@@ -29,6 +36,7 @@ export function ShareButtons({
   fallbackPath,
   text,
   downloadName,
+  refUsername = null,
 }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
 
@@ -36,10 +44,13 @@ export function ShareButtons({
 
   /**
    * URL que se incluye en el mensaje al compartir: el link a la app (no la imagen).
-   * Ya no se embebe un QR en la tarjeta, así que el destino vive en el texto.
+   * Con `refUsername`, apunta al perfil público del que invita y agrega `?ref=`
+   * para la atribución; sin él, la raíz de la app.
    */
   function shareUrl(): string {
-    return APP_URL;
+    if (!refUsername) return APP_URL;
+    const enc = encodeURIComponent(refUsername);
+    return `${APP_URL}/u/${enc}?ref=${enc}`;
   }
 
   /** Baja la imagen (`src`) como File para compartirla/descargarla. null si falla. */

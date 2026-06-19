@@ -342,7 +342,9 @@ export function PredictionForm({
             {status === "saving" ? (
               <span className="text-foreground-muted">Guardando…</span>
             ) : status === "saved" ? (
-              <span className="font-semibold text-brand">✓ Guardado</span>
+              <span className="animate-scale-in inline-block font-semibold text-brand">
+                ✓ Guardado
+              </span>
             ) : null}
           </span>
         </legend>
@@ -363,6 +365,7 @@ export function PredictionForm({
             <ResultPickButton
               key={opt.value}
               active={result === opt.value}
+              justSaved={status === "saved" && result === opt.value}
               onClick={() => pickResult(opt.value)}
               label={opt.label}
               flag={opt.flag}
@@ -445,11 +448,14 @@ export function PredictionForm({
 
 function ResultPickButton({
   active,
+  justSaved = false,
   onClick,
   label,
   flag,
 }: {
   active: boolean;
+  /** Acaba de confirmarse el guardado de esta opción: pulso sutil de feedback. */
+  justSaved?: boolean;
   onClick: () => void;
   label: string;
   flag: string | null;
@@ -460,6 +466,8 @@ function ResultPickButton({
       onClick={onClick}
       aria-pressed={active}
       className={`flex min-h-[5.5rem] flex-col items-center justify-center gap-1.5 rounded-xl border px-2 py-3 transition-all ${
+        justSaved ? "animate-pop" : ""
+      } ${
         active
           ? "border-brand bg-brand/20 text-foreground shadow-[0_0_14px_rgba(34,197,94,0.3)] ring-2 ring-brand/50"
           : "border-border bg-surface-muted text-foreground hover:border-brand/40 hover:bg-brand/10"

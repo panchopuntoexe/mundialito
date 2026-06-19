@@ -30,11 +30,14 @@ interface DayCompleteDetail {
 export function DayCompleteCelebration({
   isAnonymous = false,
   userId = null,
+  refUsername = null,
 }: {
   /** Invitado: el momento de máxima intención para ofrecer guardar la cuenta. */
   isAnonymous?: boolean;
   /** Dueño de la tarjeta de stats en vivo; sin id se cae al share de solo texto. */
   userId?: string | null;
+  /** Username para atribuir el referral en el link compartido (A5). */
+  refUsername?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -117,7 +120,7 @@ export function DayCompleteCelebration({
       onClick={() => setOpen(false)}
     >
       <div
-        className="relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 text-center"
+        className="animate-slide-up-sheet relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -143,7 +146,7 @@ export function DayCompleteCelebration({
         </h2>
         <p className="mt-1 text-sm text-foreground-muted">
           Pronosticaste todos los partidos de hoy. Racha:{" "}
-          <span className="font-semibold text-accent">
+          <span className="animate-pop inline-block font-semibold text-accent">
             {streak} {streak === 1 ? "día" : "días"}
           </span>
           .
@@ -153,7 +156,7 @@ export function DayCompleteCelebration({
             emoción del día. ShareButtons manda la IMAGEN (no solo texto). */}
         {userId && (
           <div className="mt-5 text-left">
-            <LiveStatsCard userId={userId} text={shareText} />
+            <LiveStatsCard userId={userId} text={shareText} refUsername={refUsername} />
           </div>
         )}
 

@@ -1,4 +1,5 @@
 import { Consensus } from "@/components/Consensus";
+import { CountdownToKickoff } from "@/components/CountdownToKickoff";
 import { KickoffTime } from "@/components/KickoffTime";
 import { MatchResultCard } from "@/components/MatchResultCard";
 import { PredictionForm } from "@/components/PredictionForm";
@@ -57,10 +58,13 @@ export function MatchCard({
   match,
   prediction,
   userId,
+  refUsername = null,
 }: {
   match: MatchCardData;
   prediction: MatchCardPrediction | null;
   userId: string | null;
+  /** Username del usuario para atribuir el referral al compartir el resultado (A5). */
+  refUsername?: string | null;
 }) {
   const isKnockout = match.macro_round !== "group_stage";
   const hasScore =
@@ -90,6 +94,16 @@ export function MatchCard({
           <KickoffTime kickoffAt={match.kickoff_at} />
         )}
       </div>
+
+      {/* Urgencia: cuando un partido abierto está por empezar (<2h), un chip que
+          cuenta hacia atrás empuja a pronosticar antes del cierre. Se auto-oculta
+          si falta más tiempo (el componente devuelve null). */}
+      {match.status !== "live" && match.status !== "finished" && (
+        <CountdownToKickoff
+          kickoffAt={match.kickoff_at}
+          className="mb-3 inline-flex items-center rounded-full bg-accent/10 px-2.5 py-0.5 text-[11px] font-semibold text-accent"
+        />
+      )}
 
       {/* La cabecera de equipos solo aparece cuando hay marcador (en vivo /
           terminado): ahí los botones del PredictionForm ya no están. En un
@@ -149,6 +163,7 @@ export function MatchCard({
             homeTeam={match.home_team}
             awayTeam={match.away_team}
             pointsEarned={prediction.points_earned ?? 0}
+            refUsername={refUsername}
           />
         </div>
       )}

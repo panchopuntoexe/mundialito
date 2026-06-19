@@ -6,6 +6,7 @@ import { ChangeUsernameForm } from "@/components/ChangeUsernameForm";
 import { LiveStatsCard } from "@/components/LiveStatsCard";
 import { SignOutButton } from "@/components/SignOutButton";
 import { WrappedCard } from "@/components/WrappedCard";
+import { loadUserRank } from "@/lib/leaderboards/loadRank";
 import {
   ACHIEVEMENT_DEFS,
   type AchievementType,
@@ -65,6 +66,14 @@ export default async function EstadisticasPage() {
         ((points - level.minPoints) / (next.minPoints - level.minPoints)) * 100,
       )
     : 100;
+
+  // Posición en el ranking para el TEXTO de compartir (la imagen ya la lleva).
+  // Solo con puntos > 0: un "#N de N" para 0 pts no aporta. (A4)
+  const accuracyPct = accuracyRow?.accuracy ?? 0;
+  const liveRankData = points > 0 ? await loadUserRank(points) : null;
+  const statsShareText = liveRankData
+    ? `Voy #${liveRankData.rank} de ${liveRankData.total} con ${points} pts y ${accuracyPct}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`
+    : `Llevo ${points} pts y ${accuracyPct}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-4">
@@ -131,7 +140,8 @@ export default async function EstadisticasPage() {
         </p> */}
         <LiveStatsCard
           userId={user.id}
-          text={`Llevo ${points} pts y ${accuracyRow?.accuracy ?? 0}% de aciertos en Mundialito 2026 ⚽ ¿Me ganas?`}
+          text={statsShareText}
+          refUsername={profile?.username ?? null}
         />
       </section>
 
@@ -162,6 +172,7 @@ export default async function EstadisticasPage() {
                   phaseLabel={wrappedPhaseLabel(card.phase as WrappedPhase)}
                   accuracy={stats?.accuracy ?? 0}
                   imageUrl={card.image_url}
+                  refUsername={profile?.username ?? null}
                 />
               </li>
             );

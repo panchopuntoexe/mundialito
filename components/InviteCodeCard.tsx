@@ -12,16 +12,21 @@ import { useState } from "react";
 export function InviteCodeCard({
   leagueName,
   inviteCode,
+  refUsername = null,
 }: {
   leagueName: string;
   inviteCode: string;
+  /** Username del que invita: agrega `?ref=` al link para atribuir el referral (A5). */
+  refUsername?: string | null;
 }) {
   const [copied, setCopied] = useState(false);
 
   const shareText = `Únete a mi liga "${leagueName}" en Mundialito 2026 ⚽`;
 
   function joinUrl(): string {
-    return `${window.location.origin}/leagues/join?code=${encodeURIComponent(inviteCode)}`;
+    const params = new URLSearchParams({ code: inviteCode });
+    if (refUsername) params.set("ref", refUsername);
+    return `${window.location.origin}/leagues/join?${params.toString()}`;
   }
 
   async function handleShare() {

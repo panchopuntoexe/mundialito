@@ -15,6 +15,8 @@ interface MatchResultCardProps {
   homeTeam: string;
   awayTeam: string;
   pointsEarned: number;
+  /** Username del dueño para atribuir el referral en el link (A5). */
+  refUsername?: string | null;
 }
 
 export function MatchResultCard({
@@ -23,6 +25,7 @@ export function MatchResultCard({
   homeTeam,
   awayTeam,
   pointsEarned,
+  refUsername = null,
 }: MatchResultCardProps) {
   const fallbackPath = `/api/matches/result-image?match=${matchId}&user=${userId}`;
   const text = `Pronostiqué ${homeTeam} vs ${awayTeam} en Mundialito 2026 y saqué ${pointsEarned} pts 🎯`;
@@ -41,6 +44,7 @@ export function MatchResultCard({
         fallbackPath={fallbackPath}
         text={text}
         downloadName={`resultado-${matchId}`}
+        refUsername={refUsername}
       />
     </div>
   );

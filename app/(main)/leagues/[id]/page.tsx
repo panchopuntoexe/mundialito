@@ -43,6 +43,13 @@ export default async function LeaguePage({
     notFound();
   }
 
+  // Username del que invita, para atribuir el referral en el link (A5).
+  const { data: profileRow } = await supabase
+    .from("users")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
   const leaderboard = await cached(
     leagueLeaderboardKey(league.id),
     LEADERBOARD_TTL_SECONDS,
@@ -62,7 +69,11 @@ export default async function LeaguePage({
 
       <h1 className="text-lg font-bold tracking-tight">{league.name}</h1>
 
-      <InviteCodeCard leagueName={league.name} inviteCode={league.invite_code} />
+      <InviteCodeCard
+        leagueName={league.name}
+        inviteCode={league.invite_code}
+        refUsername={profileRow?.username ?? null}
+      />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-bold tracking-tight">Ranking</h2>
