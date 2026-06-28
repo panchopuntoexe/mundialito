@@ -4,11 +4,16 @@ import { nextDay, tournamentToday } from "@/lib/matches/day";
 import { TOURNAMENT_TIME_ZONE, toTournamentDay } from "@/lib/scoring/streaks";
 
 /**
- * Timeline "Lo que se viene": los partidos de mañana y pasado mañana en el Home.
+ * Timeline "Lo que se viene" en el Home. En fase de grupos son los partidos de
+ * los próximos 2 días; en knockout, toda la ronda que se viene (el recorte lo
+ * decide el Home).
  *
  * Read-only (preview): todos tienen kickoff futuro, así que ninguno está bloqueado
  * y no llevan formulario de pronóstico — solo dan visibilidad de lo que viene. El
  * "día" se agrupa en la TZ fija del torneo, igual que los partidos de hoy.
+ *
+ * `knockout` tiñe los acentos (punto del timeline y countdown) de carmesí para
+ * acompañar el anuncio de la fase de eliminación.
  */
 
 interface UpcomingMatch {
@@ -50,7 +55,13 @@ function groupByDay(
   return groups;
 }
 
-export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
+export function UpcomingMatches({
+  matches,
+  knockout = false,
+}: {
+  matches: UpcomingMatch[];
+  knockout?: boolean;
+}) {
   if (matches.length === 0) return null;
 
   const tomorrow = nextDay(tournamentToday());
@@ -73,7 +84,9 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
             {group.matches.map((match) => (
               <li key={match.id} className="relative opacity-60">
                 <span
-                  className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full bg-brand"
+                  className={`absolute -left-[21px] top-1.5 h-2 w-2 rounded-full ${
+                    knockout ? "bg-knockout" : "bg-brand"
+                  }`}
                   aria-hidden
                 />
                 <div className="flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2">
@@ -99,7 +112,11 @@ export function UpcomingMatches({ matches }: { matches: UpcomingMatch[] }) {
                   <CountdownToKickoff
                     kickoffAt={match.kickoff_at}
                     withinMs={NEAREST_WINDOW_MS}
-                    className="mt-1 ml-4 inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold text-accent"
+                    className={`mt-1 ml-4 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      knockout
+                        ? "bg-knockout/10 text-knockout"
+                        : "bg-accent/10 text-accent"
+                    }`}
                   />
                 )}
               </li>

@@ -23,6 +23,12 @@
   --brand-strong: #16a34a;
   --accent: #f59e0b; /* ámbar, destacados / racha 🔥 */
   --danger: #ef4444; /* fallo / cierre */
+
+  /* Knockout — fase de eliminación directa (carmesí). Se enciende por fase del
+     torneo (no por SO): tiñe el banner y acentos del Home cuando arranca el
+     mata-mata, para diferenciarlo del verde de la fase de grupos. */
+  --knockout: #f43f5e; /* carmesí brillante, legible sobre el fondo oscuro */
+  --knockout-strong: #e11d48;
 }
 
 @theme inline {
@@ -36,6 +42,8 @@
   --color-brand-strong: var(--brand-strong);
   --color-accent: var(--accent);
   --color-danger: var(--danger);
+  --color-knockout: var(--knockout);
+  --color-knockout-strong: var(--knockout-strong);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

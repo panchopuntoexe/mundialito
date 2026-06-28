@@ -10,6 +10,7 @@ import {
 } from "@/components/MatchCard";
 import { AD_SLOTS } from "@/lib/ads/config";
 import { HowToPlay } from "@/components/HowToPlay";
+import { PhaseAnnouncement } from "@/components/PhaseAnnouncement";
 import { PushOptIn } from "@/components/PushOptIn";
 import { UpcomingMatches } from "@/components/UpcomingMatches";
 import {
@@ -17,6 +18,7 @@ import {
   tournamentDayRangeUtc,
   tournamentToday,
 } from "@/lib/matches/day";
+import { isKnockoutRound, knockoutAnnouncement } from "@/lib/matches/phase";
 import { TOURNAMENT_TIME_ZONE } from "@/lib/scoring/streaks";
 import { createClient } from "@/lib/supabase/server";
 
@@ -79,21 +81,45 @@ export default async function Home() {
     matchNames[m.id] = `${m.home_team} vs ${m.away_team}`;
   }
 
-  // "Lo que se viene": partidos de mañana y pasado mañana (preview read-only).
-  // Todos con kickoff futuro → ninguno bloqueado; no llevan formulario.
+  // "Lo que se viene" (preview read-only: kickoff futuro → ninguno bloqueado, sin
+  // formulario). En fase de grupos mostramos una ventana corta de 2 días (mañana
+  // + pasado mañana) para no volcar una lista enorme a diario. En knockout
+  // mostramos la RONDA COMPLETA que se viene (los 16 de 16avos, los 8 de octavos,
+  // etc.): así asoman todos los equipos ya anunciados aunque jueguen en días
+  // distintos. Traemos desde mañana en adelante y recortamos en memoria.
   const tomorrow = nextDay(today);
-  const dayAfter = nextDay(tomorrow);
   const { startUtc: upcomingStart } = tournamentDayRangeUtc(tomorrow);
-  const { endUtc: upcomingEnd } = tournamentDayRangeUtc(dayAfter);
 
   const { data: upcomingData } = await supabase
     .from("matches")
     .select(MATCH_COLUMNS)
     .gte("kickoff_at", upcomingStart)
-    .lt("kickoff_at", upcomingEnd)
     .order("kickoff_at", { ascending: true });
 
-  const upcoming: MatchCardData[] = upcomingData ?? [];
+  const allUpcoming: MatchCardData[] = upcomingData ?? [];
+
+  // Ronda de eliminación "en curso": la de los partidos de hoy si son knockout, o
+  // la del próximo partido si lo que viene es knockout. null en fase de grupos.
+  const todayRound = matches[0]?.macro_round;
+  const upcomingRound = allUpcoming[0]?.macro_round;
+  const knockoutRound = isKnockoutRound(todayRound)
+    ? todayRound
+    : isKnockoutRound(upcomingRound)
+      ? upcomingRound
+      : null;
+
+  let upcoming: MatchCardData[];
+  if (knockoutRound) {
+    // Toda la ronda que se viene (allUpcoming arranca en mañana → ya excluye hoy).
+    upcoming = allUpcoming.filter((m) => m.macro_round === knockoutRound);
+  } else {
+    // Fase de grupos: mañana + pasado mañana, como siempre.
+    const { endUtc: previewEnd } = tournamentDayRangeUtc(nextDay(tomorrow));
+    upcoming = allUpcoming.filter((m) => m.kickoff_at < previewEnd);
+  }
+
+  // Mensaje inicial de la fase de eliminación (banner carmesí), null en grupos.
+  const announcement = knockoutAnnouncement(knockoutRound);
 
   // Pronósticos propios de los partidos de hoy (RLS: solo los del usuario).
   // Incluye los campos de scoring (5.5) para mostrar acierto/puntos y la
@@ -130,6 +156,8 @@ export default async function Home() {
           {dayLabel(today)}
         </span>
       </div>
+
+      {announcement && <PhaseAnnouncement announcement={announcement} />}
 
       <HowToPlay />
 
@@ -182,7 +210,7 @@ export default async function Home() {
         </ul>
       )}
 
-      <UpcomingMatches matches={upcoming} />
+      <UpcomingMatches matches={upcoming} knockout={Boolean(knockoutRound)} />
 
       <PushOptIn />
       <DayCompleteCelebration
