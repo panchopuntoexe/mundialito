@@ -49,10 +49,23 @@ describe("mapFixture", () => {
       score_home: 1,
       score_away: 1,
       winner_team: "home",
+      penalty_home: null,
+      penalty_away: null,
       kickoff_at: "2026-06-11T20:00:00.000Z",
       home_name: "A",
       away_name: "B",
     });
+  });
+
+  it("captura el marcador de la tanda de penales (score.penalty)", () => {
+    const ls = mapFixture({
+      ...base,
+      teams: { home: { name: "A", winner: true }, away: { name: "B", winner: false } },
+      score: { penalty: { home: 5, away: 4 } },
+    });
+    expect(ls.penalty_home).toBe(5);
+    expect(ls.penalty_away).toBe(4);
+    expect(ls.winner_team).toBe("home");
   });
 
   it("grupos / sin ganador definido → winner_team null", () => {

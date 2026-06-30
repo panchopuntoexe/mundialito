@@ -17,6 +17,7 @@ import {
   fetchLiveFixtures,
   type LiveScore,
 } from "@/lib/external/apiFootball";
+import { BRACKET_CACHE_KEY } from "@/lib/bracket/types";
 import {
   buildSyncUpdates,
   isInSyncWindow,
@@ -103,6 +104,8 @@ export async function runMatchSync(now: Date = new Date()): Promise<MatchSyncSum
         score_home: u.score_home,
         score_away: u.score_away,
         winner_team: u.winner_team,
+        penalty_home: u.penalty_home,
+        penalty_away: u.penalty_away,
       })
       .eq("id", u.id);
     if (error) {
@@ -120,6 +123,8 @@ export async function runMatchSync(now: Date = new Date()): Promise<MatchSyncSum
         score_home: u.score_home,
         score_away: u.score_away,
         winner_team: u.winner_team,
+        penalty_home: u.penalty_home,
+        penalty_away: u.penalty_away,
       },
       { ex: LIVE_SCORE_TTL_SECONDS },
     );
@@ -128,8 +133,11 @@ export async function runMatchSync(now: Date = new Date()): Promise<MatchSyncSum
     if (candidate) daysToInvalidate.add(toTournamentDay(new Date(candidate.kickoff_at)));
   }
 
-  // Invalida el snapshot del día para que /api/matches sirva los scores frescos.
-  await del(...[...daysToInvalidate].map((d) => `fixtures:${d}`));
+  // Invalida el snapshot del día para que /api/matches sirva los scores frescos, y
+  // el cuadro de knockout si se tocó algún partido (cambió un score/estado/penales).
+  const keysToInvalidate = [...daysToInvalidate].map((d) => `fixtures:${d}`);
+  if (keysToInvalidate.length > 0) keysToInvalidate.push(BRACKET_CACHE_KEY);
+  await del(...keysToInvalidate);
 
   console.info(
     `[matchSync] ${updated}/${candidates.length} partidos actualizados desde ${liveScores.length} live scores.`,

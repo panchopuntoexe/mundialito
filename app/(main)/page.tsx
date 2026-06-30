@@ -33,7 +33,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 
 const MATCH_COLUMNS =
-  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status, score_home, score_away, winner_team";
+  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status, score_home, score_away, winner_team, penalty_home, penalty_away";
 
 function dayLabel(day: string): string {
   // Mediodía UTC del día para evitar bordes de TZ al formatear la fecha.

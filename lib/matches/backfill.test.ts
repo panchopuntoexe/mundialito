@@ -16,6 +16,8 @@ function row(overrides: Partial<BackfillRow> & { id: number }): BackfillRow {
     score_home: null,
     score_away: null,
     winner_team: null,
+    penalty_home: null,
+    penalty_away: null,
     ...overrides,
   };
 }
@@ -26,6 +28,8 @@ function fixture(overrides: Partial<LiveScore> & { api_football_id: number }): L
     score_home: 2,
     score_away: 0,
     winner_team: null,
+    penalty_home: null,
+    penalty_away: null,
     kickoff_at: "2026-06-11T19:00:00.000Z",
     home_name: "Mexico",
     away_name: "South Africa",
@@ -151,9 +155,31 @@ describe("buildBackfillPlan", () => {
           score_home: 2,
           score_away: 0,
           winner_team: null,
+          penalty_home: null,
+          penalty_away: null,
         },
       },
     ]);
+  });
+
+  it("repone el marcador de penales de un knockout resuelto durante la caída", () => {
+    const plan = buildBackfillPlan(
+      [row({ id: 1, home_team: "Por definir", away_team: "Por definir" })],
+      [
+        fixture({
+          api_football_id: 900,
+          status: "finished",
+          score_home: 1,
+          score_away: 1,
+          winner_team: "home",
+          penalty_home: 4,
+          penalty_away: 2,
+        }),
+      ],
+    );
+    expect(plan.updates[0].fields.penalty_home).toBe(4);
+    expect(plan.updates[0].fields.penalty_away).toBe(2);
+    expect(plan.updates[0].fields.winner_team).toBe("home");
   });
 
   it("fixture aún no empezado: solo mapea el id, sin tocar el resultado", () => {

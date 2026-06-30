@@ -10,9 +10,10 @@
  * (apiKey, baseUrl, fetch) inyectada — el cron la arma desde `serverEnv`.
  *
  * Marcador: API-Football `goals` ya es reglamentario + alargue SIN la tanda de
- * penales (la tanda vive en `score.penalty`), que es justo lo que guardamos en
- * `score_home`/`score_away` (CONTEXT.md "Goles totales"). El equipo que avanza
- * sale del flag `teams.{home,away}.winner`.
+ * penales, que es justo lo que guardamos en `score_home`/`score_away` (CONTEXT.md
+ * "Goles totales"). El equipo que avanza sale del flag `teams.{home,away}.winner`,
+ * y el marcador de la tanda en sí (ej. 4-2) lo leemos de `score.penalty` para
+ * mostrar el drama del desempate (`penalty_home`/`penalty_away`).
  */
 import { z } from "zod";
 import type { MatchStatus, WinnerTeam } from "@/types/domain";
@@ -43,6 +44,9 @@ export interface LiveScore {
   score_away: number | null;
   /** Equipo que avanza (knockout); null si aún no hay ganador definido. */
   winner_team: WinnerTeam;
+  /** Marcador de la tanda de penales (knockout); null si no hubo tanda. */
+  penalty_home: number | null;
+  penalty_away: number | null;
   /** Kickoff en ISO 8601 UTC. */
   kickoff_at: string;
   /** Nombres según API-Football — para matchear filas aún sin `api_football_id`. */
@@ -68,6 +72,19 @@ const fixtureItemSchema = z.object({
     home: z.number().nullable(),
     away: z.number().nullable(),
   }),
+  // La tanda de penales vive en `score.penalty` (números solo durante/después de
+  // la tanda; null el resto). Opcional/nullish para no romper el batch de 60s si
+  // el shape varía o falta (CLAUDE.md: no tragar el error pero tampoco reventar).
+  score: z
+    .object({
+      penalty: z
+        .object({
+          home: z.number().nullable(),
+          away: z.number().nullable(),
+        })
+        .nullish(),
+    })
+    .nullish(),
 });
 
 const responseSchema = z.object({
@@ -122,12 +139,16 @@ export function mapFixture(item: FixtureItem): LiveScore {
       ? "away"
       : null;
 
+  const penalty = item.score?.penalty;
+
   return {
     api_football_id: item.fixture.id,
     status: mapStatus(item.fixture.status.short),
     score_home: item.goals.home,
     score_away: item.goals.away,
     winner_team: winnerTeam,
+    penalty_home: penalty?.home ?? null,
+    penalty_away: penalty?.away ?? null,
     kickoff_at: new Date(item.fixture.date).toISOString(),
     home_name: item.teams.home.name,
     away_name: item.teams.away.name,

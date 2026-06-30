@@ -23,6 +23,7 @@
  * porque arrastra `next/headers`, que no existe fuera del runtime de Next.
  */
 import { createClient } from "@supabase/supabase-js";
+import { BRACKET_CACHE_KEY } from "@/lib/bracket/types";
 import { env, serverEnv } from "@/lib/env";
 import { fetchSeasonFixtures } from "@/lib/external/apiFootball";
 import { buildBackfillPlan, type BackfillRow } from "@/lib/matches/backfill";
@@ -45,7 +46,7 @@ async function main(): Promise<void> {
   const { data, error } = await admin
     .from("matches")
     .select(
-      "id, api_football_id, home_team, away_team, kickoff_at, status, score_home, score_away, winner_team",
+      "id, api_football_id, home_team, away_team, kickoff_at, status, score_home, score_away, winner_team, penalty_home, penalty_away",
     );
   if (error) {
     throw new Error(`[backfill] error leyendo matches: ${error.message}`);
@@ -83,7 +84,10 @@ async function main(): Promise<void> {
       daysToInvalidate.add(toTournamentDay(new Date(u.fields.kickoff_at)));
     }
   }
-  await del(...[...daysToInvalidate].map((d) => `fixtures:${d}`));
+  const keysToInvalidate = [...daysToInvalidate].map((d) => `fixtures:${d}`);
+  // El backfill es el camino que repone resultados de knockout: refresca el cuadro.
+  if (applied > 0) keysToInvalidate.push(BRACKET_CACHE_KEY);
+  await del(...keysToInvalidate);
 
   console.info(`[backfill] OK — ${applied}/${plan.updates.length} updates aplicados.`);
   if (applied < plan.updates.length) {

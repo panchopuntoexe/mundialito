@@ -94,6 +94,9 @@ export interface SyncUpdate {
   score_away: number | null;
   /** Equipo que avanza (knockout); null en grupos o sin definir. */
   winner_team: WinnerTeam;
+  /** Marcador de la tanda de penales; null si no hubo tanda. */
+  penalty_home: number | null;
+  penalty_away: number | null;
 }
 
 /**
@@ -120,6 +123,8 @@ export function buildSyncUpdates(
       score_home: ls.score_home,
       score_away: ls.score_away,
       winner_team: ls.winner_team,
+      penalty_home: ls.penalty_home,
+      penalty_away: ls.penalty_away,
     });
   }
   return updates;

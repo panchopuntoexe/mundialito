@@ -53,6 +53,8 @@ describe("buildSyncUpdates", () => {
     score_home: 1,
     score_away: 0,
     winner_team: null,
+    penalty_home: null,
+    penalty_away: null,
     kickoff_at: NOW.toISOString(),
     home_name: "Home",
     away_name: "Away",
@@ -67,7 +69,15 @@ describe("buildSyncUpdates", () => {
     const scores = [live({ api_football_id: 555, status: "finished", score_home: 2, score_away: 1 })];
 
     expect(buildSyncUpdates(rows, scores)).toEqual([
-      { id: 10, status: "finished", score_home: 2, score_away: 1, winner_team: null },
+      {
+        id: 10,
+        status: "finished",
+        score_home: 2,
+        score_away: 1,
+        winner_team: null,
+        penalty_home: null,
+        penalty_away: null,
+      },
     ]);
   });
 
@@ -77,6 +87,24 @@ describe("buildSyncUpdates", () => {
       live({ api_football_id: 9, status: "finished", score_home: 1, score_away: 1, winner_team: "away" }),
     ];
     expect(buildSyncUpdates(rows, scores)[0].winner_team).toBe("away");
+  });
+
+  it("propaga el marcador de penales del knockout", () => {
+    const rows = [{ id: 21, api_football_id: 8 }];
+    const scores = [
+      live({
+        api_football_id: 8,
+        status: "finished",
+        score_home: 1,
+        score_away: 1,
+        winner_team: "home",
+        penalty_home: 4,
+        penalty_away: 2,
+      }),
+    ];
+    const [u] = buildSyncUpdates(rows, scores);
+    expect(u.penalty_home).toBe(4);
+    expect(u.penalty_away).toBe(2);
   });
 
   it("omite filas sin api_football_id (aún no mapeadas)", () => {
@@ -104,6 +132,8 @@ describe("selectStaleCandidates", () => {
     score_home: 0,
     score_away: 0,
     winner_team: null,
+    penalty_home: null,
+    penalty_away: null,
     kickoff_at: NOW.toISOString(),
     home_name: "H",
     away_name: "A",

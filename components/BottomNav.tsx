@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   FaChartColumn,
   FaFutbol,
+  FaSitemap,
   FaTrophy,
   FaUserGroup,
 } from "react-icons/fa6";
@@ -16,9 +17,12 @@ import {
  * en modo standalone (viewportFit: "cover" en el root layout).
  */
 
+// "Estadísticas" → "Stats" para que las 5 etiquetas entren sin envolver en
+// pantallas angostas (la barra reparte el ancho entre todas).
 const TABS = [
   { href: "/", label: "Hoy", icon: FaFutbol },
-  { href: "/estadisticas", label: "Estadísticas", icon: FaChartColumn },
+  { href: "/cuadro", label: "Cuadro", icon: FaSitemap },
+  { href: "/estadisticas", label: "Stats", icon: FaChartColumn },
   { href: "/ranking", label: "Ranking", icon: FaTrophy },
   { href: "/leagues", label: "Ligas", icon: FaUserGroup },
 ] as const;

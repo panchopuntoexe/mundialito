@@ -28,6 +28,9 @@ export interface MatchCardData {
   score_away: number | null;
   /** "home" | "away" en knockout (la DB lo guarda como text); null en grupos. */
   winner_team: string | null;
+  /** Marcador de la tanda de penales; null si no hubo tanda. */
+  penalty_home: number | null;
+  penalty_away: number | null;
 }
 
 export interface MatchCardPrediction {
@@ -134,6 +137,17 @@ export function MatchCard({
               {match.winner_team === "home" ? match.home_team : match.away_team}
             </span>{" "}
             por penales
+            {match.penalty_home !== null && match.penalty_away !== null && (
+              // Marcador con el del ganador primero: "Avanza X por penales (4-2)".
+              <span className="font-semibold text-foreground">
+                {" "}
+                (
+                {match.winner_team === "home"
+                  ? `${match.penalty_home}-${match.penalty_away}`
+                  : `${match.penalty_away}-${match.penalty_home}`}
+                )
+              </span>
+            )}
           </p>
         )}
 

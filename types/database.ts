@@ -68,6 +68,8 @@ export interface Database {
           score_away: number | null;
           total_goals: number | null;
           winner_team: string | null;
+          penalty_home: number | null;
+          penalty_away: number | null;
           processed: boolean;
           updated_at: string;
         };
@@ -86,6 +88,8 @@ export interface Database {
           score_home?: number | null;
           score_away?: number | null;
           winner_team?: string | null;
+          penalty_home?: number | null;
+          penalty_away?: number | null;
           processed?: boolean;
           updated_at?: string;
         };
@@ -103,6 +107,8 @@ export interface Database {
           score_home?: number | null;
           score_away?: number | null;
           winner_team?: string | null;
+          penalty_home?: number | null;
+          penalty_away?: number | null;
           processed?: boolean;
           updated_at?: string;
         };

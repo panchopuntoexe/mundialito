@@ -38,10 +38,12 @@ type DayMatch = Pick<
   | "score_home"
   | "score_away"
   | "winner_team"
+  | "penalty_home"
+  | "penalty_away"
 >;
 
 const DAY_MATCH_COLUMNS =
-  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status, score_home, score_away, winner_team";
+  "id, home_team, away_team, home_flag, away_flag, phase, macro_round, kickoff_at, status, score_home, score_away, winner_team, penalty_home, penalty_away";
 
 async function loadMatchesForDay(day: string): Promise<DayMatch[]> {
   // Solo se loguea en un MISS (el fetcher no corre en un hit de caché).

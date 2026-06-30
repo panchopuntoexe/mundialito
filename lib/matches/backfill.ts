@@ -35,6 +35,8 @@ export interface BackfillRow {
   score_home: number | null;
   score_away: number | null;
   winner_team: WinnerTeam;
+  penalty_home: number | null;
+  penalty_away: number | null;
 }
 
 /** Cambios a aplicar a una fila (solo los campos que difieren). */
@@ -48,6 +50,8 @@ export interface BackfillUpdate {
     score_home?: number | null;
     score_away?: number | null;
     winner_team?: WinnerTeam;
+    penalty_home?: number | null;
+    penalty_away?: number | null;
     /** Corrección de horario: API-Football manda (ver MAX_KICKOFF_DRIFT_MS). */
     kickoff_at?: string;
   };
@@ -263,12 +267,16 @@ export function buildBackfillPlan(
       row.status !== fixture.status ||
       row.score_home !== fixture.score_home ||
       row.score_away !== fixture.score_away ||
-      row.winner_team !== fixture.winner_team;
+      row.winner_team !== fixture.winner_team ||
+      row.penalty_home !== fixture.penalty_home ||
+      row.penalty_away !== fixture.penalty_away;
     if (!terminal && resultChanged) {
       fields.status = fixture.status;
       fields.score_home = fixture.score_home;
       fields.score_away = fixture.score_away;
       fields.winner_team = fixture.winner_team;
+      fields.penalty_home = fixture.penalty_home;
+      fields.penalty_away = fixture.penalty_away;
     }
 
     const kickoffDrift =
